@@ -288,7 +288,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@repo/config-typescript@npm:*, @repo/config-typescript@workspace:config/typescript":
+"@repo/config-oxlint@workspace:config/oxlint":
+  version: 0.0.0-use.local
+  resolution: "@repo/config-oxlint@workspace:config/oxlint"
+  languageName: unknown
+  linkType: soft
+
+"@repo/config-typescript@npm:*, @repo/config-typescript@workspace:*, @repo/config-typescript@workspace:config/typescript":
   version: 0.0.0-use.local
   resolution: "@repo/config-typescript@workspace:config/typescript"
   languageName: unknown
@@ -454,6 +460,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@zoram/core@workspace:packages/core"
   dependencies:
+    "@repo/config-typescript": "workspace:*"
+    mitt: "npm:^3.0.1"
+    oxlint: "npm:^0.16.4"
+    typescript: "npm:^5.8.2"
     vite: "npm:^6.2.0"
   languageName: unknown
   linkType: soft
@@ -1007,6 +1017,13 @@ __metadata:
   dependencies:
     minipass: "npm:^7.1.2"
   checksum: 10c0/9f3bd35e41d40d02469cb30470c55ccc21cae0db40e08d1d0b1dff01cc8cc89a6f78e9c5d2b7c844e485ec0a8abc2238111213fdc5b2038e6d1012eacf316f78
+  languageName: node
+  linkType: hard
+
+"mitt@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "mitt@npm:3.0.1"
+  checksum: 10c0/3ab4fdecf3be8c5255536faa07064d05caa3dd332bd318ff02e04621f7b3069ca1de9106cfe8e7ced675abfc2bec2ce4c4ef321c4a1bb1fb29df8ae090741913
   languageName: node
   linkType: hard
 

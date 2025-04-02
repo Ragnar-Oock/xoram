@@ -4,9 +4,15 @@
   "description": "zoram core",
   "main": "index.js",
   "scripts": {
-    "lint": "oxlint \"**/*.ts\""
+    "lint": "oxlint -c=../../config/oxlint/config.oxlint.json"
   },
   "devDependencies": {
+    "@repo/config-typescript": "workspace:*",
+    "oxlint": "^0.16.4",
+    "typescript": "^5.8.2",
     "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "mitt": "^3.0.1"
   }
 }

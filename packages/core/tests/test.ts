@@ -1,7 +1,7 @@
 import {definePlugin} from "../src/plugin";
-import {dependsOn, onBeforeCreate, onCreated, onBeforeDestroy, addService, onEvent, Service} from "../src/plugins";
+import {dependsOn, onCreated, onBeforeDestroy, addService, onEvent, Service} from "../src/plugins";
 
-declare module '../src/application.ts' {
+declare module '../src/application' {
   interface ServiceCollection {
     woo?: Service<ServiceNotifications & {message: { msg }}>
     boris?: Service<ServiceNotifications & {message: { msg }}>

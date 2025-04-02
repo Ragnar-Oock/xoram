@@ -1,7 +1,7 @@
 import {Emitter, EventType, WildcardHandler} from "mitt";
-import {Application, ServiceCollection} from "../application.ts";
-import {getActivePlugin} from "../plugin.ts";
-import {makeSafeCallable} from "./error-handling.ts";
+import {Application, ServiceCollection} from "../application";
+import {getActivePlugin} from "../plugin";
+import {makeSafeCallable} from "./error-handling";
 
 export type Notifications = Record<EventType, unknown>;
 export type EventSource<notifications extends Notifications> = Emitter<notifications> | { emitter: Emitter<notifications> };
@@ -65,7 +65,6 @@ export function onEvent<
  */
 export function onEvent<
     notifications extends Notifications,
-    event extends keyof notifications,
 >(
     target: EventSourceGetter<notifications>,
     on: '*',
@@ -108,11 +107,12 @@ export function onEvent(target: EventSourceGetter<Notifications>, on: string|str
             : eventSource.emitter;
     }
 
-    const safeHandler = makeSafeCallable(handler, 'onEvent')
+    let safeHandler: Function;
 
     const events = (Array.isArray(on) ? on : [on]);
     plugin.hooks.on('created', app => {
         const resolvedTarget = resolveSource(app);
+        safeHandler = makeSafeCallable(handler, 'onEvent', plugin, app);
 
         // @ts-expect-error event and handler 's type are resolved by the function overloads above
         events.forEach(event => resolvedTarget.on(event, safeHandler));

@@ -1,10 +1,10 @@
-import {Application, ApplicationHooks} from "../application.ts";
-import {DefinedPlugin, PluginHooks} from "../plugin.ts";
+import {Application, ApplicationHooks} from "../application";
+import {DefinedPlugin, PluginHooks} from "../plugin";
 
 
 export type ErrorContext = keyof PluginHooks | keyof ApplicationHooks | 'onEvent';
 
-function handleError(error, plugin: DefinedPlugin | undefined, app: Application | undefined, context: ErrorContext) {
+function handleError(error: any, plugin: DefinedPlugin | undefined, app: Application | undefined, context: ErrorContext) {
     console.error(error, plugin, app, context);
 }
 
@@ -16,17 +16,16 @@ function handleError(error, plugin: DefinedPlugin | undefined, app: Application 
  * @param plugin the instance of plugin the call is made from
  * @param app the application the plugin instance belongs to
  * @param context the execution context
- * @param args the arguments to pass to the function
  */
 export function makeSafeCallable<args extends any[], ret>(
     fun: (...args: args) => ret,
-    context: ErrorContext
-): (
+    context: ErrorContext,
     plugin: DefinedPlugin | undefined,
     app: Application | undefined,
+): (
     ...args: args
 ) => ret | undefined {
-    return (plugin, app, ...args = [] as unknown as args) => {
+    return (...args) => {
         try {
             return fun(...args);
         } catch (error) {

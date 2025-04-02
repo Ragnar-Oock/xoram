@@ -1,4 +1,5 @@
-import {getActivePlugin, type PluginHooks} from "../plugin.ts";
+import {Application} from "../application";
+import {getActivePlugin, type PluginHooks} from "../plugin";
 
 function defineHooks(name: keyof PluginHooks): (callback: ((app: Application) => void)) => void {
   return callback => {

@@ -1,5 +1,5 @@
 import mitt, {Emitter} from "mitt";
-import {type Application} from "./application.ts";
+import {type Application} from "./application";
 
 
 /**
@@ -80,7 +80,7 @@ export function definePlugin(id: string, setup: PluginSetup): () => DefinedPlugi
     }
     catch (error) {
       // todo handle this error better ?
-      new Error(`Error in setup function of plugin "${id}"`, {cause: error as Error});
+      throw new Error(`Error in setup function of plugin "${id}"`, {cause: error as Error});
     }
     finally {
       setActivePlugin();

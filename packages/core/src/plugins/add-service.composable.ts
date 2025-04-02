@@ -1,4 +1,4 @@
-import {getActiveApp, serviceSymbol} from "../application.ts";
+import {getActiveApp, serviceSymbol} from "../application";
 import type {Emitter} from "mitt";
 
 interface ServiceNotifications {
