@@ -1,0 +1,12 @@
+{
+  "name": "@zoram/core",
+  "version": "0.0.0",
+  "description": "zoram core",
+  "main": "index.js",
+  "scripts": {
+    "lint": "oxlint \"**/*.ts\""
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}
