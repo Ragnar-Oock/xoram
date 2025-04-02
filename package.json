@@ -11,6 +11,10 @@
     "prettier": "^3.2.5",
     "turbo": "^2.4.4"
   },
-  "packageManager": "pnpm@8.15.6",
-  "name": "with-vite"
+  "name": "with-vite",
+  "packageManager": "yarn@4.7.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }
