@@ -12,8 +12,8 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
+    "@repo/config-typescript": "*",
     "eslint": "^8.57.0",
-    "typescript": "5.5.4"
+    "typescript": "5.8.2"
   }
 }

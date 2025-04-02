@@ -1,4 +1,4 @@
 {
-  "extends": "@repo/typescript-config/vite.json",
+  "extends": "config/typescript/vite.json",
   "include": ["src"]
 }
