@@ -1,8 +1,9 @@
-import {getActiveApp, serviceSymbol} from "../application";
+import {Application, getActiveApp, ServiceCollection, serviceSymbol} from "../application";
 import type {Emitter} from "mitt";
+import {getActivePlugin} from "../plugin";
 
-interface ServiceNotifications {
-  'destroy:before': {
+export interface ServiceNotifications {
+  'before_destroy': {
     /**
      * The service that emitted the event
      */
@@ -13,22 +14,55 @@ interface ServiceNotifications {
 }
 
 export interface Service<notifications extends ServiceNotifications = ServiceNotifications> {
-  readonly id: string;
   emitter: Emitter<notifications>
 }
+export type ServiceId = keyof ServiceCollection & symbol;
 
-export function addService(service: Service): void {
-  const app = getActiveApp();
+export type ServiceFactory<service extends Service> = (application: Application) => service;
 
-  if (!app) {
+/**
+ * Register a service the depends on another or on the application.
+ * @param id the id to register the service under, **MUST** be unique
+ * @param serviceFactory a function taking in the application instance and returning a ready to use service
+ * @public
+ */
+export function addService<id extends ServiceId>(id: id, serviceFactory: ServiceFactory<ServiceCollection[id]>): void;
+/**
+ * Register a self-contained service with no dependency.
+ * @param id the id to register the service under, **MUST** be unique
+ * @param service a ready to use service instance
+ * @public
+ */
+export function addService<id extends ServiceId>(id: id, service: ServiceCollection[id]): void;
+/**
+ * @param id
+ * @param serviceOrFactory
+ *
+ * @internal use one of the overrides
+ */
+export function addService(id: symbol, serviceOrFactory: Service | ServiceFactory<Service>): void {
+  const plugin = getActivePlugin();
+
+  if (!plugin) {
     if (import.meta.env.DEV) {
-      console.warn(new Error("Invoked addService with no activeApp"));
+      console.warn(new Error("Invoked addService with no activePlugin"));
     }
     return;
   }
 
-  app.emitter.emit('beforeAddService', app);
-  // @ts-expect-error service resolution is done at runtime.
-  app[serviceSymbol][service.id] = service;
-  app.emitter.emit('serviceAdded', app);
+  plugin.hooks.on('beforeCreate', app => {
+    // todo move this to app ?
+    app.emitter.emit('beforeAddService', app);
+    // @ts-expect-error service resolution is done at runtime.
+    app.services[id] = service;
+    app.emitter.emit('serviceAdded', app);
+  })
+
+  plugin.hooks.on('beforeDestroy', app => {
+    // todo emit remove service events
+    // todo move this to app ?
+
+    // @ts-expect-error service resolution is done at runtime.
+    delete app.services[id];
+  })
 }
