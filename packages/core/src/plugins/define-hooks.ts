@@ -6,7 +6,7 @@ function defineHooks(name: keyof PluginHooks): (callback: ((app: Application) =>
     const plugin = getActivePlugin();
     if (!plugin) {
       if (import.meta.env.DEV) {
-        console.error(new Error('onBeforeCreate called without an active plugin instance'));
+        console.error(new Error(`${name} hook called without an active plugin instance`));
       }
       return;
     }
