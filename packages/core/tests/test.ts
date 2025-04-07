@@ -21,15 +21,19 @@ declare const MyService: (new(...args: any[]) => Service);
 // declare function addService<id extends keyof ServiceCollection>(id: id, service: Service): void;
 // declare function addService<id extends keyof ServiceCollection>(id: id, serviceFactory: (application: Application) => Service): void;
 
-export default definePlugin('bob', () => {
-  dependsOn(billyPlugin); // if you know you'll be in the same bundle
-  dependsOn(billyPlugin.id); // if you don't know
+declare const billyPluginId: symbol;
 
+export const pluginId = Symbol('bob');
+export default definePlugin(pluginId, () => {
+  dependsOn(billyPluginId);
+
+  /*
   // require the current plugin to be loaded after the given one if
   // it is in the application config, if not doesn't do anything.
   dependsOnOptional(borisPlugin); // might be a bad idea...
-  dependsOn(borisPlugin, /* mandatory */ false); // might be a bad idea...
-  dependsOn(borisPlugin, /* optional */ true); // might be a bad idea...
+  dependsOn(borisPlugin, /!* mandatory *!/ false); // might be a bad idea...
+  dependsOn(borisPlugin, /!* optional *!/ true); // might be a bad idea...
+  */
 
   const myServiceId = 'myService';
   addService(myServiceId, app => new MyService(app.services.woo));

@@ -12,7 +12,7 @@ export type PluginSetup = () => void;
  * @todo figure out the parameters to pass in and clean up declaration
  */
 export type PluginHook = (app: Application) => void;
-export type PluginId = string;
+export type PluginId = symbol;
 
 
 /**
@@ -66,7 +66,7 @@ let activePlugin: DefinedPlugin | undefined;
 const setActivePlugin = (plugin?: DefinedPlugin) => activePlugin = plugin;
 export const getActivePlugin = () => activePlugin;
 
-export function definePlugin(id: string, setup: PluginSetup): () => DefinedPlugin {
+export function definePlugin(id: symbol, setup: PluginSetup): () => DefinedPlugin {
   return () => {
     const plugin = {
       id,
@@ -80,7 +80,7 @@ export function definePlugin(id: string, setup: PluginSetup): () => DefinedPlugi
     }
     catch (error) {
       // todo handle this error better ?
-      throw new Error(`Error in setup function of plugin "${id}"`, {cause: error as Error});
+      throw new Error(`Error in setup function of plugin "${String(id)}"`, {cause: error as Error});
     }
     finally {
       setActivePlugin();

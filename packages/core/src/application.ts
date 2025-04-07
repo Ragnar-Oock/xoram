@@ -73,22 +73,22 @@ function sortPluginsByDependencies(plugins: DefinedPlugin[]): DefinedPlugin[] {
     }
     if (temporarilyMarked.has(plugin)) {
       // todo list dependency cycle
-      throw new Error(`The plugin "${plugin.id}" declares a dependency that directly or indirectly depends on it.`)
+      throw new Error(`The plugin "${String(plugin.id)}" declares a dependency that directly or indirectly depends on it.`)
     }
     temporarilyMarked.add(plugin);
     plugin.dependencies?.forEach(dependencyOrId => {
-      const dependency = typeof dependencyOrId === 'string' ? map.get(dependencyOrId) : dependencyOrId;
+      const dependency = typeof dependencyOrId === 'symbol' ? map.get(dependencyOrId) : dependencyOrId;
 
       if (dependency !== undefined) {
         return visit(dependency);
       }
 
       // todo check that the second case can get to that point and if so make that impossible by adding the dependency to the list of plugins.
-      const dependencyType = typeof dependencyOrId === "string"
+      const dependencyType = typeof dependencyOrId === 'symbol'
         ? 'Dependency was declared by id.'
         : 'Dependency was provided as plugin.';
 
-      throw new Error(`The plugin "${plugin.id}" depends on "${typeof dependencyOrId === "string" ? dependencyOrId : dependencyOrId.id}" but it is not in the list of provided plugins. ${dependencyType}`)
+      throw new Error(`The plugin "${String(plugin.id)}" depends on "${typeof dependencyOrId === 'symbol' ? String(dependencyOrId) : String(dependencyOrId.id)}" but it is not in the list of provided plugins. ${dependencyType}`)
     })
     temporarilyMarked.delete(plugin);
     permanentlyMarked.add(plugin);
