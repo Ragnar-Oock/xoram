@@ -1,11 +1,11 @@
-import {Emitter, EventType, WildcardHandler} from "mitt";
+import {Emitter, EventType, Handler, WildcardHandler} from "mitt";
 import {Application, ServiceCollection} from "../application";
 import {getActivePlugin} from "../plugin";
 import {makeSafeCallable} from "./error-handling";
 
 export type Notifications = Record<EventType, unknown>;
 export type EventSource<notifications extends Notifications> = Emitter<notifications> | { emitter: Emitter<notifications> };
-export type EventSourceGetter<notifications extends Notifications> = (services: Readonly<ServiceCollection>) => EventSource<notifications>;
+export type EventSourceGetter<notifications extends Notifications> = ((application: Application) => EventSource<notifications>) | keyof ServiceCollection;
 
 function isMitt<notifications extends Notifications>(candidate: unknown): candidate is Emitter<notifications> {
     return (
@@ -21,6 +21,33 @@ function isMitt<notifications extends Notifications>(candidate: unknown): candid
         && typeof candidate.emit === 'function'
     )
 }
+
+function resolveSource<notifications extends Notifications>(
+    target: EventSourceGetter<notifications>,
+    app: Application
+): Emitter<notifications> {
+    switch (typeof target) {
+        case 'string':
+        case 'symbol': {
+            const source = app.services[target];
+            if (source === undefined) {
+                // find a better way to deal with this
+                throw new Error(`onEvent was invoked with an incorrect service id "${target}".`)
+            }
+            return source.emitter as unknown as Emitter<notifications>;
+        }
+        case 'function': {
+            const eventSource = target(app);
+            return isMitt<notifications>(eventSource)
+                ? eventSource
+                : eventSource.emitter;
+        }
+        default: {
+            throw new TypeError(`incorrect target provided to onEvent, typeof target === ${typeof target}, expected string, symbol or function`);
+        }
+    }
+}
+
 type UnionToIntersection<U> =
     (U extends any ? (x: U)=>void : never) extends ((x: infer I)=>void) ? I : never
 
@@ -46,7 +73,7 @@ export function onEvent<
 >(
     target: EventSourceGetter<notifications>,
     on: events,
-    handler: (event: MergedEvents<notifications, events>) => void,
+    handler: Handler<MergedEvents<notifications, events>>,
 ): void;
 
 /**
@@ -84,14 +111,14 @@ export function onEvent<
 >(
     target: EventSourceGetter<notifications>,
     on: event,
-    handler: notifications[event]
+    handler: Handler<notifications[event]>
 ): void;
 
 /**
  * Listen to event only for the lifetime of the plugin
  * @internal use one of the overrides
  */
-export function onEvent(target: EventSourceGetter<Notifications>, on: string|string[], handler: (...args: never[]) => void): void {
+export function onEvent<notifications extends Notifications>(target: EventSourceGetter<notifications>, on: string|string[], handler: (...args: never[]) => void): void {
     const plugin = getActivePlugin();
     if (!plugin) {
         if (import.meta.env.DEV) {
@@ -100,25 +127,19 @@ export function onEvent(target: EventSourceGetter<Notifications>, on: string|str
         return;
     }
 
-    const resolveSource = (app: Application) => {
-        const eventSource = target(app.services);
-        return  isMitt<Notifications>(eventSource)
-            ? eventSource
-            : eventSource.emitter;
-    }
 
     let safeHandler: Function;
-
     const events = (Array.isArray(on) ? on : [on]);
+
     plugin.hooks.on('created', app => {
-        const resolvedTarget = resolveSource(app);
+        const resolvedTarget = resolveSource(target, app);
         safeHandler = makeSafeCallable(handler, 'onEvent', plugin, app);
 
         // @ts-expect-error event and handler 's type are resolved by the function overloads above
         events.forEach(event => resolvedTarget.on(event, safeHandler));
     })
     plugin.hooks.on('beforeDestroy', (app) => {
-        const resolvedTarget = resolveSource(app);
+        const resolvedTarget = resolveSource(target, app);
         // @ts-expect-error event and handler 's type are resolved by the function overloads above
         events.forEach(event => resolvedTarget.off(event, safeHandler))
     })
