@@ -51,6 +51,8 @@ export function addService(id: symbol, serviceOrFactory: Service | ServiceFactor
   }
 
   plugin.hooks.on('beforeCreate', app => {
+    const service = typeof serviceOrFactory === 'function' ? serviceOrFactory(app) : serviceOrFactory;
+
     // todo move this to app ?
     app.emitter.emit('beforeAddService', app);
     // @ts-expect-error service resolution is done at runtime.
