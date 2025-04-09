@@ -68,3 +68,13 @@ export function addService(id: symbol, serviceOrFactory: Service | ServiceFactor
     delete app.services[id];
   })
 }
+
+export function useService<id extends keyof ServiceCollection>(serviceId: id): ServiceCollection[id] {
+  const app = getActiveApp();
+
+  if (app === undefined) {
+    throw new Error('useService used without an active zoram application') // todo do better
+  }
+
+  return app.services[serviceId];
+}
