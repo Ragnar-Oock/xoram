@@ -131,6 +131,10 @@ function destroyApp(app: Application): void {
 export function createApp(config: ApplicationConfig): Application {
 	const { id = `application_${appCount}`, plugins } = config;
 
+	if (Array.isArray(plugins) && plugins.length === 0) {
+		console.warn(`Application "${id}" initialized without plugin, did you forget to provide them ?`);
+	}
+
 	const app = Object.seal({
 		id,
 		emitter: mitt(),
