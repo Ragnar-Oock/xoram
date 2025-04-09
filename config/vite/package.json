@@ -1,0 +1,12 @@
+{
+  "name": "@repo/config-vite",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "vitest": "^3.1.1"
+  }
+}
