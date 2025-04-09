@@ -11,7 +11,7 @@
     "lint": "oxlint \"**/*.ts\""
   },
   "devDependencies": {
-    "@repo/config-typescript": "*",
-    "typescript": "5.8.2"
+    "@repo/config-typescript": "workspace:*",
+    "typescript": "^5.8.3"
   }
 }

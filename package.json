@@ -6,10 +6,11 @@
     "lint": "turbo run lint"
   },
   "devDependencies": {
-    "oxlint": "^0.16.4",
-    "turbo": "^2.4.4",
-    "typescript": "^5.8.2",
-    "vite": "^6.2.4"
+    "oxlint": "^0.16.5",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.2.5",
+    "vitest": "^3.1.1"
   },
   "name": "with-vite",
   "packageManager": "yarn@4.7.0",
