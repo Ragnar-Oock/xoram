@@ -1,6 +1,6 @@
-import {Application, getActiveApp, ServiceCollection, serviceSymbol} from "../application";
 import type {Emitter} from "mitt";
-import {getActivePlugin} from "../plugin";
+import {Application, getActiveApp, ServiceCollection} from "./application";
+import {getActivePlugin} from "./plugins";
 
 export interface ServiceNotifications {
   'before_destroy': {
