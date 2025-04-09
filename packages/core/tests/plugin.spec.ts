@@ -1,5 +1,6 @@
 import {afterEach, beforeEach, describe, expect, it, Mock, vi} from "vitest";
-import {createApp, definePlugin, onBeforeCreate, onBeforeDestroy, onCreated, PluginHooks} from "../src";
+import {a} from "vitest/dist/chunks/suite.d.FvehnV49";
+import {createApp, definePlugin, onBeforeCreate, onBeforeDestroy, onCreated, PluginHooks, pluginSymbol} from "../src";
 
 
 describe('plugin', () => {
@@ -10,9 +11,8 @@ describe('plugin', () => {
 		const hooks = {
 			beforeCreate: vi.fn(),
 			created: vi.fn(),
-			beforeDestroy: vi.fn(),
-			destroyed: vi.fn(),
-		} as const satisfies { [hook in keyof PluginHooks]: Mock };
+			beforeDestroy: vi.fn()
+		} as const satisfies Omit<{ [hook in keyof PluginHooks]: Mock }, 'destroyed'>;
 
 		const firstPlugin = definePlugin(first, () => {
 			onBeforeCreate(() => hooks.beforeCreate(first));
@@ -44,5 +44,21 @@ describe('plugin', () => {
 					expect(spy, `hook ${hook} should have been called with ${String(first)}`).toHaveBeenCalledWith(first);
 				});
 			})
+
+		// todo test for destroyed hook
+
+		it(`should invoke the "destroyed" hook`, ({task}) => {
+			const app = createApp({id: task.id, plugins: [
+					firstPlugin,
+				]})
+
+			const spy = vi.fn();
+			app[pluginSymbol].get(first)!.hooks.on('destroyed', () => spy(first));
+
+			app.destroy();
+
+			expect(spy, `hook destroyed should have been called`).toHaveBeenCalledOnce();
+			expect(spy, `hook destroyed should have been called with ${String(first)}`).toHaveBeenCalledWith(first);
+		});
 	});
 });
