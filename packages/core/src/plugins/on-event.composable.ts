@@ -1,6 +1,6 @@
 import {Emitter, EventType, Handler, WildcardHandler} from "mitt";
 import {Application, ServiceCollection} from "../application";
-import {getActivePlugin} from "../plugin";
+import {getActivePlugin} from "./define-plugin";
 import {makeSafeCallable} from "./error-handling";
 
 export type Notifications = Record<EventType, unknown>;

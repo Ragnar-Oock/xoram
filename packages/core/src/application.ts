@@ -1,5 +1,5 @@
 import mitt, {type Emitter} from "mitt";
-import type {DefinedPlugin} from "./plugin";
+import type {DefinedPlugin, PluginId} from "./plugins";
 
 export type ApplicationHooks = {
   /**

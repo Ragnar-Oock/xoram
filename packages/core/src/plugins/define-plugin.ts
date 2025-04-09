@@ -1,5 +1,5 @@
 import mitt, {Emitter} from "mitt";
-import {type Application} from "./application";
+import {type Application} from "../application";
 
 
 /**

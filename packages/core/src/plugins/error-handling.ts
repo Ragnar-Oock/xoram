@@ -1,5 +1,5 @@
 import {Application, ApplicationHooks} from "../application";
-import {DefinedPlugin, PluginHooks} from "../plugin";
+import {DefinedPlugin, PluginHooks} from "./define-plugin";
 
 
 export type ErrorContext = keyof PluginHooks | keyof ApplicationHooks | 'onEvent';
