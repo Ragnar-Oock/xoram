@@ -41,7 +41,7 @@ export type PluginHooks = {
   beforeDestroy: Application;
   /**
    * Fires after a plugin is removed from the application.
-   * @internal
+   * @internal used by devtools
    */
   destroyed: Application;
 }
@@ -56,9 +56,16 @@ export type DefinedPlugin = {
    * List the other plugins that should be initialized before this one, if they are not part of the
    * application config, the application will not instantiate.
    */
-  dependencies: (DefinedPlugin | DefinedPlugin['id'])[];
+  dependencies: PluginId[];
+  /**
+   * A Mitt instance to manage the plugin's life cycle hooks
+   */
+  hooks: Emitter<PluginHooks>;
 
-  hooks: Emitter<PluginHooks>
+  /**
+   * Ask the plugin to clean up before being removed from the application.
+   */
+  destroy: (app: Application) => void;
 }
 
 let activePlugin: DefinedPlugin | undefined;
@@ -72,6 +79,10 @@ export function definePlugin(id: symbol, setup: PluginSetup): () => DefinedPlugi
       id,
       dependencies: [],
       hooks: mitt(),
+      destroy: (app) => {
+        plugin.hooks.emit('beforeDestroy', app);
+        plugin.hooks.emit('destroyed', app);
+      }
     } satisfies DefinedPlugin;
 
     setActivePlugin(plugin);

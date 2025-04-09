@@ -2,52 +2,60 @@ import mitt, {type Emitter} from "mitt";
 import type {DefinedPlugin, PluginId} from "./plugins";
 
 export type ApplicationHooks = {
-  /**
-   * Fired before a service is added to the application
-   *
-   * @todo make it preventable ?
-   */
-  beforeAddService: Application;
-  /**
-   * Fired when a service has been added to the application
-   */
-  serviceAdded: Application;
+	/**
+	 * Fired before a service is added to the application
+	 *
+	 * @todo make it preventable ?
+	 */
+	beforeAddService: Application;
+	/**
+	 * Fired when a service has been added to the application
+	 */
+	serviceAdded: Application;
 }
 
+/**
+ * Register your service in this interface by augmenting it
+ */
 /* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
 export interface ServiceCollection {
-  // services will be added here by plugins
+	// services will be added here by plugins
 }
 
 export type Application = {
-  /**
-   * The name of the application, will be useful when debugging if you have more than one
-   * application in a given environment.
-   * @public
-   */
-  readonly id: string;
-  /**
-   * The application's own event emitter used to broadcast its life cycle events.
-   *
-   * @internal
-   */
-  readonly emitter: Emitter<ApplicationHooks>;
-  /**
-   * The services registered on the application, usable by plugins.
-   */
-  readonly services: Readonly<ServiceCollection>;
+	/**
+	 * The name of the application, will be useful when debugging if you have more than one
+	 * application in a given environment.
+	 * @public
+	 */
+	readonly id: string;
+	/**
+	 * The application's own event emitter used to broadcast its life cycle events.
+	 *
+	 * @internal
+	 */
+	readonly emitter: Emitter<ApplicationHooks>;
+	/**
+	 * The services registered on the application, usable by plugins.
+	 */
+	readonly services: Readonly<ServiceCollection>;
 
-  /**
-   * All the plugins loaded in the application.
-   *
-   * @internal
-   */
-  [pluginSymbol]: DefinedPlugin[];
+	/**
+	 * All the plugins loaded in the application.
+	 *
+	 * @internal
+	 */
+	[pluginSymbol]: Map<PluginId, DefinedPlugin>;
+
+	/**
+	 * Cleanly destroy the application.
+	 */
+	destroy(): void;
 }
 
 export type ApplicationConfig = {
-  id?: string;
-  plugins: (() => DefinedPlugin)[];
+	id?: string;
+	plugins: (() => DefinedPlugin)[];
 }
 
 // region context
@@ -109,6 +117,16 @@ export const serviceSymbol = Symbol('service-list');
 
 let appCount = 0;
 
+function destroyApp(app: Application): void {
+	const plugins = [...app[pluginSymbol].values()];
+
+	const pluginsToDestroy = sortPluginsByDependencies(plugins).reverse();
+
+	pluginsToDestroy.forEach(plugin => {
+		plugin.destroy(app);
+	})
+}
+
 /**
  * Create an application from a set of plugins
  *
@@ -116,30 +134,32 @@ let appCount = 0;
  * @param config
  */
 export function createApp(config: ApplicationConfig): Application {
-  const { id = `application_${appCount}`, plugins } = config;
+	const { id = `application_${appCount}`, plugins } = config;
 
-  const app = Object.seal({
-    id,
-    emitter: mitt(),
-    services: {},
-    [pluginSymbol]: [] as DefinedPlugin[],
-  }) satisfies Application
+	const app = Object.seal({
+		id,
+		emitter: mitt(),
+		services: {} as Readonly<ServiceCollection>,
+		[pluginSymbol]: new Map(),
+		destroy: () => {
+			destroyApp(app);
+		},
+	}) satisfies Application
 
-  setActiveApp(app);
+	setActiveApp(app);
 
-  sortPluginsByDependencies(
-      plugins.map(setup => setup())
-  )
-    .map(plugin => {
-      plugin.hooks.emit('beforeCreate', app);
-      return plugin;
-    })
-    .map(plugin => {
-      plugin.hooks.emit('created', app);
-      return plugin;
-    })
+	sortPluginsByDependencies(plugins.map(setup => setup()))
+		.map(plugin => {
+			plugin.hooks.emit('beforeCreate', app);
+			return plugin;
+		})
+		.map(plugin => {
+			app[pluginSymbol].set(plugin.id, plugin);
+			plugin.hooks.emit('created', app);
+			return plugin;
+		})
 
-  setActiveApp();
+	setActiveApp();
 
-  return app;
+	return app;
 }
