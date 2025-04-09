@@ -2,9 +2,12 @@
   "name": "@zoram/core",
   "version": "0.0.0",
   "description": "zoram core",
-  "main": "index.js",
+  "main": "src/index.ts",
+  "type": "module",
+  "types": "src/index.ts",
   "scripts": {
-    "lint": "oxlint -c=../../config/oxlint/config.oxlint.json"
+    "lint": "oxlint -c=../../config/oxlint/config.oxlint.json",
+    "test:watch": "vitest watch"
   },
   "devDependencies": {
     "@repo/config-typescript": "workspace:*",
