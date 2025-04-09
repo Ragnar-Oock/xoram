@@ -19,7 +19,7 @@ export function dependsOn(dependency: PluginId): void;
  *
  * @internal use the public override
  */
-export function dependsOn(dependency: DefinedPlugin | PluginId, _activePlugin = getActivePlugin()): void {
+export function dependsOn(dependency: PluginId, _activePlugin = getActivePlugin()): void {
   if (!_activePlugin) {
     if (import.meta.env.DEV) {
       console.warn(new Error("Invoked dependsOn with no activePlugin"));
