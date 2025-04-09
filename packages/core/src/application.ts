@@ -69,46 +69,41 @@ export const getActiveApp = () => activeApp;
 
 // region plugin sort
 function sortPluginsByDependencies(plugins: DefinedPlugin[]): DefinedPlugin[] {
-  const sorted: DefinedPlugin[] = [];
-  const unmarked: DefinedPlugin[] = [...plugins];
-  const map = new Map(unmarked.map(plugin => [plugin.id, plugin] as const));
-  const temporarilyMarked = new Set<DefinedPlugin>();
-  const permanentlyMarked = new Set<DefinedPlugin>();
+	const sorted: DefinedPlugin[] = [];
+	const unmarked: DefinedPlugin[] = [...plugins];
+	const map = new Map(unmarked.map(plugin => [plugin.id, plugin] as const));
+	const temporarilyMarked = new Set<DefinedPlugin>();
+	const permanentlyMarked = new Set<DefinedPlugin>();
 
-  const visit = (plugin: DefinedPlugin): void => {
-    if (permanentlyMarked.has(plugin)) {
-      return;
-    }
-    if (temporarilyMarked.has(plugin)) {
-      // todo list dependency cycle
-      throw new Error(`The plugin "${String(plugin.id)}" declares a dependency that directly or indirectly depends on it.`)
-    }
-    temporarilyMarked.add(plugin);
-    plugin.dependencies?.forEach(dependencyOrId => {
-      const dependency = typeof dependencyOrId === 'symbol' ? map.get(dependencyOrId) : dependencyOrId;
+	const visit = (plugin: DefinedPlugin): void => {
+		if (permanentlyMarked.has(plugin)) {
+			return;
+		}
+		if (temporarilyMarked.has(plugin)) {
+			// todo list dependency cycle
+			throw new Error(`The plugin "${String(plugin.id)}" declares a dependency that directly or indirectly depends on it.`)
+		}
+		temporarilyMarked.add(plugin);
+		plugin.dependencies?.forEach(dependencyId => {
+			const dependency = map.get(dependencyId);
 
-      if (dependency !== undefined) {
-        return visit(dependency);
-      }
+			if (dependency !== undefined) {
+				return visit(dependency);
+			}
+			else {
+				throw new Error(`The plugin "${String(plugin.id)}" depends on "${String(dependencyId)}" but it is not in the list of provided plugins. Did you forget to register it ?`)
+			}
+		})
+		temporarilyMarked.delete(plugin);
+		permanentlyMarked.add(plugin);
+		sorted.push(plugin);
+	}
 
-      // todo check that the second case can get to that point and if so make that impossible by adding the dependency to the list of plugins.
-      const dependencyType = typeof dependencyOrId === 'symbol'
-        ? 'Dependency was declared by id.'
-        : 'Dependency was provided as plugin.';
+	for (const definedPlugin of unmarked) {
+		visit(definedPlugin);
+	}
 
-      throw new Error(`The plugin "${String(plugin.id)}" depends on "${typeof dependencyOrId === 'symbol' ? String(dependencyOrId) : String(dependencyOrId.id)}" but it is not in the list of provided plugins. ${dependencyType}`)
-    })
-    temporarilyMarked.delete(plugin);
-    permanentlyMarked.add(plugin);
-    sorted.unshift(plugin);
-
-  }
-  let node = unmarked.pop();
-  while (node) {
-    visit(node);
-    node = unmarked.pop();
-  }
-  return sorted;
+	return sorted;
 }
 // endregion
 
