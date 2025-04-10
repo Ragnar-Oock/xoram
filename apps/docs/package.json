@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --clearScreen false",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
     "lint": "oxlint \"src/**/*.ts\""
   },
   "dependencies": {
@@ -15,6 +15,8 @@
   "devDependencies": {
     "@repo/config-typescript": "*",
     "typescript": "^5.8.3",
-    "vite": "^6.2.5"
+    "vite": "^6.2.5",
+    "vitepress": "^1.6.3",
+    "vue": "^3.5.13"
   }
 }
