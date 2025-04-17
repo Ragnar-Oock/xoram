@@ -6,13 +6,13 @@
   "type": "module",
   "types": "src/index.ts",
   "scripts": {
-    "lint": "oxlint -c=../../config/oxlint/config.oxlint.json",
+    "lint": "oxlint",
     "test:watch": "vitest watch"
   },
   "devDependencies": {
     "@repo/config-typescript": "workspace:*",
     "@repo/config-vite": "workspace:*",
-    "oxlint": "^0.16.5",
+    "oxlint": "^0.16.6",
     "typescript": "^5.8.3",
     "vite": "^6.2.5"
   },

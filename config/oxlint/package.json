@@ -1,7 +1,0 @@
-{
-  "name": "@repo/config-oxlint",
-  "version": "0.0.0",
-  "description": "A shared oxlint config for the repo",
-  "main": "./config.oxlint.json",
-  "private": true
-}

@@ -6,7 +6,7 @@
     "lint": "turbo run lint"
   },
   "devDependencies": {
-    "oxlint": "^0.16.5",
+    "oxlint": "^0.16.6",
     "turbo": "^2.5.0",
     "typescript": "^5.8.3",
     "vite": "^6.2.5",
