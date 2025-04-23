@@ -1,0 +1,77 @@
+import {Application, getActiveApp, pluginSymbol, sortPluginsByDependencies} from "../application";
+import {PluginDefinition} from "./define-plugin";
+
+/**
+ * Register a set of plugins into the active application after it has been initialized.
+ *
+ * @param definePlugins the plugin definitions to register in the application
+ *
+ * @public
+ */
+export function addPlugins(definePlugins: PluginDefinition[]): void;
+/**
+ * Register a set of plugins into the active application after it has been initialized.
+ *
+ * @param definePlugins the plugin definitions to register in the application
+ * @param app the application to register the plugin into, you should not need to pass this argument in normal use
+ *
+ * @public
+ */
+export function addPlugins(definePlugins: PluginDefinition[], app: Application): void;
+/**
+ * Register a set of plugins into the active application after it has been initialized.
+ *
+ * @param definePlugins the plugin definitions to register in the application
+ * @param app the application to register the plugin into, you should not need to pass this argument in normal use
+ *
+ * @internal
+ */
+export function addPlugins(definePlugins: PluginDefinition[], app = getActiveApp()): void {
+	if (app === undefined) {
+		throw new TypeError('addPlugin called outside of an application context and no app instance passed as parameter.') // todo handle that better
+	}
+
+	const pluginCollection = app[pluginSymbol];
+
+	const plugins = definePlugins.map(setup => setup());
+	const {sorted, aborted} = sortPluginsByDependencies(plugins, pluginCollection);
+
+	if (aborted) {
+		app.emitter.emit('failedPluginRegistration', {app, reason: aborted})
+		return;
+	}
+
+	sorted
+		.map(plugin => {
+			plugin.hooks.emit('beforeCreate', app);
+			return plugin;
+		})
+		.map(plugin => {
+			pluginCollection.set(plugin.id, plugin);
+			plugin.hooks.emit('created', app);
+			return plugin;
+		})
+}
+
+/**
+ * Register a plugin into the active application after it has been initialized.
+ *
+ * @param definePlugin the plugin definition to register in the application.
+ * @public
+ */
+export function addPlugin(definePlugin: PluginDefinition): void;
+/**
+ * Register a plugin into the active application after it has been initialized.
+ *
+ * @param definePlugin the plugin definition to register in the application.
+ * @param app the application to register the plugin into, you should not need to pass this argument in normal use
+ *
+ * @public
+ */
+export function addPlugin(definePlugin: PluginDefinition, app: Application): void;
+/**
+ * @internal use one of the overrides
+ */
+export function addPlugin(definePlugin: PluginDefinition, app = getActiveApp()): void {
+	addPlugins([definePlugin], app as Application);
+}
