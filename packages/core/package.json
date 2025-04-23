@@ -12,9 +12,9 @@
   "devDependencies": {
     "@repo/config-typescript": "workspace:*",
     "@repo/config-vite": "workspace:*",
-    "oxlint": "^0.16.6",
+    "oxlint": "^0.16.7",
     "typescript": "^5.8.3",
-    "vite": "^6.2.5"
+    "vite": "^6.3.2"
   },
   "dependencies": {
     "mitt": "^3.0.1"
