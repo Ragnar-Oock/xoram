@@ -1,5 +1,4 @@
-import {afterEach, beforeEach, describe, expect, it, Mock, vi} from "vitest";
-import {a} from "vitest/dist/chunks/suite.d.FvehnV49";
+import {afterEach, describe, expect, it, Mock, vi} from "vitest";
 import {createApp, definePlugin, onBeforeCreate, onBeforeDestroy, onCreated, PluginHooks, pluginSymbol} from "../src";
 
 
