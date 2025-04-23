@@ -14,7 +14,6 @@
     "no-eq-null": "warn",
     "no-proto": "error",
     "no-regex-spaces": "error",
-    "no-undefined": "warn",
     "no-unused-expressions": "warn",
     "no-var": "error",
     "unicode-bom": "error",
