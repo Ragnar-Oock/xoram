@@ -73,7 +73,19 @@ let activePlugin: DefinedPlugin | undefined;
 const setActivePlugin = (plugin?: DefinedPlugin) => activePlugin = plugin;
 export const getActivePlugin = () => activePlugin;
 
-export function definePlugin(id: symbol, setup: PluginSetup): () => DefinedPlugin {
+/**
+ * A factory function that returns a defined plugin ready to be added to an application.
+ *
+ * @see definePlugin
+ */
+export type PluginDefinition = () => DefinedPlugin;
+
+let pluginCount = 0;
+export function pluginId(name = 'plugin') {
+  return  Symbol(`${name}_${(pluginCount++).toString(32).padStart(4, '0')}`);
+}
+
+export function definePlugin(id: symbol, setup: PluginSetup): PluginDefinition {
   return () => {
     const plugin = {
       id,
