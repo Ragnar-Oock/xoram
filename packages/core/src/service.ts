@@ -54,7 +54,7 @@ export function addService(id: symbol, serviceOrFactory: Service | ServiceFactor
     const service = typeof serviceOrFactory === 'function' ? serviceOrFactory(app) : serviceOrFactory;
 
     // todo move this to app ?
-    app.emitter.emit('beforeAddService', app);
+    app.emitter.emit('beforeServiceAdded', app);
     // @ts-expect-error service resolution is done at runtime.
     app.services[id] = service;
     app.emitter.emit('serviceAdded', app);

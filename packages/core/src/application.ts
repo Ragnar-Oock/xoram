@@ -1,6 +1,7 @@
 import mitt, {type Emitter} from "mitt";
 import type {DefinedPlugin, PluginId} from "./plugins";
 import {PluginDefinition} from "./plugins/define-plugin";
+import {Service, ServiceId} from "./service";
 
 export type ApplicationHooks = {
 	/**
@@ -8,11 +9,75 @@ export type ApplicationHooks = {
 	 *
 	 * @todo make it preventable ?
 	 */
-	beforeAddService: Application;
+	beforeServiceAdded: {
+		app: Application,
+		service: Service,
+	};
 	/**
 	 * Fired when a service has been added to the application
 	 */
-	serviceAdded: Application;
+	serviceAdded: {
+		app: Application,
+		service: Service,
+	};
+	/**
+	 * Fired before a service is removed from the application, can be used to do some cleanup.
+	 */
+	beforeServiceRemoved: {
+		app: Application,
+		id: ServiceId,
+		service: Service,
+	};
+	/**
+	 * Fired after the service has been removed from the application
+	 */
+	serviceRemoved: {
+		app: Application,
+		id: ServiceId,
+	};
+	/**
+	 * Fired before a plugin is added to the application, such a plugin has finished its setup phase and if fully defined.
+	 */
+	beforePluginRegistration: {
+		app: Application,
+		plugin: DefinedPlugin,
+	};
+
+	/**
+	 * Fired after a plugin registration was attempted but could not succeed.
+	 *
+	 * @see onFailedPluginRegistration
+	 */
+	failedPluginRegistration: {
+		app: Application,
+		// plugins: DefinedPlugin[],
+		reason: Error,
+	};
+
+	/**
+	 * Fired after a plugin has been added to the application, such a plugin has finished its `created` phase.
+	 */
+	pluginRegistered: {
+		app: Application,
+		plugin: DefinedPlugin,
+	}
+
+	/**
+	 * Fired before a plugin's `beforeDestroy` hook. The plugin is still in its `created` phase.
+	 */
+	beforePluginRemoved: {
+		app: Application,
+		plugin: DefinedPlugin,
+	};
+
+	/**
+	 * Fired after the plugin has been removed from the application and after its `destroyed` hook has been invoked.
+	 */
+	pluginRemoved: {
+		app: Application,
+		pluginId: PluginId,
+	}
+
 }
 
 /**
