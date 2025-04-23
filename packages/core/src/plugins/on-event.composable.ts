@@ -5,7 +5,8 @@ import {makeSafeCallable} from "./error-handling";
 
 export type Notifications = Record<EventType, unknown>;
 export type EventSource<notifications extends Notifications> = Emitter<notifications> | { emitter: Emitter<notifications> };
-export type EventSourceGetter<notifications extends Notifications> = ((application: Application) => EventSource<notifications>) | keyof ServiceCollection;
+export type EventSourceGetter<notifications extends Notifications> = ((application: Application) => EventSource<notifications>);
+export type EventTarget<notifications extends Notifications> = EventSource<notifications> | EventSourceGetter<notifications> | keyof ServiceCollection
 
 function isMitt<notifications extends Notifications>(candidate: unknown): candidate is Emitter<notifications> {
     return (
@@ -23,7 +24,7 @@ function isMitt<notifications extends Notifications>(candidate: unknown): candid
 }
 
 function resolveSource<notifications extends Notifications>(
-    target: EventSourceGetter<notifications>,
+    target: EventTarget<notifications>,
     app: Application
 ): Emitter<notifications> {
     switch (typeof target) {
@@ -32,7 +33,7 @@ function resolveSource<notifications extends Notifications>(
             const source = app.services[target];
             if (source === undefined) {
                 // find a better way to deal with this
-                throw new Error(`onEvent was invoked with an incorrect service id "${target}".`)
+                throw new Error(`onEvent was invoked with an incorrect service id "${String(target)}".`)
             }
             return source.emitter as unknown as Emitter<notifications>;
         }
@@ -41,6 +42,11 @@ function resolveSource<notifications extends Notifications>(
             return isMitt<notifications>(eventSource)
                 ? eventSource
                 : eventSource.emitter;
+        }
+        case 'object': {
+            return isMitt<notifications>(target)
+                ? target
+                : target.emitter;
         }
         default: {
             throw new TypeError(`incorrect target provided to onEvent, typeof target === ${typeof target}, expected string, symbol or function`);
@@ -71,7 +77,7 @@ export function onEvent<
     notifications extends Notifications,
     events extends (keyof notifications)[],
 >(
-    target: EventSourceGetter<notifications>,
+    target: EventTarget<notifications>,
     on: events,
     handler: Handler<MergedEvents<notifications, events>>,
 ): void;
@@ -93,7 +99,7 @@ export function onEvent<
 export function onEvent<
     notifications extends Notifications,
 >(
-    target: EventSourceGetter<notifications>,
+    target: EventTarget<notifications>,
     on: '*',
     handler: WildcardHandler<notifications>
 ): void;
@@ -109,7 +115,7 @@ export function onEvent<
     notifications extends Notifications,
     event extends keyof notifications,
 >(
-    target: EventSourceGetter<notifications>,
+    target: EventTarget<notifications>,
     on: event,
     handler: Handler<notifications[event]>
 ): void;
@@ -118,7 +124,7 @@ export function onEvent<
  * Listen to event only for the lifetime of the plugin
  * @internal use one of the overrides
  */
-export function onEvent<notifications extends Notifications>(target: EventSourceGetter<notifications>, on: string|string[], handler: (...args: never[]) => void): void {
+export function onEvent<notifications extends Notifications>(target: EventTarget<notifications>, on: string|string[], handler: (...args: never[]) => void): void {
     const plugin = getActivePlugin();
     if (!plugin) {
         if (import.meta.env.DEV) {
@@ -131,6 +137,9 @@ export function onEvent<notifications extends Notifications>(target: EventSource
     let safeHandler: Function;
     const events = (Array.isArray(on) ? on : [on]);
 
+
+    // todo check if plugin has already been created to skip hook setup
+    // todo evaluate use case of onEvent use in hooks
     plugin.hooks.on('created', app => {
         const resolvedTarget = resolveSource(target, app);
         safeHandler = makeSafeCallable(handler, 'onEvent', plugin, app);
