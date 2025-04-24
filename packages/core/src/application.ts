@@ -1,7 +1,58 @@
 import mitt, {type Emitter} from "mitt";
 import type {DefinedPlugin, PluginId} from "./plugins";
 import {PluginDefinition} from "./plugins/define-plugin";
+import {
+	playBeforeCreateHook,
+	playBeforeDestroyHook,
+	playCreatedHook,
+	playDestroyedHook
+} from "./plugins/play-plugin-hook";
 import {Service, ServiceId} from "./service";
+
+export type ApplicationPluginEvent = {
+	/**
+	 * The application that emitted the event and that is set as a context for the plugin to use.
+	 */
+	app: Application,
+	/**
+	 * The plugin that triggered the event.
+	 */
+	plugin: DefinedPlugin,
+}
+
+export type ApplicationPluginHooks = {
+	/**
+	 * Fired before a plugin is added to the application, the plugin is in its {@link PluginPhase `mount` phase} and the
+	 * {@link PluginHooks#beforeCreate `beforeCreate` hook} has not been invoked yet.
+	 */
+	beforePluginRegistration: ApplicationPluginEvent;
+	/**
+	 * Fired after the transition to the plugin's {@link PluginPhase `active` phase}, after it's
+	 * {@link PluginHooks#created `created` hook} has been invoked and the plugin added to the application.
+	 */
+	pluginRegistered: ApplicationPluginEvent
+	/**
+	 * Fired after a plugin enters its {@link PluginPhase `teardown` phase} but before it's
+	 * {@link PluginHooks#beforeDestroy `beforeDestroyed` hook} is invoked.
+	 */
+	beforePluginRemoved: ApplicationPluginEvent;
+	/**
+	 * Fired after the transition to the plugin's {@link PluginPhase `destroyed` phase}, after it's
+	 * {@link PluginHooks#destroyed `destroyed` hook} has been invoked and the plugin removed from the application.
+	 */
+	pluginRemoved: ApplicationPluginEvent;
+
+	/**
+	 * Fired after a plugin registration was attempted but could not succeed.
+	 *
+	 * @see onFailedPluginRegistration
+	 */
+	failedPluginRegistration: {
+		app: Application,
+		// plugins: DefinedPlugin[],
+		reason: Error,
+	};
+}
 
 export type ApplicationHooks = {
 	/**
@@ -35,50 +86,8 @@ export type ApplicationHooks = {
 		app: Application,
 		id: ServiceId,
 	};
-	/**
-	 * Fired before a plugin is added to the application, such a plugin has finished its setup phase and if fully defined.
-	 */
-	beforePluginRegistration: {
-		app: Application,
-		plugin: DefinedPlugin,
-	};
 
-	/**
-	 * Fired after a plugin registration was attempted but could not succeed.
-	 *
-	 * @see onFailedPluginRegistration
-	 */
-	failedPluginRegistration: {
-		app: Application,
-		// plugins: DefinedPlugin[],
-		reason: Error,
-	};
-
-	/**
-	 * Fired after a plugin has been added to the application, such a plugin has finished its `created` phase.
-	 */
-	pluginRegistered: {
-		app: Application,
-		plugin: DefinedPlugin,
-	}
-
-	/**
-	 * Fired before a plugin's `beforeDestroy` hook. The plugin is still in its `created` phase.
-	 */
-	beforePluginRemoved: {
-		app: Application,
-		plugin: DefinedPlugin,
-	};
-
-	/**
-	 * Fired after the plugin has been removed from the application and after its `destroyed` hook has been invoked.
-	 */
-	pluginRemoved: {
-		app: Application,
-		pluginId: PluginId,
-	}
-
-}
+} & ApplicationPluginHooks;
 
 /**
  * Register your service in this interface by augmenting it
@@ -138,7 +147,7 @@ export let activeApp: Application | undefined;
  *
  * @internal
  */
-function setActiveApp(app?: Application): Application | undefined {
+export function setActiveApp(app?: Application): Application | undefined {
 	return (activeApp = app);
 }
 
@@ -250,9 +259,9 @@ function destroyApp(app: Application): void {
 
 	const pluginsToDestroy = sorted.reverse();
 
-	pluginsToDestroy.forEach(plugin => {
-		plugin.destroy(app);
-	})
+	pluginsToDestroy
+		.map(plugin => playBeforeDestroyHook(app, plugin))
+		.map(plugin => playDestroyedHook(app, plugin));
 }
 
 /**
@@ -289,15 +298,8 @@ export function createApp(config: ApplicationConfig): Application {
 	}
 
 	sorted
-		.map(plugin => {
-			plugin.hooks.emit('beforeCreate', app);
-			return plugin;
-		})
-		.map(plugin => {
-			app[pluginSymbol].set(plugin.id, plugin);
-			plugin.hooks.emit('created', app);
-			return plugin;
-		})
+		.map(plugin => playBeforeCreateHook(app, plugin))
+		.map(plugin => playCreatedHook(app, plugin))
 
 	setActiveApp();
 

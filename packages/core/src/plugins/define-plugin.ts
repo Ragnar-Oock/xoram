@@ -1,5 +1,5 @@
 import mitt, {Emitter} from "mitt";
-import {type Application} from "../application";
+import type {Application} from "../application";
 
 
 /**
@@ -16,35 +16,58 @@ export type PluginId = symbol;
 
 
 /**
- * @internal used internally to manage plugin life cycle.
+ * Used internally to manage plugin life cycle.
+ * @internal
  */
 export type PluginHooks = {
   /**
-   * Fires at the start of the instantiation of the plugin.
+   * Fires after the transition from the {@link PluginPhase `setup` phase} to the {@link PluginPhase `mount` phase}.
+   *
    * First hook called in the life cycle of the plugin, right after dependency resolution is done.
    *
    * @see onBeforeCreate
    */
   beforeCreate: Application;
   /**
-   * Fires once the `onBeforeCreate` hook of all the plugin of a batch have been called.
+   * Fires after the transition from the {@link PluginPhase `mount` phase} to the {@link PluginPhase `active` phase}, once
+   * the {@link PluginHooks#beforeCreate `beforeCreate`} hook of all the plugin of a batch have been called.
+   *
    * At that point all services you might depend on have been registered.
    *
-   * @see onCreated
+   * @see {@link onCreated}
    */
   created: Application;
   /**
-   * Fires before a plugin is removed from the application.
+   * Fires after the transition from the {@link PluginPhase `active` phase} to the {@link PluginPhase `teardown` phase},
+   * before the plugin gets removed from the application.
    *
    * @see onBeforeDestroy
    */
   beforeDestroy: Application;
   /**
-   * Fires after a plugin is removed from the application.
-   * @internal used by devtools
+   * Fires after the transition from the {@link PluginPhase `teardown` phase} to the {@link PluginPhase `destroyed` phase},
+   * after the plugin is removed from the application.
+   *
+   * Used internally for housekeeping and devtools, you MUST not use this hook in your code.
+   *
+   * @internal
    */
   destroyed: Application;
 }
+/**
+ * The phase of the plugin during it's life cycle, phase transition can only occur in one order and always lead to a
+ * hook being played. Phase order is as follows :
+ * 1. **setup**: the plugin is getting build, this is when the `setup` function provided to {@link definePlugin `definePlugin`} is invoked.
+ * 2. **mount**: the plugin is in the process of registering in the application, this is a transient state
+ * 3. **active**: the plugin's main phase where it will stay for the most time
+ * 4. **teardown**: the cleanup phase before the plugin is removed from the application
+ * 5. **destroyed**: the plugin has been removed from the application, it should not be used anymore and references to it
+ * should be removed so it can be garbage collected
+ *
+ * @see {@link PluginHooks} for details on the hooks emitted for each transition
+ *
+ */
+export type PluginPhase = 'setup' | 'mount' | 'active' | 'teardown' | 'destroyed';
 
 export type DefinedPlugin = {
   /**
@@ -61,17 +84,20 @@ export type DefinedPlugin = {
    * A Mitt instance to manage the plugin's life cycle hooks
    */
   hooks: Emitter<PluginHooks>;
-
   /**
-   * Ask the plugin to clean up before being removed from the application.
+   * The current phase of the plugin. Some built-in functions will react differently depending on this value.
    */
-  destroy: (app: Application) => void;
+  phase: PluginPhase;
 }
 
 let activePlugin: DefinedPlugin | undefined;
 
-const setActivePlugin = (plugin?: DefinedPlugin) => activePlugin = plugin;
-export const getActivePlugin = () => activePlugin;
+function setActivePlugin(plugin?: DefinedPlugin): DefinedPlugin | undefined {
+  return (activePlugin = plugin);
+}
+export function getActivePlugin(): DefinedPlugin | undefined {
+  return activePlugin;
+}
 
 /**
  * A factory function that returns a defined plugin ready to be added to an application.
@@ -81,20 +107,18 @@ export const getActivePlugin = () => activePlugin;
 export type PluginDefinition = () => DefinedPlugin;
 
 let pluginCount = 0;
-export function pluginId(name = 'plugin') {
+export function pluginId(name = 'plugin'): symbol {
+// eslint-disable-next-line no-magic-numbers
   return  Symbol(`${name}_${(pluginCount++).toString(32).padStart(4, '0')}`);
 }
 
 export function definePlugin(id: symbol, setup: PluginSetup): PluginDefinition {
-  return () => {
+  return (): DefinedPlugin => {
     const plugin = {
       id,
       dependencies: [],
       hooks: mitt(),
-      destroy: (app) => {
-        plugin.hooks.emit('beforeDestroy', app);
-        plugin.hooks.emit('destroyed', app);
-      }
+      phase: 'setup' as PluginPhase
     } satisfies DefinedPlugin;
 
     setActivePlugin(plugin);

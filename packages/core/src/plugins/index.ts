@@ -6,7 +6,8 @@ export {
 } from './define-plugin';
 export type {
     PluginId,
-    DefinedPlugin, PluginHook,
+    DefinedPlugin,
+    PluginHook,
     PluginHooks,
     PluginSetup
 } from './define-plugin';

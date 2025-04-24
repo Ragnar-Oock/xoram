@@ -1,5 +1,6 @@
 import {Application, getActiveApp, pluginSymbol, sortPluginsByDependencies} from "../application";
 import {PluginDefinition} from "./define-plugin";
+import {playBeforeCreateHook, playCreatedHook} from "./play-plugin-hook";
 
 /**
  * Register a set of plugins into the active application after it has been initialized.
@@ -42,15 +43,8 @@ export function addPlugins(definePlugins: PluginDefinition[], app = getActiveApp
 	}
 
 	sorted
-		.map(plugin => {
-			plugin.hooks.emit('beforeCreate', app);
-			return plugin;
-		})
-		.map(plugin => {
-			pluginCollection.set(plugin.id, plugin);
-			plugin.hooks.emit('created', app);
-			return plugin;
-		})
+		.map(plugin => playBeforeCreateHook(app, plugin))
+		.map(plugin => playCreatedHook(app, plugin))
 }
 
 /**
@@ -70,7 +64,12 @@ export function addPlugin(definePlugin: PluginDefinition): void;
  */
 export function addPlugin(definePlugin: PluginDefinition, app: Application): void;
 /**
- * @internal use one of the overrides
+ * use one of the overrides
+ *
+ * @param definePlugin the plugin to add
+ * @param app the app context to use
+ * @internal
+ *
  */
 export function addPlugin(definePlugin: PluginDefinition, app = getActiveApp()): void {
 	addPlugins([definePlugin], app as Application);
