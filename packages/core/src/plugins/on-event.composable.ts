@@ -1,5 +1,5 @@
 import {Emitter, EventType, Handler, WildcardHandler} from "mitt";
-import {Application, ServiceCollection} from "../application";
+import {Application, getActiveApp, ServiceCollection} from "../application";
 import {getActivePlugin} from "./define-plugin";
 import {makeSafeCallable} from "./error-handling";
 
@@ -23,11 +23,17 @@ function isMitt<notifications extends Notifications>(candidate: unknown): candid
     )
 }
 
+/**
+ * Tries to convert an {@link EventTarget} as passed to {@link onEvent `onEvent`} into a usable emitter.
+ * @param target the target to convert to an emitter
+ * @param app the application to use as context
+ */
 function resolveSource<notifications extends Notifications>(
     target: EventTarget<notifications>,
     app: Application
 ): Emitter<notifications> {
     switch (typeof target) {
+        // service id syntax
         case 'string':
         case 'symbol': {
             const source = app.services[target];
@@ -37,24 +43,28 @@ function resolveSource<notifications extends Notifications>(
             }
             return source.emitter as unknown as Emitter<notifications>;
         }
+        // target getter syntax
         case 'function': {
             const eventSource = target(app);
             return isMitt<notifications>(eventSource)
                 ? eventSource
                 : eventSource.emitter;
         }
+        // direct target syntax
         case 'object': {
             return isMitt<notifications>(target)
                 ? target
                 : target.emitter;
         }
+
         default: {
-            throw new TypeError(`incorrect target provided to onEvent, typeof target === ${typeof target}, expected string, symbol or function`);
+            throw new TypeError(`incorrect target provided to onEvent, typeof target === ${typeof target}, expected string, symbol, function or object`);
         }
     }
 }
 
 type UnionToIntersection<U> =
+    // eslint-disable-next-line no-explicit-any
     (U extends any ? (x: U)=>void : never) extends ((x: infer I)=>void) ? I : never
 
 export type MergedEvents<
@@ -66,12 +76,19 @@ export type MergedEvents<
  * Listen to multiple events the same source at once and cleanly stop to listen when the plugin is disposed off.
  *
  * @example
+ * // target getter
  * onEvent(app => app.services.myService, ['an-event', 'another-event'], console.log);
- * onEvent(myTopic, ['an-event', 'another-event'], console.log);
+ * onEvent(({services}) => services.myService, ['an-event', 'another-event'], console.log);
+ * // direct target
+ * onEvent(myCustomEmitter, ['an-event', 'another-event'], console.log);
+ * // service id
+ * onEvent('myService', ['an-event', 'another-event'], console.log);
  *
  * @param target something to listen events on
  * @param on a list of events to listen to
- * @param handler callback to invoke when any of the events in `on` happens
+ * @param handler callback to invoke when any of the events in `on` is emitted by `target`
+ *
+ * @public
  */
 export function onEvent<
     notifications extends Notifications,
@@ -89,12 +106,19 @@ export function onEvent<
  * events consider passing an array of those events.
  *
  * @example
- * onEvent(myService, '*', console.log);
- * onEvent(myTopic, '*', console.log);
+ * // target getter
+ * onEvent(app => app.services.myService, '*', console.log);
+ * onEvent(({services}) => services.myService, '*', console.log);
+ * // direct target
+ * onEvent(myCustomEmitter, '*', console.log);
+ * // service id
+ * onEvent('myService', '*', console.log);
  *
  * @param target something to listen events on
  * @param on ask to subscribe to everything
  * @param handler callback to invoke when any event is emitted by `target`
+ *
+ * @public
  */
 export function onEvent<
     notifications extends Notifications,
@@ -107,22 +131,38 @@ export function onEvent<
 /**
  * Listen to a specific event of a source and cleanly stop to listen when the plugin is disposed of.
  *
+ * @example
+ * // target getter
+ * onEvent(app => app.services.myService, 'an-event', console.log);
+ * onEvent(({services}) => services.myService, 'an-event', console.log);
+ * // direct target
+ * onEvent(myCustomEmitter, 'an-event', console.log);
+ * // service id
+ * onEvent('myService', 'an-event', console.log);
+ *
  * @param target target something to listen events on
  * @param on the name of the event to listen to
  * @param handler callback to invoke when the event is emitted by `target`
+ *
+ * @public
  */
 export function onEvent<
-    notifications extends Notifications,
-    event extends keyof notifications,
+  notifications extends Notifications,
+  event extends keyof notifications,
 >(
-    target: EventTarget<notifications>,
-    on: event,
-    handler: Handler<notifications[event]>
+  target: EventTarget<notifications>,
+  on: event,
+  handler: Handler<notifications[event]>
 ): void;
 
 /**
+ * Use one of the overrides
+ *
  * Listen to event only for the lifetime of the plugin
- * @internal use one of the overrides
+ * @param target the thing to listen for events on
+ * @param on the events to listen for
+ * @param handler the function to invoke when the event occurs
+ * @internal
  */
 export function onEvent<notifications extends Notifications>(target: EventTarget<notifications>, on: string|string[], handler: (...args: never[]) => void): void {
     const plugin = getActivePlugin();
@@ -134,19 +174,36 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
     }
 
 
-    let safeHandler: Function;
+    let safeHandler: (...args: never[]) => void;
     const events = (Array.isArray(on) ? on : [on]);
 
-
-    // todo check if plugin has already been created to skip hook setup
-    // todo evaluate use case of onEvent use in hooks
-    plugin.hooks.on('created', app => {
+    /**
+     * @param app the application to use as context
+     */
+    function subscribe(app: Application): void {
         const resolvedTarget = resolveSource(target, app);
         safeHandler = makeSafeCallable(handler, 'onEvent', plugin, app);
 
         // @ts-expect-error event and handler 's type are resolved by the function overloads above
         events.forEach(event => resolvedTarget.on(event, safeHandler));
-    })
+    }
+
+    if (plugin.phase === 'setup') {
+        plugin.hooks.on('created', subscribe)
+    }
+    else {
+        const app = getActiveApp();
+        if (app === undefined) {
+            if (import.meta.env.DEV) {
+                console.warn(new Error('onEvent was invoked outside a plugin hook or setup function'));
+            }
+
+            return;
+        }
+
+        subscribe(app);
+    }
+
     plugin.hooks.on('beforeDestroy', (app) => {
         const resolvedTarget = resolveSource(target, app);
         // @ts-expect-error event and handler 's type are resolved by the function overloads above
