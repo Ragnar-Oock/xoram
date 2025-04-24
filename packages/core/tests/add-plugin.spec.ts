@@ -1,15 +1,17 @@
-// eslint-disable no-magic-numbers
-import {describe, expect, vi} from "vitest";
-import {ApplicationHooks, createApp, definePlugin, dependsOn, onBeforeCreate, onCreated, pluginSymbol} from "../src";
-import {addPlugins} from "../src/plugins/add-plugin";
-import {pluginId} from "../src/plugins/define-plugin";
-import borisPlugin, {borisPluginId} from "./dummies/boris.plugin";
-import personPlugin, {personPluginId} from "./dummies/person.plugin";
-import {it} from './fixture/test-with-destroyable';
+// oxlint-disable no-magic-numbers
+import { describe, expect, vi } from 'vitest';
+import { ApplicationHooks, createApp, definePlugin, dependsOn, onBeforeCreate, onCreated, pluginSymbol } from '../src';
+import { addPlugins } from '../src/plugins/add-plugin';
+import { pluginId } from '../src/plugins/define-plugin';
+import borisPlugin, { borisPluginId } from './dummies/boris.plugin';
+import { noop } from './dummies/noop';
+import personPlugin, { personPluginId } from './dummies/person.plugin';
+import { it } from './fixture/test-with-destroyable';
 
-function noop(): undefined {
-	return undefined;
-}
+// TODO:
+// - test addPlugin
+// - test hook invocation order
+// - test hooks are invoked safely (no error bubbling up)
 
 describe('addPlugins', () => {
 	it('should add plugins without dependencies', ({task, autoDestroy}) => {
@@ -135,7 +137,6 @@ describe('addPlugins', () => {
 	// we can't introduce dependency cycles in an app where all plugin dependencies are already met
 	// that won't be true when we add optional dependencies, will that pause any issue ?
 
-	// how to test that a function take an argument ?
 	it('should accept an application context', ({task, autoDestroy}) => {
 		// setup
 		const app = autoDestroy(createApp({id: task.id, plugins: []}));
@@ -148,7 +149,7 @@ describe('addPlugins', () => {
 		// exec / check
 		expect(() => addPlugins([definePlugin(
 			pluginId('emptyPlugin'),
-			// eslint-disable-next-line no-empty-function
+			// oxlint-disable-next-line no-empty-function
 			noop)
 		]))
 			.toThrow(new TypeError('addPlugin called outside of an application context and no app instance passed as parameter.'))
@@ -295,11 +296,11 @@ describe('addPlugins', () => {
 		})], app);
 
 		// check
-		// eslint-disable no-magic-number
+		// oxlint-disable no-magic-number
 		expect(spy).toHaveBeenCalledTimes(2);
 		expect(spy).toHaveBeenNthCalledWith(1, 'beforePluginRegistration');
 		expect(spy).toHaveBeenNthCalledWith(2, 'beforeCreate');
-		// eslint-enable
+		// oxlint-enable
 	});
 
 	it('should invoke the pluginRegistered hook', ({task, autoDestroy}) => {

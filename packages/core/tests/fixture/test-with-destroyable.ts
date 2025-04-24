@@ -1,4 +1,4 @@
-import {test} from "vitest";
+import { test } from 'vitest';
 
 export type Destroyable = {destroy: () => void};
 
@@ -7,7 +7,7 @@ export type DestroyableTest = {
 }
 
 const testWithDestroyable = test.extend<DestroyableTest>({
-	// eslint-disable-next-line no-empty-pattern
+	// oxlint-disable-next-line no-empty-pattern
 	autoDestroy: async ({}, use) => {
 		let local: Destroyable | undefined;
 
