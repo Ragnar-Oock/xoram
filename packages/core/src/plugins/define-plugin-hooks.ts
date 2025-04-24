@@ -1,8 +1,9 @@
-import {Application} from "../application";
-import {getActivePlugin, type PluginHooks} from "./define-plugin";
+import { Application } from '../application/application.type';
+import { getActivePlugin, type PluginHooks } from './define-plugin';
 
 function definePluginHooks(name: keyof PluginHooks): (callback: ((app: Application) => void)) => void {
-  return callback => {
+// oxlint-disable-next-line prefer-await-to-callbacks
+  return (callback): void => {
     const plugin = getActivePlugin();
     if (!plugin) {
       if (import.meta.env.DEV) {

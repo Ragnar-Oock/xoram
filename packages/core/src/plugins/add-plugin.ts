@@ -1,6 +1,9 @@
-import {Application, getActiveApp, pluginSymbol, sortPluginsByDependencies} from "../application";
-import {PluginDefinition} from "./define-plugin";
+import {getActiveApp} from "../application/active-app";
+import type {Application} from "../application/application.type";
+import {pluginSymbol} from "../application/application.type";
+import type {PluginDefinition} from "./define-plugin";
 import {playBeforeCreateHook, playCreatedHook} from "./play-plugin-hook";
+import {sortPluginsByDependencies} from "./sort";
 
 /**
  * Register a set of plugins into the active application after it has been initialized.

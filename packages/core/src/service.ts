@@ -1,6 +1,7 @@
-import type {Emitter} from "mitt";
-import {Application, getActiveApp, ServiceCollection} from "./application";
-import {getActivePlugin} from "./plugins";
+import type { Emitter } from 'mitt';
+import type { Application, ServiceCollection } from './application';
+import { getActiveApp } from './application/active-app';
+import { getActivePlugin } from './plugins/define-plugin';
 
 export interface ServiceNotifications {
   'before_destroy': {
@@ -35,10 +36,12 @@ export function addService<id extends ServiceId>(id: id, serviceFactory: Service
  */
 export function addService<id extends ServiceId>(id: id, service: ServiceCollection[id]): void;
 /**
- * @param id
- * @param serviceOrFactory
+ * Use one of the overrides
  *
- * @internal use one of the overrides
+ * @param id the id to reference the service
+ * @param serviceOrFactory a service object or a function returning a service object
+ *
+ * @internal
  */
 export function addService(id: symbol, serviceOrFactory: Service | ServiceFactory<Service>): void {
   const plugin = getActivePlugin();
@@ -54,10 +57,10 @@ export function addService(id: symbol, serviceOrFactory: Service | ServiceFactor
     const service = typeof serviceOrFactory === 'function' ? serviceOrFactory(app) : serviceOrFactory;
 
     // todo move this to app ?
-    app.emitter.emit('beforeServiceAdded', app);
+    app.emitter.emit('beforeServiceAdded', {app, service});
     // @ts-expect-error service resolution is done at runtime.
     app.services[id] = service;
-    app.emitter.emit('serviceAdded', app);
+    app.emitter.emit('serviceAdded', {app, service});
   })
 
   plugin.hooks.on('beforeDestroy', app => {

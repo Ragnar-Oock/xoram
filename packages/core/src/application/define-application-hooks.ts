@@ -1,5 +1,6 @@
-// eslint-disable prefer-await-to-callbacks
-import {ApplicationHooks, getActiveApp} from "../application";
+// oxlint-disable prefer-await-to-callbacks
+import { getActiveApp } from './active-app';
+import { ApplicationHooks } from './application.type';
 
 function defineApplicationHook<hook extends keyof ApplicationHooks>(name: hook): (callback: ((payload: ApplicationHooks[hook]) => void)) => void {
 	return (callback): void => {
