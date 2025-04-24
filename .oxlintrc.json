@@ -28,7 +28,6 @@
     "catch-or-return": "error",
     "spec-only": "error",
     "explicit-function-return-type": "warn",
-    "no-dynamic-delete": "warn",
     "no-empty-object-type": "warn",
     "no-explicit-any": "warn",
     "no-import-type-side-effects": "error",
@@ -47,7 +46,9 @@
     "no-useless-constructor": "error",
     "no-named-as-default-member": "warn",
     "no-absolute-path": "error",
-    "no-duplicates": "warn",
+    "no-duplicates": ["warn", {
+      "preferInline": false
+    }],
     "no-empty-named-blocks": "error",
     "no-self-import": "error",
     "no-commented-out-tests": "warn",
@@ -120,7 +121,6 @@
     "grouped-accessor-pairs": "error",
     "guard-for-in": "warn",
     "new-cap": "warn",
-    "no-duplicate-imports": "error",
     "no-labels": "error",
     "no-magic-numbers": "warn",
     "no-return-assign": "warn",
