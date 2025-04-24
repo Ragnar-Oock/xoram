@@ -1,14 +1,14 @@
 import {Application, pluginSymbol, setActiveApp} from "../application";
-import {DefinedPlugin} from "./define-plugin";
+import {DefinedPlugin, setActivePlugin} from "./define-plugin";
 
 /**
  * A hook invocation plays out like this :
- * 1. set the active application
+ * 1. set the active application and plugin
  * 2. update the application if needed
  * 3. update the plugin phase
  * 4. update other plugin stuff if needed
  * 5. emit events in the appropriate order of each hook
- * 6. unset the active application
+ * 6. unset the active application and plugin
  * 7. return the plugin instance
  */
 
@@ -21,12 +21,14 @@ import {DefinedPlugin} from "./define-plugin";
  */
 export function playBeforeCreateHook(app: Application, plugin: DefinedPlugin): DefinedPlugin {
 	setActiveApp(app);
+	setActivePlugin(plugin);
 
 	plugin.phase = 'mount';
 	app.emitter.emit('beforePluginRegistration', {app, plugin})
 	plugin.hooks.emit('beforeCreate', app);
 	plugin.hooks.off('beforeCreate');
 
+	setActivePlugin();
 	setActiveApp();
 
 	return plugin;
@@ -41,6 +43,7 @@ export function playBeforeCreateHook(app: Application, plugin: DefinedPlugin): D
  */
 export function playCreatedHook(app: Application, plugin: DefinedPlugin): DefinedPlugin {
 	setActiveApp(app);
+	setActivePlugin(plugin);
 
 	app[pluginSymbol].set(plugin.id, plugin);
 	plugin.phase = 'active';
@@ -48,6 +51,7 @@ export function playCreatedHook(app: Application, plugin: DefinedPlugin): Define
 	plugin.hooks.off('created');
 	app.emitter.emit('pluginRegistered', {app, plugin})
 
+	setActivePlugin();
 	setActiveApp();
 
 	return plugin;
@@ -62,12 +66,14 @@ export function playCreatedHook(app: Application, plugin: DefinedPlugin): Define
  */
 export function playBeforeDestroyHook(app: Application, plugin: DefinedPlugin): DefinedPlugin {
 	setActiveApp(app);
+	setActivePlugin(plugin);
 
 	plugin.phase = 'teardown';
 	app.emitter.emit('beforePluginRemoved', {app, plugin});
 	plugin.hooks.emit('beforeDestroy', app);
 	plugin.hooks.off('beforeDestroy');
 
+	setActivePlugin();
 	setActiveApp();
 
 	return plugin;
@@ -82,6 +88,7 @@ export function playBeforeDestroyHook(app: Application, plugin: DefinedPlugin): 
  */
 export function playDestroyedHook(app: Application, plugin: DefinedPlugin): DefinedPlugin {
 	setActiveApp(app);
+	setActivePlugin(plugin);
 
 	app[pluginSymbol].delete(plugin.id);
 	plugin.phase = 'destroyed';
@@ -89,6 +96,7 @@ export function playDestroyedHook(app: Application, plugin: DefinedPlugin): Defi
 	plugin.hooks.off('destroyed');
 	app.emitter.emit('pluginRemoved', {app, plugin});
 
+	setActivePlugin();
 	setActiveApp();
 
 	return plugin;
