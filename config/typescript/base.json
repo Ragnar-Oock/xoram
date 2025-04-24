@@ -18,6 +18,8 @@
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "importsNotUsedAsValues": "error",
+    "verbatimModuleSyntax": true,
 
     "strict": true,
     "lib": [
