@@ -1,5 +1,8 @@
-import mitt, { Emitter } from 'mitt';
+import type { Emitter } from 'mitt';
+import mitt from 'mitt';
+import { getActiveApp } from '../application';
 import type { Application } from '../application/application.type';
+import { invokeHookWithErrorHandling } from '../error-handling';
 
 
 /**
@@ -20,6 +23,7 @@ export type PluginId = symbol;
  * @internal
  */
 export type PluginHooks = {
+	setup: never;
 	/**
 	 * Fires after the transition from the {@link PluginPhase `setup` phase} to the {@link PluginPhase `mount` phase}.
 	 *
@@ -113,35 +117,69 @@ export function getActivePlugin(): DefinedPlugin | undefined {
  *
  * @see definePlugin
  */
-export type PluginDefinition = () => DefinedPlugin;
+export type PluginDefinition = {
+	(): DefinedPlugin;
+	id: PluginId;
+};
 
 let pluginCount = 0;
+
 export function pluginId(name = 'plugin'): symbol {
 // oxlint-disable-next-line no-magic-numbers
-	return  Symbol(`${name}_${(pluginCount++).toString(32).padStart(4, '0')}`);
+	return Symbol(`${ name }_${ (pluginCount++).toString(32).padStart(4, '0') }`);
 }
 
-export function definePlugin(id: symbol, setup: PluginSetup): PluginDefinition {
-	return (): DefinedPlugin => {
+/**
+ * Define an anonymous plugin using a generated id
+ *
+ * @param setup the plugin setup function
+ */
+export function definePlugin(setup: PluginSetup): PluginDefinition;
+/**
+ * Define a named plugin using a provided id.
+ *
+ * @param id a unique id to reference the plugin by
+ * @param setup the plugin setup function
+ */
+export function definePlugin(id: PluginId, setup: PluginSetup): PluginDefinition;
+/**
+ * Use one of the overloads
+ *
+ * @param _idOrSetup an id for the (id, setup) overload or a setup function for the (setup) overload
+ * @param _setup a setup function for the (id, setup) overload
+ *
+ * @internal
+ */
+export function definePlugin(_idOrSetup: PluginSetup | PluginId, _setup?: PluginSetup): PluginDefinition {
+	let id: PluginId, setup: PluginSetup;
+	if (typeof _idOrSetup === 'symbol' && typeof _setup === 'function') {
+		id = _idOrSetup as PluginId;
+		setup = _setup;
+	}
+	else if (typeof _idOrSetup === 'function' && _setup === undefined) {
+		id = pluginId('anonymous');
+		setup = _idOrSetup;
+	}
+	else {
+		throw new TypeError('invalid definePlugin overload usage'); // todo make a better error
+	}
+
+	function pluginDefinition(): DefinedPlugin {
 		const plugin = {
 			id,
 			dependencies: [],
 			hooks: mitt(),
-			phase: 'setup' as PluginPhase
+			phase: 'setup' as PluginPhase,
 		} satisfies DefinedPlugin;
 
 		setActivePlugin(plugin);
-		try {
-			setup();
-		}
-		catch (error) {
-			// todo handle this error better ?
-			throw new Error(`Error in setup function of plugin "${String(id)}"`, {cause: error as Error});
-		}
-		finally {
-			setActivePlugin();
-		}
+		invokeHookWithErrorHandling(setup, 'setup', plugin, getActiveApp());
+		setActivePlugin();
 
 		return plugin;
 	}
+
+	pluginDefinition.id = id;
+
+	return pluginDefinition;
 }
