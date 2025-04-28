@@ -5,7 +5,6 @@ export type {
 	ApplicationConfig,
 	ServiceCollection,
 	ApplicationHooks,
-	ApplicationPluginHooks,
 	ApplicationPluginEvent
 } from "./application.type";
 export  { serviceSymbol, pluginSymbol } from "./application.type";

@@ -8,8 +8,6 @@ export {
 } from "./define-plugin";
 export type {
 	DefinedPlugin,
-	PluginHook,
-	PluginHooks,
 	PluginSetup,
 	PluginId,
 	PluginDefinition,
@@ -35,3 +33,5 @@ export {
 
 export { sortPluginsByDependencies } from "./sort";
 export type { PluginSortingResult } from "./sort";
+
+export type { ApplicationPluginHooks, PluginHooks, PluginHook } from './plugin-hooks.type';
