@@ -35,3 +35,6 @@ export { sortPluginsByDependencies } from "./sort";
 export type { PluginSortingResult } from "./sort";
 
 export type { ApplicationPluginHooks, PluginHooks, PluginHook } from './plugin-hooks.type';
+
+export { removePlugin } from './remove-plugin';
+
