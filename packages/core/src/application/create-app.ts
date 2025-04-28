@@ -61,7 +61,7 @@ export function createApp(config: ApplicationConfig): Application {
 		},
 	}) satisfies Application
 
-	setActiveApp(app);
+	const resetActiveApp = setActiveApp(app);
 
 	let {sorted, aborted} = sortPluginsByDependencies(plugins.map(setup => setup()));
 
@@ -73,7 +73,7 @@ export function createApp(config: ApplicationConfig): Application {
 		.map(plugin => playBeforeCreateHook(app, plugin))
 		.map(plugin => playCreatedHook(app, plugin))
 
-	setActiveApp();
+	resetActiveApp();
 
 	return app;
 }

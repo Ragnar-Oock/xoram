@@ -1,4 +1,4 @@
-import {Application} from "./application.type";
+import { Application } from './application.type';
 
 export let activeApp: Application | undefined;
 
@@ -9,10 +9,16 @@ export let activeApp: Application | undefined;
  *
  * @param app the application to set as active
  *
+ * @returns a function to reset the `activeApp` to it's value from before the call
+ *
  * @internal
  */
-export function setActiveApp(app?: Application): Application | undefined {
-	return (activeApp = app);
+export function setActiveApp(app: Application): () => void {
+	const previous = activeApp;
+	activeApp = app;
+	return (): void => {
+		activeApp = previous
+	};
 }
 
 /**
