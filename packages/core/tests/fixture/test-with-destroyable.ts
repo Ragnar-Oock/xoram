@@ -1,9 +1,11 @@
 import { test } from 'vitest';
+import { type Application, type ApplicationConfig, createApp } from '../../src';
 
 export type Destroyable = {destroy: () => void};
 
 export type DestroyableTest = {
 	autoDestroy: <destroyable extends Destroyable>(destroyable: destroyable) => destroyable;
+	autoDestroyedApp: (plugins: ApplicationConfig['plugins']) => Application;
 }
 
 const testWithDestroyable = test.extend<DestroyableTest>({
@@ -17,6 +19,11 @@ const testWithDestroyable = test.extend<DestroyableTest>({
 		});
 
 		local?.destroy();
+	},
+	autoDestroyedApp: async ({autoDestroy, task}, use) => {
+		return await use((plugins: ApplicationConfig['plugins']) => {
+			return autoDestroy(createApp({id: task.id, plugins}))
+		})
 	}
 })
 
