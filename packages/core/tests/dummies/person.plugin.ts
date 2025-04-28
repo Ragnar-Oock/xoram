@@ -1,5 +1,6 @@
-import {addService, definePlugin, Service, ServiceNotifications} from "@zoram/core";
-import mitt from "mitt";
+import type { Service, ServiceNotifications } from '@zoram/core';
+import { addService, definePlugin } from '@zoram/core';
+import mitt from 'mitt';
 
 export type Person = {
     name: string;

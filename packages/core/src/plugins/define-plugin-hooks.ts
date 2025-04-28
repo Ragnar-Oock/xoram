@@ -1,5 +1,6 @@
-import { Application } from '../application/application.type';
-import { getActivePlugin, type PluginHooks } from './define-plugin';
+import type { Application } from '../application/application.type';
+import { getActivePlugin } from './define-plugin';
+import type { PluginHooks } from './plugin-hooks.type';
 
 function definePluginHooks(name: keyof PluginHooks): (callback: ((app: Application) => void)) => void {
 // oxlint-disable-next-line prefer-await-to-callbacks

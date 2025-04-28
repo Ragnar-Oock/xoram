@@ -1,8 +1,8 @@
 import type { Emitter } from 'mitt';
 import mitt from 'mitt';
 import { getActiveApp } from '../application';
-import type { Application } from '../application/application.type';
 import { invokeHookWithErrorHandling } from '../error-handling';
+import type { PluginHooks } from './plugin-hooks.type';
 
 
 /**
@@ -106,6 +106,7 @@ export function definePlugin(id: PluginId, setup: PluginSetup): PluginDefinition
  */
 export function definePlugin(_idOrSetup: PluginSetup | PluginId, _setup?: PluginSetup): PluginDefinition {
 	let id: PluginId, setup: PluginSetup;
+	// noinspection SuspiciousTypeOfGuard
 	if (typeof _idOrSetup === 'symbol' && typeof _setup === 'function') {
 		id = _idOrSetup as PluginId;
 		setup = _setup;
