@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
-import type { DefinedPlugin } from '../src';
-import { definePlugin, getActivePlugin, pluginId } from '../src';
-import { noop } from './dummies/noop';
+import type { DefinedPlugin } from '../../../src';
+import { definePlugin, getActivePlugin, pluginId } from '../../../src';
+import { noop } from '../../dummies/noop';
 
 describe('definePlugin', () => {
 	describe('overload 1 (setup)', () => {
@@ -65,10 +65,12 @@ describe('definePlugin', () => {
 	describe('invalid overloads', () => {
 		it('should fail with just an id', () => {
 			expectTypeOf(definePlugin).not.toEqualTypeOf<(id: symbol) => (() => DefinedPlugin)>();
+			// @ts-expect-error definePlugin can't take just an id as parameter
 			expect(() => definePlugin(pluginId())).toThrow(new TypeError('invalid definePlugin overload usage'));
 		});
 		it('should fail with 2 setup function', () => {
 			expectTypeOf(definePlugin).not.toEqualTypeOf<(setup1: () => void, setup: () => void) => (() => DefinedPlugin)>();
+			// @ts-expect-error definePlugin can't take 2 functions as parameters
 			expect(() => definePlugin(noop, noop)).toThrow(new TypeError('invalid definePlugin overload usage'));
 		});
 	});

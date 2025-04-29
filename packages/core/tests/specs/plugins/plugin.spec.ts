@@ -1,5 +1,16 @@
-import { afterEach, describe, expect, it, Mock, vi } from 'vitest';
-import { createApp, definePlugin, onBeforeCreate, onBeforeDestroy, onCreated, PluginHooks, pluginSymbol } from '../src';
+import type { DefinedPlugin, PluginHooks } from '@zoram/core'
+import {
+	addPlugins,
+	createApp,
+	definePlugin,
+	onBeforeCreate,
+	onBeforeDestroy,
+	onCreated,
+	pluginId,
+	pluginSymbol,
+} from '@zoram/core';
+import type { Mock } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 
 describe('plugin', () => {
@@ -12,7 +23,7 @@ describe('plugin', () => {
 			beforeCreate: vi.fn(),
 			created: vi.fn(),
 			beforeDestroy: vi.fn()
-		} as const satisfies Omit<{ [hook in keyof PluginHooks]: Mock }, 'destroyed'>;
+		} as const satisfies Omit<{ [hook in keyof PluginHooks]: Mock }, 'destroyed' | 'setup'>;
 
 		const plugin = definePlugin(pluginId, () => {
 			onBeforeCreate(() => hooks.beforeCreate(pluginId));
@@ -48,7 +59,7 @@ describe('plugin', () => {
 			const spy = vi.fn();
 			const pluginInstance = app[pluginSymbol].get(pluginId);
 			expect(pluginInstance).not.toBeUndefined();
-			pluginInstance.hooks.on('destroyed', () => spy(pluginId));
+			(pluginInstance as DefinedPlugin).hooks.on('destroyed', () => spy(pluginId));
 
 			app.destroy();
 

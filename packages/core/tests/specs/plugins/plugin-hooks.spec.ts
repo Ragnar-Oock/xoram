@@ -1,5 +1,5 @@
-import {describe, it} from "vitest";
-import {noop} from "./dummies/noop";
+import { describe, it } from 'vitest';
+import { noop } from '../../dummies/noop';
 
 
 /**
