@@ -1,4 +1,4 @@
-export { createApp } from "./create-app";
+export { createApp, destroyApp } from "./create-app";
 
 export type {
 	Application,

@@ -13,19 +13,19 @@ import { pluginSymbol } from './application.type';
 let appCount = 0;
 
 /**
- * Use `app.destroy()`
+ * Tear down an application and it's plugins
  *
  * @param app the application to destroy
  *
- * @internal
+ * @public
  */
-function destroyApp(app: Application): void {
+export function destroyApp(app: Application): void {
 	const plugins = [...app[pluginSymbol].values()];
 
 	const {sorted, aborted} = sortPluginsByDependencies(plugins);
 
 	if (aborted) {
-		console.warn('Application destruction failed', {cause: aborted})
+		console.warn(new Error('Application destruction failed', {cause: aborted}))
 		return;
 	}
 
@@ -56,9 +56,6 @@ export function createApp(config: ApplicationConfig): Application {
 		emitter: emitter(),
 		services: {} as Readonly<ServiceCollection>,
 		[pluginSymbol]: new Map(),
-		destroy: () => {
-			destroyApp(app);
-		},
 	}) satisfies Application
 
 	const resetActiveApp = setActiveApp(app);

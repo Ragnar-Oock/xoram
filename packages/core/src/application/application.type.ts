@@ -51,11 +51,6 @@ export type Application = {
 	 * @internal
 	 */
 	[pluginSymbol]: Map<PluginId, DefinedPlugin>;
-
-	/**
-	 * Cleanly destroy the application.
-	 */
-	destroy(): void;
 }
 
 export type ApplicationConfig = {
