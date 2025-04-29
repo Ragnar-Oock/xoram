@@ -1,17 +1,15 @@
+
+export { getActivePlugin, setActivePlugin } from './active-plugin';
+
 export { addPlugins, addPlugin } from "./add-plugin";
 
 export {
 	definePlugin,
-	getActivePlugin,
-	setActivePlugin,
 	pluginId
 } from "./define-plugin";
 export type {
-	DefinedPlugin,
 	PluginSetup,
-	PluginId,
-	PluginDefinition,
-	PluginPhase
+	PluginDefinition
 } from "./define-plugin";
 
 export {
@@ -35,6 +33,8 @@ export { sortPluginsByDependencies } from "./sort";
 export type { PluginSortingResult } from "./sort";
 
 export type { ApplicationPluginHooks, PluginHooks, PluginHook } from './plugin-hooks.type';
+
+export type { DefinedPlugin, PluginId, PluginPhase } from './plugin.type';
 
 export { removePlugin } from './remove-plugin';
 

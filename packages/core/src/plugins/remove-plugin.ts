@@ -1,6 +1,6 @@
 import { type Application, getActiveApp, pluginSymbol } from '../application';
-import type { DefinedPlugin, PluginId } from './define-plugin';
 import { playBeforeDestroyHook, playDestroyedHook } from './play-plugin-hook';
+import type { DefinedPlugin, PluginId } from './plugin.type';
 
 
 function getDependents(app: Application, plugin: DefinedPlugin): DefinedPlugin[] {

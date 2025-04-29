@@ -1,5 +1,5 @@
 import type { Application } from '../application/application.type';
-import { getActivePlugin } from './define-plugin';
+import { getActivePlugin } from './active-plugin';
 import type { PluginHooks } from './plugin-hooks.type';
 
 function definePluginHooks(name: keyof PluginHooks): (callback: ((app: Application) => void)) => void {

@@ -3,7 +3,7 @@ import { getActiveApp } from '../application/active-app';
 import type { Application, ServiceCollection } from '../application/application.type';
 import { makeSafeCallable } from '../error-handling';
 import type { Service } from '../services/services.type';
-import { getActivePlugin } from './define-plugin';
+import { getActivePlugin } from './active-plugin';
 
 export type Notifications = Record<EventType, unknown>;
 export type EventSource<notifications extends Notifications> = Emitter<notifications> | { emitter: Emitter<notifications> };

@@ -1,9 +1,8 @@
 import type { Application } from '../application';
 import { setActiveApp } from '../application/active-app';
 import { pluginSymbol } from '../application/application.type';
-import { invokeHookWithErrorHandling } from '../error-handling';
-import type { DefinedPlugin } from './define-plugin';
-import { setActivePlugin } from './define-plugin';
+import { setActivePlugin } from './active-plugin';
+import type { DefinedPlugin } from './plugin.type';
 
 /**
  * A hook invocation plays out like this :

@@ -1,4 +1,5 @@
-import {getActivePlugin, type PluginId} from "./define-plugin";
+import { getActivePlugin } from './active-plugin';
+import type { PluginId } from './plugin.type';
 
 /**
  * Mark the plugin as depending on the given dependency.

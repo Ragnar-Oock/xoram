@@ -1,4 +1,4 @@
-import type {DefinedPlugin, PluginId} from "./define-plugin";
+import type { DefinedPlugin, PluginId } from './plugin.type';
 
 // region plugin sort
 export type PluginSortingResult = Readonly<{
@@ -24,7 +24,8 @@ export type PluginSortingResult = Readonly<{
 /**
  * Topologically sort plugins by their dependencies.
  * @param plugins plugins to sort by dependencies
- * @param existingPlugins plugins to consider already registered, those plugins can be used as dependencies by the plugins from `plugin`
+ * @param existingPlugins plugins to consider already registered, those plugins can be used as dependencies by the
+ *   plugins from `plugin`
  *
  * @internal
  */
