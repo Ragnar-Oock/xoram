@@ -7,9 +7,6 @@ export type {
 	ApplicationHooks,
 	ApplicationPluginEvent
 } from "./application.type";
-export  { serviceSymbol, pluginSymbol } from "./application.type";
 
-export { getActiveApp, setActiveApp } from "./active-app";
-
-export { onFailedPluginRegistration } from "./define-application-hooks";
+// export { onFailedPluginRegistration } from "./define-application-hooks";
 
