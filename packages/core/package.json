@@ -7,14 +7,15 @@
   "types": "src/index.ts",
   "scripts": {
     "lint": "oxlint",
-    "test:watch": "vitest watch"
+    "test:watch": "vitest watch --typecheck"
   },
   "devDependencies": {
     "@repo/config-typescript": "workspace:*",
     "@repo/config-vite": "workspace:*",
-    "oxlint": "^0.16.7",
+    "oxlint": "^0.16.8",
     "typescript": "^5.8.3",
-    "vite": "^6.3.2"
+    "vite": "^6.3.3",
+    "vitest": "3.1.2"
   },
   "dependencies": {
     "mitt": "^3.0.1"

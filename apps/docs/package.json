@@ -15,7 +15,7 @@
   "devDependencies": {
     "@repo/config-typescript": "*",
     "typescript": "^5.8.3",
-    "vite": "^6.3.2",
+    "vite": "^6.3.3",
     "vitepress": "^1.6.3",
     "vue": "^3.5.13"
   }
