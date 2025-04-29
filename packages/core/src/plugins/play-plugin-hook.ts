@@ -27,8 +27,8 @@ export function playBeforeCreateHook(app: Application, plugin: DefinedPlugin): D
 	setActivePlugin(plugin);
 
 	plugin.phase = 'mount';
-	invokeHookWithErrorHandling(() => app.emitter.emit('beforePluginRegistration', {app, plugin}), 'beforePluginRegistration', plugin, app);
-	invokeHookWithErrorHandling(() => plugin.hooks.emit('beforeCreate', app), 'beforeCreate', plugin, app);
+	app.emitter.emit('beforePluginRegistration', {app, plugin});
+	plugin.hooks.emit('beforeCreate', app);
 	plugin.hooks.off('beforeCreate');
 
 	setActivePlugin();
@@ -50,9 +50,9 @@ export function playCreatedHook(app: Application, plugin: DefinedPlugin): Define
 
 	app[pluginSymbol].set(plugin.id, plugin);
 	plugin.phase = 'active';
-	invokeHookWithErrorHandling(() => plugin.hooks.emit('created', app), 'created', plugin, app);
+	plugin.hooks.emit('created', app);
 	plugin.hooks.off('created');
-	invokeHookWithErrorHandling(() => app.emitter.emit('pluginRegistered', {app, plugin}), 'pluginRegistered', plugin, app);
+	app.emitter.emit('pluginRegistered', {app, plugin});
 
 	setActivePlugin();
 	resetActiveApp();
@@ -72,8 +72,8 @@ export function playBeforeDestroyHook(app: Application, plugin: DefinedPlugin): 
 	setActivePlugin(plugin);
 
 	plugin.phase = 'teardown';
-	invokeHookWithErrorHandling(() => app.emitter.emit('beforePluginRemoved', {app, plugin}), 'beforePluginRemoved', plugin, app);
-	invokeHookWithErrorHandling(() => plugin.hooks.emit('beforeDestroy', app), 'beforeDestroy', plugin, app);
+	app.emitter.emit('beforePluginRemoved', {app, plugin});
+	plugin.hooks.emit('beforeDestroy', app);
 	plugin.hooks.off('beforeDestroy');
 
 	setActivePlugin();
@@ -95,9 +95,9 @@ export function playDestroyedHook(app: Application, plugin: DefinedPlugin): Defi
 
 	app[pluginSymbol].delete(plugin.id);
 	plugin.phase = 'destroyed';
-	invokeHookWithErrorHandling(() => plugin.hooks.emit('destroyed', app), 'destroyed', plugin, app);
+	plugin.hooks.emit('destroyed', app);
 	plugin.hooks.off('destroyed');
-	invokeHookWithErrorHandling(() => app.emitter.emit('pluginRemoved', {app, plugin}), 'pluginRemoved', plugin, app);
+	app.emitter.emit('pluginRemoved', {app, plugin});
 
 	setActivePlugin();
 	resetActiveApp();

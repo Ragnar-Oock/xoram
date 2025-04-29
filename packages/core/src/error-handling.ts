@@ -2,9 +2,13 @@ import type { Application, ApplicationHooks } from './application/application.ty
 import type { DefinedPlugin, PluginHooks } from './plugins';
 
 
-export type ErrorContext = keyof PluginHooks | keyof ApplicationHooks | 'onEvent';
+export type ErrorContext = keyof PluginHooks | keyof ApplicationHooks | 'onEvent' | 'unknown';
 
-function handleError(error: unknown, plugin: DefinedPlugin | undefined, app: Application | undefined, context: ErrorContext): void {
+export function handleError(
+	error: unknown,
+	plugin?: DefinedPlugin | undefined,
+	app?: Application | undefined,
+	context: ErrorContext = 'unknown'): void {
 	console.error(error, plugin, app, context);
 }
 
@@ -18,17 +22,17 @@ function handleError(error: unknown, plugin: DefinedPlugin | undefined, app: App
  * @param app the application the plugin instance belongs to
  * @param context the execution context
  */
-export function makeSafeCallable<args extends unknown[], ret>(
-	fun: (...args: args) => ret,
+export function makeSafeCallable<args extends unknown[]>(
+	fun: (...args: args) => void,
 	context: ErrorContext,
 	plugin: DefinedPlugin | undefined,
 	app: Application | undefined,
 ): (
 	...args: args
-) => ret | undefined {
-	return (...args): ret | undefined => {
+) => void {
+	return (...args): void => {
 		try {
-			return fun(...args);
+			fun(...args);
 		} catch (error) {
 			handleError(error, plugin, app, context)
 		}

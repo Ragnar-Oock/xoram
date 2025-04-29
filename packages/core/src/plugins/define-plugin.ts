@@ -67,7 +67,7 @@ export function definePlugin(_idOrSetup: PluginSetup | PluginId, _setup?: Plugin
 		const plugin = {
 			id,
 			dependencies: [],
-			hooks: mitt(),
+			hooks: emitter(),
 			phase: 'setup' as PluginPhase,
 		} satisfies DefinedPlugin;
 

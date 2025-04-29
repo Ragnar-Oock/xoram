@@ -1,6 +1,6 @@
 import type { Service, ServiceNotifications } from '@zoram/core';
 import { addService, definePlugin } from '@zoram/core';
-import mitt from 'mitt';
+import { emitter } from '../../src/emitter';
 
 export type Person = {
     name: string;
@@ -14,7 +14,7 @@ export interface PersonServiceNotifications extends ServiceNotifications {
 function personService(): PersonService {
     const persons: Record<string, Person> = {};
     return {
-        emitter: mitt<PersonServiceNotifications>(),
+        emitter: emitter<PersonServiceNotifications>(),
         add(person: Person) {
             persons[person.name] = person;
             return this;

@@ -184,7 +184,7 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 	 */
 	function subscribe(app: Application): void {
 		const resolvedTarget = resolveSource(target, app);
-		safeHandler = makeSafeCallable(handler, 'onEvent', plugin, app);
+		safeHandler = makeSafeCallable(handler, 'onEvent', plugin, app); // todo unwrap this helper
 
 		// @ts-expect-error event and handler 's type are resolved by the function overloads above
 		events.forEach(event => resolvedTarget.on(event, safeHandler));

@@ -1,4 +1,4 @@
-import mitt from 'mitt';
+import { emitter } from '../emitter';
 import {
 	playBeforeCreateHook,
 	playBeforeDestroyHook,
@@ -53,7 +53,7 @@ export function createApp(config: ApplicationConfig): Application {
 
 	const app = Object.seal({
 		id,
-		emitter: mitt(),
+		emitter: emitter(),
 		services: {} as Readonly<ServiceCollection>,
 		[pluginSymbol]: new Map(),
 		destroy: () => {
