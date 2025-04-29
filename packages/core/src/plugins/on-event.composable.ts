@@ -26,9 +26,9 @@ function resolveSource<notifications extends Notifications>(
 	app: Application
 ): Emitter<notifications> {
 	switch (typeof target) {
-		/* service id syntax */
 		case 'string':
 		case 'symbol': {
+			// service id syntax
 			const source = app.services[target] as Service | undefined;
 			if (source === undefined) {
 				// find a better way to deal with this
@@ -36,15 +36,15 @@ function resolveSource<notifications extends Notifications>(
 			}
 			return source.emitter as unknown as Emitter<notifications>;
 		}
-		/* target getter syntax */
 		case 'function': {
+			// target getter syntax
 			const eventSource = target(app);
 			return isMitt<notifications>(eventSource)
 				? eventSource
 				: eventSource.emitter;
 		}
-		/* direct target syntax */
 		case 'object': {
+			// direct target syntax
 			return isMitt<notifications>(target)
 				? target
 				: target.emitter;
