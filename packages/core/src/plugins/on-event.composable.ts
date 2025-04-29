@@ -12,18 +12,8 @@ export type EventSourceGetter<notifications extends Notifications> = ((applicati
 export type EventTarget<notifications extends Notifications> = EventSource<notifications> | EventSourceGetter<notifications> | keyof ServiceCollection
 
 function isMitt<notifications extends Notifications>(candidate: unknown): candidate is Emitter<notifications> {
-	return (
-		candidate !== null
-		&& typeof candidate === 'object'
-		// @ts-expect-error we're checking if stuff exists
-		&& candidate.all instanceof Map
-		// @ts-expect-error we're checking if stuff exists
-		&& typeof candidate.on === 'function'
-		// @ts-expect-error we're checking if stuff exists
-		&& typeof candidate.off === 'function'
-		// @ts-expect-error we're checking if stuff exists
-		&& typeof candidate.emit === 'function'
-	)
+	// @ts-expect-error  all we care about here is that a `on` method exists on candidate
+	return typeof candidate?.on === 'function';
 }
 
 /**
@@ -36,7 +26,7 @@ function resolveSource<notifications extends Notifications>(
 	app: Application
 ): Emitter<notifications> {
 	switch (typeof target) {
-		// service id syntax
+		/* service id syntax */
 		case 'string':
 		case 'symbol': {
 			const source = app.services[target] as Service | undefined;
@@ -46,14 +36,14 @@ function resolveSource<notifications extends Notifications>(
 			}
 			return source.emitter as unknown as Emitter<notifications>;
 		}
-		// target getter syntax
+		/* target getter syntax */
 		case 'function': {
 			const eventSource = target(app);
 			return isMitt<notifications>(eventSource)
 				? eventSource
 				: eventSource.emitter;
 		}
-		// direct target syntax
+		/* direct target syntax */
 		case 'object': {
 			return isMitt<notifications>(target)
 				? target
@@ -183,13 +173,13 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 	/**
 	 * @param app the application to use as context
 	 */
-	function subscribe(app: Application): void {
+	const subscribe = (app: Application): void => {
 		const resolvedTarget = resolveSource(target, app);
 		safeHandler = makeSafeCallable(handler, 'onEvent', plugin, app); // todo unwrap this helper
 
 		// @ts-expect-error event and handler 's type are resolved by the function overloads above
 		events.forEach(event => resolvedTarget.on(event, safeHandler));
-	}
+	};
 
 	if (plugin.phase === 'setup') {
 		plugin.hooks.on(created, subscribe)
