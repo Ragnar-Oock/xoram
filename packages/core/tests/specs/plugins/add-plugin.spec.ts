@@ -35,7 +35,7 @@ describe('addPlugins', () => {
 		}));
 
 		// validate
-		expect(app[pluginSymbol].has(personPluginId)).toBe(true);
+		expect(app[pluginSymbol].has(personPlugin.id)).toBe(true);
 	});
 
 	it('should add plugins that depend on instanced plugins', ({task, autoDestroy}) => {
@@ -51,7 +51,7 @@ describe('addPlugins', () => {
 		}));
 
 		// validate
-		expect(app[pluginSymbol].has(borisPluginId)).toBe(true);
+		expect(app[pluginSymbol].has(borisPlugin.id)).toBe(true);
 	});
 
 	it('should add plugins that depends on plugins of the same batch', ({task, autoDestroy}) => {
@@ -67,8 +67,8 @@ describe('addPlugins', () => {
 		}));
 
 		// check
-		expect(app[pluginSymbol].has(personPluginId)).toBe(true);
-		expect(app[pluginSymbol].has(borisPluginId)).toBe(true);
+		expect(app[pluginSymbol].has(personPlugin.id)).toBe(true);
+		expect(app[pluginSymbol].has(borisPlugin.id)).toBe(true);
 	});
 
 	it('should add plugins that depends on a mixed set of instanced plugins and of the same batch', ({task, autoDestroy}) => {
@@ -80,16 +80,16 @@ describe('addPlugins', () => {
 				onCreated(() => {
 					// exec
 					addPlugins([borisPlugin, definePlugin(mixedDependencyPlugin, () => {
-						dependsOn(borisPluginId);
-						dependsOn(personPluginId);
+						dependsOn(borisPlugin.id);
+						dependsOn(personPlugin.id);
 					})]);
 				})
 			})]
 		}));
 
 		// check
-		expect(app[pluginSymbol].has(personPluginId)).toBe(true);
-		expect(app[pluginSymbol].has(borisPluginId)).toBe(true);
+		expect(app[pluginSymbol].has(personPlugin.id)).toBe(true);
+		expect(app[pluginSymbol].has(borisPlugin.id)).toBe(true);
 		expect(app[pluginSymbol].has(mixedDependencyPlugin)).toBe(true);
 	});
 
