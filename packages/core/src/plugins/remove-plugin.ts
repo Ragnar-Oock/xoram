@@ -1,4 +1,6 @@
-import { type Application, getActiveApp, pluginSymbol } from '../application';
+import type { Application } from '../application';
+import { getActiveApp } from '../application/active-app';
+import { pluginSymbol } from '../application/application.type';
 import { playBeforeDestroyHook, playDestroyedHook } from './play-plugin-hook';
 import type { DefinedPlugin, PluginId } from './plugin.type';
 

@@ -1,5 +1,5 @@
 import type { Application, ServiceCollection } from '../application';
-import { getActivePlugin } from '../plugins';
+import { getActivePlugin } from '../plugins/active-plugin';
 import type { Service, ServiceId } from './services.type';
 
 export type ServiceFactory<service extends Service> = (application: Application) => service;
@@ -43,7 +43,7 @@ export function addService(serviceId: ServiceId, serviceOrFactory: Service | Ser
 		return;
 	}
 
-	plugin.hooks.on('beforeCreate', app => {
+	plugin.hooks.on(beforeCreate, app => {
 		const service = typeof serviceOrFactory === 'function' ? serviceOrFactory(app) : serviceOrFactory;
 
 		// todo move this to app ?
@@ -53,7 +53,7 @@ export function addService(serviceId: ServiceId, serviceOrFactory: Service | Ser
 		app.emitter.emit('serviceAdded', {app, service, serviceId});
 	})
 
-	plugin.hooks.on('beforeDestroy', app => {
+	plugin.hooks.on(beforeDestroy, app => {
 		// todo emit remove service events
 		// todo move this to app ?
 

@@ -1,6 +1,6 @@
-import { Application } from './application.type';
+import type { Application } from './application.type';
 
-export let activeApp: Application | undefined;
+let activeApp: Application | undefined;
 
 /**
  * Set the current application context.
@@ -13,19 +13,15 @@ export let activeApp: Application | undefined;
  *
  * @internal
  */
-export function setActiveApp(app: Application): () => void {
+export const setActiveApp = (app: Application): () => void => {
 	const previous = activeApp;
 	activeApp = app;
-	return (): void => {
-		activeApp = previous
-	};
-}
+	return () => activeApp = previous;
+};
 
 /**
  * Access the current application context
  *
  * @internal
  */
-export function getActiveApp(): Application | undefined {
-	return activeApp;
-}
+export const getActiveApp = (): Application | undefined => activeApp;

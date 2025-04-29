@@ -6,13 +6,13 @@ let activePlugin: DefinedPlugin | undefined;
  * @param plugin the plugin to set as the active context
  * @internal
  */
-export function setActivePlugin(plugin?: DefinedPlugin): DefinedPlugin | undefined {
-	return (activePlugin = plugin);
-}
+export const setActivePlugin = (plugin: DefinedPlugin): () => void => {
+	const previous = activePlugin;
+	activePlugin = plugin;
+	return () => activePlugin = previous;
+};
 
 /**
  * @internal
  */
-export function getActivePlugin(): DefinedPlugin | undefined {
-	return activePlugin;
-}
+export const getActivePlugin = (): DefinedPlugin | undefined => activePlugin;

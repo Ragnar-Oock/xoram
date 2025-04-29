@@ -1,4 +1,4 @@
-import { getActiveApp } from '../application';
+import { getActiveApp } from '../application/active-app';
 import { emitter } from '../emitter';
 import { invokeHookWithErrorHandling } from '../error-handling';
 import { setActivePlugin } from './active-plugin';
@@ -71,9 +71,9 @@ export function definePlugin(_idOrSetup: PluginSetup | PluginId, _setup?: Plugin
 			phase: 'setup' as PluginPhase,
 		} satisfies DefinedPlugin;
 
-		setActivePlugin(plugin);
+		const reset = setActivePlugin(plugin);
 		invokeHookWithErrorHandling(setup, 'setup', plugin, getActiveApp());
-		setActivePlugin();
+		reset();
 
 		return plugin;
 	}

@@ -24,14 +24,14 @@ import type { DefinedPlugin } from './plugin.type';
  */
 export function playBeforeCreateHook(app: Application, plugin: DefinedPlugin): DefinedPlugin {
 	const resetActiveApp = setActiveApp(app);
-	setActivePlugin(plugin);
+	const resetActivePlugin = setActivePlugin(plugin);
 
 	plugin.phase = 'mount';
 	app.emitter.emit('beforePluginRegistration', {app, plugin});
 	plugin.hooks.emit('beforeCreate', app);
 	plugin.hooks.off('beforeCreate');
 
-	setActivePlugin();
+	resetActivePlugin();
 	resetActiveApp();
 
 	return plugin;
@@ -46,7 +46,7 @@ export function playBeforeCreateHook(app: Application, plugin: DefinedPlugin): D
  */
 export function playCreatedHook(app: Application, plugin: DefinedPlugin): DefinedPlugin {
 	const resetActiveApp = setActiveApp(app);
-	setActivePlugin(plugin);
+	const resetActivePlugin = setActivePlugin(plugin);
 
 	app[pluginSymbol].set(plugin.id, plugin);
 	plugin.phase = 'active';
@@ -54,7 +54,7 @@ export function playCreatedHook(app: Application, plugin: DefinedPlugin): Define
 	plugin.hooks.off('created');
 	app.emitter.emit('pluginRegistered', {app, plugin});
 
-	setActivePlugin();
+	resetActivePlugin();
 	resetActiveApp();
 
 	return plugin;
@@ -69,14 +69,14 @@ export function playCreatedHook(app: Application, plugin: DefinedPlugin): Define
  */
 export function playBeforeDestroyHook(app: Application, plugin: DefinedPlugin): DefinedPlugin {
 	const resetActiveApp = setActiveApp(app);
-	setActivePlugin(plugin);
+	const resetActivePlugin = setActivePlugin(plugin);
 
 	plugin.phase = 'teardown';
 	app.emitter.emit('beforePluginRemoved', {app, plugin});
 	plugin.hooks.emit('beforeDestroy', app);
 	plugin.hooks.off('beforeDestroy');
 
-	setActivePlugin();
+	resetActivePlugin();
 	resetActiveApp();
 
 	return plugin;
@@ -91,7 +91,7 @@ export function playBeforeDestroyHook(app: Application, plugin: DefinedPlugin): 
  */
 export function playDestroyedHook(app: Application, plugin: DefinedPlugin): DefinedPlugin {
 	const resetActiveApp = setActiveApp(app);
-	setActivePlugin(plugin);
+	const resetActivePlugin = setActivePlugin(plugin);
 
 	app[pluginSymbol].delete(plugin.id);
 	plugin.phase = 'destroyed';
@@ -99,7 +99,7 @@ export function playDestroyedHook(app: Application, plugin: DefinedPlugin): Defi
 	plugin.hooks.off('destroyed');
 	app.emitter.emit('pluginRemoved', {app, plugin});
 
-	setActivePlugin();
+	resetActivePlugin();
 	resetActiveApp();
 
 	return plugin;
