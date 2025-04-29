@@ -4,6 +4,7 @@ import type { Application, ServiceCollection } from '../application/application.
 import { makeSafeCallable } from '../error-handling';
 import type { Service } from '../services/services.type';
 import { getActivePlugin } from './active-plugin';
+import { beforeDestroy, created } from './plugin-hooks.type';
 
 export type Notifications = Record<EventType, unknown>;
 export type EventSource<notifications extends Notifications> = Emitter<notifications> | { emitter: Emitter<notifications> };
@@ -191,7 +192,7 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 	}
 
 	if (plugin.phase === 'setup') {
-		plugin.hooks.on('created', subscribe)
+		plugin.hooks.on(created, subscribe)
 	}
 	else {
 		const app = getActiveApp();
@@ -206,7 +207,7 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 		subscribe(app);
 	}
 
-	plugin.hooks.on('beforeDestroy', (app) => {
+	plugin.hooks.on(beforeDestroy, (app) => {
 		const resolvedTarget = resolveSource(target, app);
 		// @ts-expect-error event and handler 's type are resolved by the function overloads above
 		events.forEach(event => resolvedTarget.off(event, safeHandler))

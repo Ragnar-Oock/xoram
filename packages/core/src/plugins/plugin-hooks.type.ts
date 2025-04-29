@@ -82,3 +82,13 @@ export type PluginHooks = {
 	 */
 	destroyed: Application;
 }
+
+
+/* @internal */
+export const beforeCreate = 'beforeCreate';
+/* @internal */
+export const created = 'created';
+/* @internal */
+export const beforeDestroy = 'beforeDestroy';
+/* @internal */
+export const destroyed = 'destroyed';

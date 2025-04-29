@@ -2,6 +2,7 @@ import type { Application } from '../application';
 import { setActiveApp } from '../application/active-app';
 import { pluginSymbol } from '../application/application.type';
 import { setActivePlugin } from './active-plugin';
+import { beforeCreate, beforeDestroy, created, destroyed } from './plugin-hooks.type';
 import type { DefinedPlugin } from './plugin.type';
 
 /**
@@ -28,8 +29,8 @@ export function playBeforeCreateHook(app: Application, plugin: DefinedPlugin): D
 
 	plugin.phase = 'mount';
 	app.emitter.emit('beforePluginRegistration', {app, plugin});
-	plugin.hooks.emit('beforeCreate', app);
-	plugin.hooks.off('beforeCreate');
+	plugin.hooks.emit(beforeCreate, app);
+	plugin.hooks.off(beforeCreate);
 
 	resetActivePlugin();
 	resetActiveApp();
@@ -50,8 +51,8 @@ export function playCreatedHook(app: Application, plugin: DefinedPlugin): Define
 
 	app[pluginSymbol].set(plugin.id, plugin);
 	plugin.phase = 'active';
-	plugin.hooks.emit('created', app);
-	plugin.hooks.off('created');
+	plugin.hooks.emit(created, app);
+	plugin.hooks.off(created);
 	app.emitter.emit('pluginRegistered', {app, plugin});
 
 	resetActivePlugin();
@@ -73,8 +74,8 @@ export function playBeforeDestroyHook(app: Application, plugin: DefinedPlugin): 
 
 	plugin.phase = 'teardown';
 	app.emitter.emit('beforePluginRemoved', {app, plugin});
-	plugin.hooks.emit('beforeDestroy', app);
-	plugin.hooks.off('beforeDestroy');
+	plugin.hooks.emit(beforeDestroy, app);
+	plugin.hooks.off(beforeDestroy);
 
 	resetActivePlugin();
 	resetActiveApp();
@@ -95,8 +96,8 @@ export function playDestroyedHook(app: Application, plugin: DefinedPlugin): Defi
 
 	app[pluginSymbol].delete(plugin.id);
 	plugin.phase = 'destroyed';
-	plugin.hooks.emit('destroyed', app);
-	plugin.hooks.off('destroyed');
+	plugin.hooks.emit(destroyed, app);
+	plugin.hooks.off(destroyed);
 	app.emitter.emit('pluginRemoved', {app, plugin});
 
 	resetActivePlugin();

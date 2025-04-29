@@ -25,8 +25,8 @@ export interface ServiceCollection {
 	// services will be added here by plugins
 }
 
-export const pluginSymbol = Symbol('plugin-list');
-export const serviceSymbol = Symbol('service-list');
+export const pluginSymbol = Symbol('plugins');
+export const serviceSymbol = Symbol('services');
 export type Application = {
 	/**
 	 * The name of the application, will be useful when debugging if you have more than one

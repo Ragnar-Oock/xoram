@@ -22,7 +22,7 @@ export type PluginDefinition = {
 
 let pluginCount = 0;
 
-export function pluginId(name = 'plugin'): symbol {
+export function pluginId(name = ''): symbol {
 // oxlint-disable-next-line no-magic-numbers
 	return Symbol(`${ name }_${ (pluginCount++).toString(32).padStart(4, '0') }`);
 }
@@ -56,7 +56,7 @@ export function definePlugin(_idOrSetup: PluginSetup | PluginId, _setup?: Plugin
 		setup = _setup;
 	}
 	else if (typeof _idOrSetup === 'function' && _setup === undefined) {
-		id = pluginId('anonymous');
+		id = pluginId();
 		setup = _idOrSetup;
 	}
 	else {

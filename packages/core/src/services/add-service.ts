@@ -1,5 +1,6 @@
 import type { Application, ServiceCollection } from '../application';
 import { getActivePlugin } from '../plugins/active-plugin';
+import { beforeCreate, beforeDestroy } from '../plugins/plugin-hooks.type';
 import type { Service, ServiceId } from './services.type';
 
 export type ServiceFactory<service extends Service> = (application: Application) => service;
