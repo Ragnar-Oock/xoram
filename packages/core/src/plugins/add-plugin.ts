@@ -31,7 +31,7 @@ export function addPlugins(definePlugins: PluginDefinition[], app: Application):
  * @internal
  */
 export function addPlugins(definePlugins: PluginDefinition[], app = getActiveApp()): void {
-	if (app === undefined) {
+	if (!app) {
 		throw new TypeError('addPlugin called outside of an application context and no app instance passed as parameter.') // todo handle that better
 	}
 

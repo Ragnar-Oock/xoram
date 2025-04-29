@@ -53,12 +53,12 @@ export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app: Applicat
  * @internal
  */
 export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app = getActiveApp()): void {
-	if (app === undefined) {
+	if (!app) {
 		// todo decide if we throw or not
 		throw new Error('removePlugin invoked without application context')
 	}
 	const id = typeof idOrPlugin === 'symbol' ? app[pluginSymbol].get(idOrPlugin) : idOrPlugin;
-	if (id === undefined) {
+	if (!id) {
 		console.warn(new Error(`Tried to remove plugin with id "${String(idOrPlugin)}" but it's not registered in the app.`));
 		return;
 	}

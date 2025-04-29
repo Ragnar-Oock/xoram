@@ -30,7 +30,7 @@ function resolveSource<notifications extends Notifications>(
 		case 'symbol': {
 			// service id syntax
 			const source = app.services[target] as Service | undefined;
-			if (source === undefined) {
+			if (!source) {
 				// find a better way to deal with this
 				throw new Error(`onEvent was invoked with an incorrect service id "${String(target)}".`)
 			}
@@ -186,7 +186,7 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 	}
 	else {
 		const app = getActiveApp();
-		if (app === undefined) {
+		if (!app) {
 			if (import.meta.env.DEV) {
 				console.warn(new Error('onEvent was invoked outside a plugin hook or setup function'));
 			}

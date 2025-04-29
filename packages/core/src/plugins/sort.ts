@@ -57,7 +57,7 @@ export function sortPluginsByDependencies(plugins: DefinedPlugin[], existingPlug
 		for (const dependencyId of plugin.dependencies) {
 			const dependency = map.get(dependencyId);
 
-			if (dependency === undefined) {
+			if (!dependency) {
 				aborted = new Error(`The plugin "${String(pluginId)}" depends on "${String(dependencyId)}" but it is not in the list of provided plugins. Did you forget to register it ?`);
 				break;
 			}
