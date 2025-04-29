@@ -1,15 +1,6 @@
-import {
-	addService,
-	definePlugin,
-	dependsOn,
-	onBeforeDestroy,
-	onCreated,
-	onEvent,
-	Service,
-	ServiceNotifications,
-} from '@zoram/core';
-import mitt from 'mitt';
-// import {addPlugins} from "../src/plugins/add-plugin";
+import type { Service, ServiceNotifications } from '@zoram/core';
+import { addService, definePlugin, dependsOn, onBeforeDestroy, onCreated, onEvent } from '@zoram/core';
+import { emitter } from '../src/emitter';
 
 declare module '@zoram/core' {
 	interface ServiceCollection {
@@ -33,7 +24,7 @@ declare const MyService: (new(...args: unknown[]) => Service);
 declare const billyPluginId: symbol;
 const myServiceId = Symbol('myService');
 
-export const pluginId = Symbol('bob');
+const pluginId = Symbol('bob');
 export default definePlugin(pluginId, () => {
 	dependsOn(billyPluginId);
 
@@ -47,7 +38,7 @@ export default definePlugin(pluginId, () => {
 
 	addService(myServiceId, app => new MyService(app.services.woo));
 	addService(myServiceId, new MyService());
-	addService(myServiceId, {emitter: mitt<ServiceNotifications>()})
+	addService(myServiceId, {emitter: emitter<ServiceNotifications>()})
 
 	onCreated(({services}) => {
 		services.woo.registerSomething(something);
