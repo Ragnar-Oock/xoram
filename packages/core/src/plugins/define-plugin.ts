@@ -1,6 +1,6 @@
 import { getActiveApp } from '../application/active-app';
 import { emitter } from '../emitter';
-import { invokeHookWithErrorHandling } from '../error-handling';
+import { handleError } from '../error-handling';
 import { setActivePlugin } from './active-plugin';
 import type { DefinedPlugin, PluginId, PluginPhase } from './plugin.type';
 
@@ -72,7 +72,12 @@ export function definePlugin(_idOrSetup: PluginSetup | PluginId, _setup?: Plugin
 		} satisfies DefinedPlugin;
 
 		const reset = setActivePlugin(plugin);
-		invokeHookWithErrorHandling(setup, 'setup', plugin, getActiveApp());
+		try {
+			setup()
+		}
+		catch (error) {
+			handleError(error, plugin, getActiveApp(), 'setup')
+		}
 		reset();
 
 		return plugin;

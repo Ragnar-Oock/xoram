@@ -1,7 +1,7 @@
 import type { Emitter, EventType, Handler, WildcardHandler } from 'mitt';
 import { getActiveApp } from '../application/active-app';
 import type { Application, ServiceCollection } from '../application/application.type';
-import { makeSafeCallable } from '../error-handling';
+import { handleError } from '../error-handling';
 import type { Service } from '../services/services.type';
 import { getActivePlugin } from './active-plugin';
 import { beforeDestroy, created } from './plugin-hooks.type';
@@ -175,7 +175,14 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 	 */
 	const subscribe = (app: Application): void => {
 		const resolvedTarget = resolveSource(target, app);
-		safeHandler = makeSafeCallable(handler, 'onEvent', plugin, app); // todo unwrap this helper
+		safeHandler = (...args: never[]) => {
+			try {
+				handler(...args);
+			}
+			catch (error) {
+				handleError(error, plugin, app, 'onEvent')
+			}
+		}
 
 		// @ts-expect-error event and handler 's type are resolved by the function overloads above
 		events.forEach(event => resolvedTarget.on(event, safeHandler));
