@@ -1,72 +1,29 @@
+// eslint-disable no-magic-numbers
 import { describe, expect, vi } from 'vitest';
-import { getActiveApp, type PluginId, pluginSymbol, removePlugin, setActiveApp } from '../../../src';
+import { type Application, getActiveApp, type PluginId, pluginSymbol, removePlugin, setActiveApp } from '../../../src';
 import borisPlugin from '../../dummies/boris.plugin';
-import { noop } from '../../dummies/noop';
 import personPlugin from '../../dummies/person.plugin';
 import { it } from '../../fixture/test-with-destroyable';
 
 describe('removePlugin', () => {
-	describe('using auto injection of app context', () => {
-		it('should remove the plugin with given id from the app', ({autoDestroyedApp}) => {
-			// setup
-			const app = autoDestroyedApp([personPlugin]);
-			const resetActiveApp = setActiveApp(app); // emulate hook auto-injection
-			// validate
-			expect(app[pluginSymbol].has(personPlugin.id)).toBeTruthy();
-			expect(getActiveApp()).toBeTypeOf('object');
-			// exec
-			removePlugin(personPlugin.id);
-			// check
-			expect(app[pluginSymbol].has(personPlugin.id)).toBeFalsy();
-			// clean up
-			resetActiveApp();
-		});
-		it('should recursively remove the plugins that depends on the targeted plugin from the app', ({autoDestroyedApp}) => {
-			// setup
-			const app = autoDestroyedApp([personPlugin, borisPlugin]);
-			const resetActiveApp = setActiveApp(app); // emulate hook auto-injection
-			// validate
-			expect(app[pluginSymbol].has(personPlugin.id)).toBeTruthy();
-			expect(getActiveApp()).toBeTypeOf('object');
-			// exec
-			removePlugin(personPlugin.id);
-			// check
-			expect(app[pluginSymbol].has(personPlugin.id)).toBeFalsy();
-			expect(app[pluginSymbol].has(borisPlugin.id)).toBeFalsy();
-			// clean up
-			resetActiveApp();
-		});
-		// todo how to check that ? using hook invocation order ?
-		it.todo('should remove the dependent plugins before the targeted one', () => {});
-		it('should be idempotent', ({autoDestroyedApp}) => {
-			// setup
-			const app = autoDestroyedApp([personPlugin]);
-			const resetActiveApp = setActiveApp(app); // emulate hook auto-injection
-			// validate
-			expect(app[pluginSymbol].has(personPlugin.id)).toBeTruthy();
-			expect(getActiveApp()).toBeTypeOf('object');
-			// exec 1
-			removePlugin(personPlugin.id);
-			// check 1
-			expect(app[pluginSymbol].has(personPlugin.id)).toBeFalsy();
+	type TestCase = [name: string, exec: (app: Application) => void];
 
-			// exec 2
-			removePlugin(personPlugin.id);
-			// check 2
-			expect(app[pluginSymbol].has(personPlugin.id)).toBeFalsy();
-
-			// clean up
-			resetActiveApp();
-		});
-	});
-	describe('using manual injection of app context', () => {
+	// run all tests in suite with both manually provided app context and auto-injected app context (as if used in a hook)
+	describe.for<TestCase>([
+		['with app context', (app): void => removePlugin(personPlugin.id, app)],
+		['without app context', (app): void => {
+			const reset = setActiveApp(app); // fake hook environment
+			removePlugin(personPlugin.id)
+			reset();
+		}],
+	])('%s', ([, exec]) => {
 		it('should remove the plugin with given id from the app', ({autoDestroyedApp}) => {
 			// setup
 			const app = autoDestroyedApp([personPlugin]);
 			// validate
 			expect(app[pluginSymbol].has(personPlugin.id)).toBeTruthy();
 			// exec
-			removePlugin(personPlugin.id, app);
+			exec(app);
 			// check
 			expect(app[pluginSymbol].has(personPlugin.id)).toBeFalsy();
 		});
@@ -76,7 +33,7 @@ describe('removePlugin', () => {
 			// validate
 			expect(app[pluginSymbol].has(personPlugin.id)).toBeTruthy();
 			// exec
-			removePlugin(personPlugin.id, app);
+			exec(app);
 			// check
 			expect(app[pluginSymbol].has(personPlugin.id)).toBeFalsy();
 			expect(app[pluginSymbol].has(borisPlugin.id)).toBeFalsy();
@@ -88,59 +45,59 @@ describe('removePlugin', () => {
 			expect(app[pluginSymbol].has(personPlugin.id)).toBeTruthy();
 
 			// exec / check
-			expect(() => removePlugin(personPlugin.id)).toThrow(); // todo add error message
+			expect(() => {
+				// @ts-expect-error intentionally unset app context to see if exec throws or not
+				const reset = setActiveApp();
+
+				// @ts-expect-error intentionally don't provide app context to see if it throws or not
+				exec()
+				reset();
+			}).toThrow(); // todo add error message
 		});
-		// todo how to check that ? using hook invocation order ?
-		it.todo('should remove the dependent plugins before the targeted one', () => {});
 		it('should be idempotent', ({autoDestroyedApp}) => {
 			// setup
 			const app = autoDestroyedApp([personPlugin]);
 			// validate
 			expect(app[pluginSymbol].has(personPlugin.id)).toBeTruthy();
 			// exec 1
-			removePlugin(personPlugin.id, app);
+			exec(app);
 			// check 1
 			expect(app[pluginSymbol].has(personPlugin.id)).toBeFalsy();
 			// exec 2
-			removePlugin(personPlugin.id, app);
+			exec(app);
 			// check 2
 			expect(app[pluginSymbol].has(personPlugin.id)).toBeFalsy();
 		});
 
-		describe('beforePluginRemoved hook', () => {
+		describe('beforePluginRemoved app hook', () => {
 			it('should be invoked for all removed plugins', ({autoDestroyedApp}) => {
 				const app = autoDestroyedApp([personPlugin, borisPlugin]);
-				const called = new Set<PluginId>;
-				app.emitter.on('beforePluginRemoved', ({plugin}) => called.add(plugin.id));
+				const spy = vi.fn();
+				app.emitter.on('beforePluginRemoved', ({plugin}) => spy(plugin.id));
 
-				removePlugin(personPlugin.id, app);
+				exec(app);
 
-				expect(called.has(personPlugin.id)).toBeTruthy();
-				expect(called.has(borisPlugin.id)).toBeTruthy();
+				expect(spy).toHaveBeenCalledTimes(2);
+				expect(spy).toHaveBeenCalledWith(borisPlugin.id); // boris depends on person so should be invoked first
+				expect(spy).toHaveBeenCalledWith(personPlugin.id);
 			});
 			it('should be invoked in reverse topological order of dependencies', ({autoDestroyedApp}) => {
 				const app = autoDestroyedApp([personPlugin, borisPlugin]);
 				const spy = vi.fn();
-				app.emitter.on('beforePluginRemoved', ({plugin}) => {
-					spy(plugin.id);
-				});
+				app.emitter.on('beforePluginRemoved', ({plugin}) => spy(plugin.id));
 
-				removePlugin(personPlugin.id, app);
+				exec(app);
 
-				expect(spy).toHaveBeenCalledTimes(2);
 				expect(spy).toHaveBeenNthCalledWith(1, borisPlugin.id); // boris depends on person so should be invoked first
 				expect(spy).toHaveBeenNthCalledWith(2, personPlugin.id);
 			});
 			it('should be invoked during the corresponding plugin\'s `teardown` phase', ({autoDestroyedApp}) => {
 				const app = autoDestroyedApp([personPlugin, borisPlugin]);
 				const spy = vi.fn();
-				app.emitter.on('beforePluginRemoved', ({plugin}) => {
-					spy(plugin.phase);
-				});
+				app.emitter.on('beforePluginRemoved', ({plugin}) => spy(plugin.phase));
 
-				removePlugin(personPlugin.id, app);
+				exec(app);
 
-				expect(spy).toHaveBeenCalledTimes(2);
 				expect(spy).toHaveBeenNthCalledWith(1, 'teardown'); // boris
 				expect(spy).toHaveBeenNthCalledWith(2, 'teardown'); // person
 			});
@@ -156,7 +113,7 @@ describe('removePlugin', () => {
 					calledBeforeBeforeDestroy = calledBeforeBeforeDestroy && (!calledBeforeDestroyOn.has(plugin.id))
 				});
 
-				removePlugin(personPlugin.id, app);
+				exec(app);
 
 				expect(calledBeforeBeforeDestroy).toBeTruthy();
 			});
@@ -176,24 +133,98 @@ describe('removePlugin', () => {
 				expect(spy).toHaveBeenCalledTimes(3);
 
 			});
+			it('should be invoked with an active app', ({autoDestroyedApp}) => {
+				// setup
+				const app = autoDestroyedApp([personPlugin]);
+				const spy = vi.fn();
+
+				app.emitter.on('beforePluginRemoved', () => {
+					spy(getActiveApp());
+				})
+
+				exec(app);
+
+				expect(spy).toHaveBeenCalledExactlyOnceWith(app);
+			});
 		});
-	});
 
-	describe('beforePluginRemoved hook', () => {
-		it.todo('should be invoked when removing a plugin from an app', noop);
-		it.todo('should be invoked when destroying an app', noop);
-		it.todo('should be invoked during the corresponding plugin\'s `teardown` phase', noop);
-		it.todo('should be invoked before the corresponding plugin\'s `beforeDestroy` hook', noop);
-		it.todo('should be invoked safely', noop);
-		it.todo('should be invoked with an active app', noop);
-	});
+		describe('pluginRemoved app hook', () => {
+			it('should be invoked for all removed plugins', ({autoDestroyedApp}) => {
+				const app = autoDestroyedApp([personPlugin, borisPlugin]);
+				const spy = vi.fn();
+				app.emitter.on('pluginRemoved', ({plugin}) => spy(plugin.id));
 
-	describe('pluginRemoved hook', () => {
-		it.todo('should be invoked when removing a plugin from an app', noop);
-		it.todo('should be invoked when destroying an app', noop);
-		it.todo('should be invoked during the corresponding plugin\'s `destroyed` phase', noop);
-		it.todo('should be invoked after the corresponding plugin\'s `destroyed` hook', noop);
-		it.todo('should be invoked safely', noop);
-		it.todo('should be invoked with an active app', noop);
+				exec(app);
+
+				expect(spy).toHaveBeenCalledTimes(2);
+				expect(spy).toHaveBeenCalledWith(borisPlugin.id); // boris depends on person so should be invoked first
+				expect(spy).toHaveBeenCalledWith(personPlugin.id);
+			});
+			it('should be invoked in reverse topological order of dependencies', ({autoDestroyedApp}) => {
+				const app = autoDestroyedApp([personPlugin, borisPlugin]);
+				const spy = vi.fn();
+				app.emitter.on('pluginRemoved', ({plugin}) => spy(plugin.id));
+
+				exec(app);
+
+				expect(spy).toHaveBeenNthCalledWith(1, borisPlugin.id); // boris depends on person so should be invoked first
+				expect(spy).toHaveBeenNthCalledWith(2, personPlugin.id);
+			});
+			it('should be invoked during the corresponding plugin\'s `destroyed` phase', ({autoDestroyedApp}) => {
+				const app = autoDestroyedApp([personPlugin, borisPlugin]);
+				const spy = vi.fn();
+				app.emitter.on('pluginRemoved', ({plugin}) => spy(plugin.phase));
+
+				exec(app);
+
+				expect(spy).toHaveBeenNthCalledWith(1, 'destroyed'); // boris
+				expect(spy).toHaveBeenNthCalledWith(2, 'destroyed'); // person
+			});
+			it('should be invoked after the corresponding plugin\'s `destroyed` hook',  ({autoDestroyedApp}) => {
+				const app = autoDestroyedApp([personPlugin, borisPlugin]);
+				const calledBeforeDestroyOn = new Set<PluginId>();
+				let calledBeforeDestroyed = true;
+
+				app[pluginSymbol].forEach(plugin => plugin.hooks.on('destroyed', () => {
+					calledBeforeDestroyOn.add(plugin.id);
+				}))
+				app.emitter.on('beforePluginRemoved', ({plugin}) => {
+					calledBeforeDestroyed = calledBeforeDestroyed && (!calledBeforeDestroyOn.has(plugin.id))
+				});
+
+				exec(app);
+
+				expect(calledBeforeDestroyed).toBeTruthy();
+			});
+			it('should be invoked safely', ({autoDestroyedApp}) => {
+				// setup
+				const app = autoDestroyedApp([personPlugin]);
+				const spy = vi.fn();
+
+				app.emitter.on('pluginRemoved', spy);
+				app.emitter.on('pluginRemoved', () => {
+					spy();
+					throw new Error('catch me');
+				})
+				app.emitter.on('pluginRemoved', spy);
+
+				expect(() => removePlugin(personPlugin.id, app)).not.toThrow();
+				expect(spy).toHaveBeenCalledTimes(3);
+
+			});
+			it('should be invoked with an active app', ({autoDestroyedApp}) => {
+				// setup
+				const app = autoDestroyedApp([personPlugin]);
+				const spy = vi.fn();
+
+				app.emitter.on('pluginRemoved', () => {
+					spy(getActiveApp());
+				})
+
+				exec(app);
+
+				expect(spy).toHaveBeenCalledExactlyOnceWith(app);
+			});
+		})
 	});
 });
