@@ -24,8 +24,7 @@ declare const MyService: (new(...args: unknown[]) => Service);
 declare const billyPluginId: symbol;
 const myServiceId = Symbol('myService');
 
-const pluginId = Symbol('bob');
-export default definePlugin(pluginId, () => {
+export default definePlugin('bob', () => {
 	dependsOn(billyPluginId);
 
 	/*

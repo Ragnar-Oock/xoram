@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, vi } from 'vitest';
 import { createApp, definePlugin, dependsOn, onCreated } from '../src';
-import personPlugin, { personPluginId } from './dummies/person.plugin';
+import personPlugin from './dummies/person.plugin';
 import { it } from './fixture/test-with-destroyable';
 
 describe('application', () => {
@@ -27,26 +27,24 @@ describe('application', () => {
 	it.fails('should throw if multiple plugins have the same id', ({task, autoDestroy}) => {
 
 		expect(() => autoDestroy(createApp([personPlugin, personPlugin],{id: task.id })))
-			.toThrowError(new Error('Application creation failed', {cause: new Error(`Plugin with id "${String(personPluginId)}" registered multiple times`)}))
+			.toThrowError(new Error('Application creation failed', {cause: new Error(`Plugin with id "${String(personPlugin.id)}" registered multiple times`)}))
 	});
 
 	describe('plugin initialization order', () => {
-		const dependency = Symbol('dependency');
-		const dependent = Symbol('dependent');
-		const dependentPlugin = definePlugin(dependent, () => {
-			dependsOn(dependency);
+		const dependentPlugin = definePlugin('dependent', () => {
+			dependsOn(dependencyPlugin.id);
 
-			setupSpy(dependent);
+			setupSpy('dependent');
 
 			onCreated(()=> {
-				onCreatedSpy(dependent);
+				onCreatedSpy('dependent');
 			})
 		});
-		const dependencyPlugin = definePlugin(dependency, () => {
-			setupSpy(dependency);
+		const dependencyPlugin = definePlugin('dependency', () => {
+			setupSpy('dependency');
 
 			onCreated(()=> {
-				onCreatedSpy(dependency);
+				onCreatedSpy('dependency');
 			});
 		});
 		const setupSpy = vi.fn();
@@ -67,8 +65,8 @@ describe('application', () => {
 
 			// oxlint-disable no-magic-numbers
 			expect(setupSpy).toHaveBeenCalledTimes(2);
-			expect(setupSpy).toHaveBeenNthCalledWith(1, dependency);
-			expect(setupSpy).toHaveBeenNthCalledWith(2, dependent);
+			expect(setupSpy).toHaveBeenNthCalledWith(1, 'dependency');
+			expect(setupSpy).toHaveBeenNthCalledWith(2, 'dependent');
 			// oxlint-enable no-magic-numbers
 		});
 
@@ -82,8 +80,8 @@ describe('application', () => {
 
 			// oxlint-disable no-magic-numbers
 			expect(setupSpy).toHaveBeenCalledTimes(2);
-			expect(setupSpy).toHaveBeenNthCalledWith(1, dependent);
-			expect(setupSpy).toHaveBeenNthCalledWith(2, dependency);
+			expect(setupSpy).toHaveBeenNthCalledWith(1, 'dependent');
+			expect(setupSpy).toHaveBeenNthCalledWith(2, 'dependency');
 			// oxlint-enable no-magic-numbers
 
 		});
@@ -98,8 +96,8 @@ describe('application', () => {
 
 			// oxlint-disable no-magic-numbers
 			expect(onCreatedSpy).toHaveBeenCalledTimes(2);
-			expect(onCreatedSpy).toHaveBeenNthCalledWith(1, dependency);
-			expect(onCreatedSpy).toHaveBeenNthCalledWith(2, dependent);
+			expect(onCreatedSpy).toHaveBeenNthCalledWith(1, 'dependency');
+			expect(onCreatedSpy).toHaveBeenNthCalledWith(2, 'dependent');
 			// oxlint-enable no-magic-numbers
 		});
 
@@ -113,8 +111,8 @@ describe('application', () => {
 
 			// oxlint-disable no-magic-numbers
 			expect(onCreatedSpy).toHaveBeenCalledTimes(2);
-			expect(onCreatedSpy).toHaveBeenNthCalledWith(1, dependency);
-			expect(onCreatedSpy).toHaveBeenNthCalledWith(2, dependent);
+			expect(onCreatedSpy).toHaveBeenNthCalledWith(1, 'dependency');
+			expect(onCreatedSpy).toHaveBeenNthCalledWith(2, 'dependent');
 			// oxlint-enable no-magic-numbers
 		});
 	})

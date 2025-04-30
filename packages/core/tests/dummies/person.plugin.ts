@@ -39,8 +39,6 @@ export interface PersonService extends Service<PersonServiceNotifications> {
     readonly list: Record<string, Person>;
 }
 
-
-export const personPluginId = Symbol('person-plugin');
 export const personServiceId = Symbol('person-service');
 
 declare module '../../src' {
@@ -49,7 +47,8 @@ declare module '../../src' {
         // person: PersonService;
     }
 }
-export default definePlugin(personPluginId, () => {
+
+export default definePlugin('person-plugin', () => {
     addService(personServiceId, personService());
 
 

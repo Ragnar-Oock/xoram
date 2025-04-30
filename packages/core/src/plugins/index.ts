@@ -1,8 +1,7 @@
 export { addPlugins, addPlugin } from "./add-plugin";
 
 export {
-	definePlugin,
-	pluginId
+	definePlugin
 } from "./define-plugin";
 export type {
 	PluginSetup,

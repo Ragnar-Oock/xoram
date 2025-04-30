@@ -1,9 +1,8 @@
-import {definePlugin, dependsOn, onCreated, useService} from "../../src";
-import {personPluginId, personServiceId} from "./person.plugin";
+import { definePlugin, dependsOn, onCreated, useService } from '../../src';
+import personPlugin, { personServiceId } from './person.plugin';
 
-export const borisPluginId = Symbol('boris-plugin');
-export default definePlugin(borisPluginId, () => {
-    dependsOn(personPluginId);
+export default definePlugin('boris-plugin', () => {
+    dependsOn(personPlugin.id);
 
     onCreated(app => {
         const person = useService(personServiceId);

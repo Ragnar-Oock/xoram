@@ -20,13 +20,6 @@ export type PluginDefinition = {
 	id: PluginId;
 };
 
-let pluginCount = 0;
-
-export function pluginId(name = ''): symbol {
-// oxlint-disable-next-line no-magic-numbers
-	return Symbol(`${ name }_${ (pluginCount++).toString(32).padStart(4, '0') }`);
-}
-
 /**
  * Define an anonymous plugin using a generated id
  *
@@ -36,10 +29,11 @@ export function definePlugin(setup: PluginSetup): PluginDefinition;
 /**
  * Define a named plugin using a provided id.
  *
- * @param id a unique id to reference the plugin by
+ * @param id the name of the plugin to recognize it by in logs, errors and tools. Will be used as the description of
+ *   the symbol used for identifying the plugin.
  * @param setup the plugin setup function
  */
-export function definePlugin(id: PluginId, setup: PluginSetup): PluginDefinition;
+export function definePlugin(id: string, setup: PluginSetup): PluginDefinition;
 /**
  * Use one of the overloads
  *
@@ -48,15 +42,14 @@ export function definePlugin(id: PluginId, setup: PluginSetup): PluginDefinition
  *
  * @internal
  */
-export function definePlugin(_idOrSetup: PluginSetup | PluginId, _setup?: PluginSetup): PluginDefinition {
+export function definePlugin(_idOrSetup: PluginSetup | string, _setup?: PluginSetup): PluginDefinition {
 	let id: PluginId, setup: PluginSetup;
-	// noinspection SuspiciousTypeOfGuard
-	if (typeof _idOrSetup === 'symbol' && typeof _setup === 'function') {
-		id = _idOrSetup as PluginId;
+	if (typeof _idOrSetup === 'string' && typeof _setup === 'function') {
+		id = Symbol(_idOrSetup);
 		setup = _setup;
 	}
 	else if (typeof _idOrSetup === 'function' && _setup === undefined) {
-		id = pluginId();
+		id = Symbol();
 		setup = _idOrSetup;
 	}
 	else {

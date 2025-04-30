@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import type { DefinedPlugin } from '../../../src';
-import { definePlugin, pluginId } from '../../../src';
+import { definePlugin } from '../../../src';
 import { getActivePlugin } from '../../../src/plugins/active-plugin';
 import { noop } from '../../dummies/noop';
 
@@ -32,42 +32,41 @@ describe('definePlugin', () => {
 		});
 	});
 	describe('overload 2 (id, setup)', () => {
-		it('should accept a symbol and a function with no argument', () => {
-			expectTypeOf(definePlugin).toEqualTypeOf<(id: symbol, setup: () => void) => (() => DefinedPlugin)>()
-			expect(() => definePlugin(pluginId(), noop)).not.toThrow();
+		it('should accept a string and a function with no argument', ({task}) => {
+			expectTypeOf(definePlugin).toEqualTypeOf<(id: string, setup: () => void) => (() => DefinedPlugin)>()
+			expect(() => definePlugin(task.id, noop)).not.toThrow();
 		});
 		it('should not invoke the setup function', () => {
 			// setup
 			const spy = vi.fn();
 
 			// exec
-			definePlugin(pluginId(), spy);
+			definePlugin(spy);
 
 			// check
 			expect(spy).not.toHaveBeenCalled();
 		});
 		it('should return a callable object', () => {
-			const defined = definePlugin(pluginId(), noop);
+			const defined = definePlugin(noop);
 
 			expect(defined).toBeInstanceOf(Function);
 		});
-		it('should return a callable object with an id', () => {
-			const defined = definePlugin(pluginId(), noop);
+		it('should return a callable object with a symbol as id', () => {
+			const defined = definePlugin(noop);
 
 			expect(defined.id).toBeTypeOf('symbol');
 		});
-		it('should use the provided id in the return', () => {
-			const id = pluginId();
-			const defined = definePlugin(id, noop);
+		it('should use the provided id in as the label of the symbol used for id', ({task}) => {
+			const defined = definePlugin(task.id, noop);
 
-			expect(defined.id).toBe(id);
+			expect(defined.id.description).toBe(task.id);
 		});
 	});
 	describe('invalid overloads', () => {
-		it('should fail with just an id', () => {
+		it('should fail with just an id', ({task}) => {
 			expectTypeOf(definePlugin).not.toEqualTypeOf<(id: symbol) => (() => DefinedPlugin)>();
 			// @ts-expect-error definePlugin can't take just an id as parameter
-			expect(() => definePlugin(pluginId())).toThrow(new TypeError('invalid definePlugin overload usage'));
+			expect(() => definePlugin(task.id)).toThrow(new TypeError('invalid definePlugin overload usage'));
 		});
 		it('should fail with 2 setup function', () => {
 			expectTypeOf(definePlugin).not.toEqualTypeOf<(setup1: () => void, setup: () => void) => (() => DefinedPlugin)>();
@@ -121,39 +120,39 @@ describe('PluginDefinition', () => {
 		});
 	});
 	describe('from overload 2 (id, setup)', () => {
-		it('should return a plugin object', () => {
-			const definition = definePlugin(pluginId(), noop);
+		it('should return a plugin object', ({task}) => {
+			const definition = definePlugin(task.id, noop);
 
 			const plugin = definition();
 
 			expect(plugin).toBeTypeOf('object');
 		});
-		it('should set the phase to `setup`', () => {
-			const definition = definePlugin(pluginId(), noop);
+		it('should set the phase to `setup`', ({task}) => {
+			const definition = definePlugin(task.id, noop);
 
 			const plugin = definition();
 
 			expect(plugin.phase).toBe('setup');
 		});
-		it('should invoke the setup function when called', () => {
+		it('should invoke the setup function when called', ({task}) => {
 			const setup = vi.fn()
-			const definition = definePlugin(setup);
+			const definition = definePlugin(task.id, setup);
 
 			definition();
 
 			expect(setup).toHaveBeenCalledOnce();
 			expect(setup).toHaveBeenCalledWith();
 		});
-		it('should catch errors from the setup function', () => {
-			const definition = definePlugin(pluginId(), () => {
+		it('should catch errors from the setup function', ({task}) => {
+			const definition = definePlugin(task.id, () => {
 				throw new Error('catch me');
 			});
 
 			expect(() => definition()).not.toThrow();
 		});
-		it('should provide the plugin object via activePlugin', () => {
+		it('should provide the plugin object via activePlugin', ({task}) => {
 			let activePlugin;
-			const definition = definePlugin(pluginId(), () => {
+			const definition = definePlugin(task.id, () => {
 				activePlugin = getActivePlugin();
 			});
 

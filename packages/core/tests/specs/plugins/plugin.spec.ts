@@ -9,7 +9,7 @@ describe('plugin', () => {
 	describe('hooks', () => {
 		// todo update / replace this test
 
-		const pluginId = Symbol('first');
+		const pluginId = 'first';
 
 		const hooks = {
 			beforeCreate: vi.fn(),
@@ -18,9 +18,9 @@ describe('plugin', () => {
 		} as const satisfies Omit<{ [hook in keyof PluginHooks]: Mock }, 'destroyed' | 'setup'>;
 
 		const plugin = definePlugin(pluginId, () => {
-			onBeforeCreate(() => hooks.beforeCreate(pluginId));
-			onCreated(() => hooks.created(pluginId));
-			onBeforeDestroy(() => hooks.beforeDestroy(pluginId));
+			onBeforeCreate(() => hooks.beforeCreate());
+			onCreated(() => hooks.created());
+			onBeforeDestroy(() => hooks.beforeDestroy());
 		});
 
 		afterEach(() => {
@@ -38,7 +38,7 @@ describe('plugin', () => {
 					);
 
 					expect(spy, `hook ${hook} should have been called`).toHaveBeenCalledOnce();
-					expect(spy, `hook ${hook} should have been called with ${String(pluginId)}`).toHaveBeenCalledWith(pluginId);
+					// todo test for app parameter
 				});
 			})
 
@@ -48,14 +48,14 @@ describe('plugin', () => {
 			const app = createApp([ plugin ], {id: task.id});
 
 			const spy = vi.fn();
-			const pluginInstance = app[pluginSymbol].get(pluginId);
+			const pluginInstance = app[pluginSymbol].get(plugin.id);
 			expect(pluginInstance).not.toBeUndefined();
-			(pluginInstance as DefinedPlugin).hooks.on('destroyed', () => spy(pluginId));
+			(pluginInstance as DefinedPlugin).hooks.on('destroyed', () => spy(plugin.id));
 
 			destroyApp(app);
 
 			expect(spy, `hook destroyed should have been called`).toHaveBeenCalledOnce();
-			expect(spy, `hook destroyed should have been called with ${String(pluginId)}`).toHaveBeenCalledWith(pluginId);
+			expect(spy, `hook destroyed should have been called with ${String(plugin.id)}`).toHaveBeenCalledWith(plugin.id);
 		});
 	});
 });
