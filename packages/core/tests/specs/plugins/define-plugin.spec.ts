@@ -1,6 +1,7 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import type { DefinedPlugin } from '../../../src';
-import { definePlugin, getActivePlugin, pluginId } from '../../../src';
+import { definePlugin, pluginId } from '../../../src';
+import { getActivePlugin } from '../../../src/plugins/active-plugin';
 import { noop } from '../../dummies/noop';
 
 describe('definePlugin', () => {

@@ -1,6 +1,8 @@
 // eslint-disable no-magic-numbers
 import { describe, expect, vi } from 'vitest';
-import { type Application, getActiveApp, type PluginId, pluginSymbol, removePlugin, setActiveApp } from '../../../src';
+import { type Application, type PluginId, removePlugin } from '../../../src';
+import { getActiveApp, setActiveApp } from '../../../src/application/active-app';
+import { pluginSymbol } from '../../../src/application/application.type';
 import borisPlugin from '../../dummies/boris.plugin';
 import personPlugin from '../../dummies/person.plugin';
 import { it } from '../../fixture/test-with-destroyable';

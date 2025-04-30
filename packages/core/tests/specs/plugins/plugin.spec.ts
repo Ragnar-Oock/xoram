@@ -1,16 +1,8 @@
-import type { DefinedPlugin, PluginHooks } from '@zoram/core'
-import {
-	addPlugins,
-	createApp,
-	definePlugin,
-	onBeforeCreate,
-	onBeforeDestroy,
-	onCreated,
-	pluginId,
-	pluginSymbol,
-} from '@zoram/core';
+import type { DefinedPlugin, PluginHooks } from '@zoram/core';
+import { createApp, definePlugin, destroyApp, onBeforeCreate, onBeforeDestroy, onCreated } from '@zoram/core'
 import type { Mock } from 'vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { pluginSymbol } from '../../../src/application/application.type';
 
 
 describe('plugin', () => {
