@@ -25,7 +25,7 @@ let appCount = 0;
 export function destroyApp(app: Application): void {
 	const plugins = [...app[pluginSymbol].values()];
 
-	const {sorted, aborted} = sortPluginsByDependencies(plugins);
+	const [sorted, aborted] = sortPluginsByDependencies(plugins);
 
 	if (aborted) {
 		// todo check if this can occur in normal use and remove it or change the message if it can't
@@ -65,7 +65,7 @@ export function createApp(plugins: PluginDefinition[], options: ApplicationOptio
 
 	const resetActiveApp = setActiveApp(app);
 
-	let {sorted, aborted} = sortPluginsByDependencies(plugins.map(setup => setup()));
+	let [sorted, aborted] = sortPluginsByDependencies(plugins.map(setup => setup()));
 
 	if (aborted) {
 		throw new Error(`Application creation failed`, {cause: aborted});

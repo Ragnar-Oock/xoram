@@ -38,7 +38,7 @@ export function addPlugins(definePlugins: PluginDefinition[], app = getActiveApp
 	const pluginCollection = app[pluginSymbol];
 
 	const plugins = definePlugins.map(setup => setup());
-	const {sorted, aborted} = sortPluginsByDependencies(plugins, pluginCollection);
+	const [sorted, aborted] = sortPluginsByDependencies(plugins, pluginCollection);
 
 	if (aborted) {
 		app.emitter.emit('failedPluginRegistration', {app, reason: aborted})

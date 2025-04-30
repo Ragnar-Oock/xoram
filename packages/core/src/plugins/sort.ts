@@ -1,25 +1,25 @@
 import type { DefinedPlugin, PluginId } from './plugin.type';
 
 // region plugin sort
-export type PluginSortingResult = Readonly<{
+export type PluginSortingResult = Readonly<[
 	/**
 	 * The sorted list of plugins
 	 */
-	sorted: DefinedPlugin[];
+	sorted: DefinedPlugin[],
 	/**
 	 * The sorting wasn't aborted.
 	 */
-	aborted: false;
-} | {
+	aborted: false,
+] | [
 	/**
 	 * Empty array to avoid fallbacks all over the place.
 	 */
-	sorted: never[];
+	sorted: never[],
 	/**
 	 * The reason why the sorting was aborted.
 	 */
-	aborted: Error;
-}>
+	aborted: Error,
+]>
 
 /**
  * Topologically sort plugins by their dependencies.
@@ -73,8 +73,8 @@ export function sortPluginsByDependencies(plugins: DefinedPlugin[], existingPlug
 		visit(definedPlugin);
 	}
 
-	return {
+	return [
 		sorted,
 		aborted
-	} as Readonly<PluginSortingResult>;
+	] as Readonly<PluginSortingResult>;
 }
