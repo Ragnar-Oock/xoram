@@ -16,15 +16,12 @@ import { it } from '../../fixture/test-with-destroyable';
 describe('addPlugins', () => {
 	it('should add plugins without dependencies', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({
-			id: task.id,
-			plugins: [definePlugin(pluginId(), () => {
+		const app = autoDestroy(createApp([definePlugin(pluginId(), () => {
 				onCreated(() => {
 					// exec
 					addPlugins([personPlugin]);
 				})
-			})]
-		}));
+			})], {id: task.id}));
 
 		// validate
 		expect(app[pluginSymbol].has(personPlugin.id)).toBe(true);
@@ -32,15 +29,16 @@ describe('addPlugins', () => {
 
 	it('should add plugins that depend on instanced plugins', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({
-			id: task.id,
-			plugins: [personPlugin, definePlugin(pluginId(), () => {
-				onCreated(() => {
-					// exec
-					addPlugins([borisPlugin]);
+		const app = autoDestroy(createApp(
+			[
+				personPlugin,
+				definePlugin(pluginId(), () => {
+					onCreated(() => {
+						// exec
+						addPlugins([borisPlugin]);
+					})
 				})
-			})]
-		}));
+			], {id: task.id}));
 
 		// validate
 		expect(app[pluginSymbol].has(borisPlugin.id)).toBe(true);
@@ -48,15 +46,15 @@ describe('addPlugins', () => {
 
 	it('should add plugins that depends on plugins of the same batch', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({
-			id: task.id,
-			plugins: [definePlugin(pluginId(), () => {
-				onCreated(() => {
-					// exec
-					addPlugins([borisPlugin, personPlugin]);
+		const app = autoDestroy(
+			createApp([
+				definePlugin(pluginId(), () => {
+					onCreated(() => {
+						// exec
+						addPlugins([borisPlugin, personPlugin]);
+					})
 				})
-			})]
-		}));
+			], { id: task.id }));
 
 		// check
 		expect(app[pluginSymbol].has(personPlugin.id)).toBe(true);
@@ -66,18 +64,22 @@ describe('addPlugins', () => {
 	it('should add plugins that depends on a mixed set of instanced plugins and of the same batch', ({task, autoDestroy}) => {
 		// setup
 		const mixedDependencyPlugin = pluginId();
-		const app = autoDestroy(createApp({
-			id: task.id,
-			plugins: [personPlugin, definePlugin(pluginId(), () => {
-				onCreated(() => {
-					// exec
-					addPlugins([borisPlugin, definePlugin(mixedDependencyPlugin, () => {
-						dependsOn(borisPlugin.id);
-						dependsOn(personPlugin.id);
-					})]);
+		const app = autoDestroy(
+			createApp([
+				personPlugin,
+				definePlugin(() => {
+					onCreated(() => {
+						// exec
+						addPlugins([
+							borisPlugin,
+							definePlugin(mixedDependencyPlugin, () => {
+								dependsOn(borisPlugin.id);
+								dependsOn(personPlugin.id);
+							})
+						]);
+					})
 				})
-			})]
-		}));
+			], {id: task.id}));
 
 		// check
 		expect(app[pluginSymbol].has(personPlugin.id)).toBe(true);
@@ -97,10 +99,7 @@ describe('addPlugins', () => {
 			dependsOn(idA);
 		})
 
-		const app = autoDestroy(createApp({
-			id: task.id,
-			plugins: []
-		}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 
 		const spyOnFailedPluginRegistration = vi.fn();
 
@@ -129,7 +128,7 @@ describe('addPlugins', () => {
 			onCreated(() => console.log('created'));
 		})
 
-		const app = autoDestroy(createApp({id: task.id, plugins: [ pluginA, ]}));
+		const app = autoDestroy(createApp([ pluginA ], {id: task.id}));
 
 		// exec / check
 		expect(() => addPlugins([pluginB], app)).toThrow();
@@ -139,7 +138,7 @@ describe('addPlugins', () => {
 
 	it('should accept an application context', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 
 		// exec / check
 		expect(() => addPlugins([definePlugin(pluginId('emptyPlugin'), noop)], app)).not.toThrow();
@@ -157,7 +156,7 @@ describe('addPlugins', () => {
 
 	it('should add the plugin to the application', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const id = pluginId(task.id);
 
 		// exec
@@ -169,7 +168,7 @@ describe('addPlugins', () => {
 
 	it('should build the plugin', ({task, autoDestroy}) => {
 		//setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const setup = vi.fn();
 
 		// exec
@@ -182,7 +181,7 @@ describe('addPlugins', () => {
 
 	it('should invoke the beforeCreate hook', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const spy = vi.fn();
 
 		// exec
@@ -197,7 +196,7 @@ describe('addPlugins', () => {
 
 	it('should invoke the beforeCreate hook before adding the plugin to the application', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const id = pluginId(task.id);
 
 		const spy = vi.fn(() => {
@@ -216,7 +215,7 @@ describe('addPlugins', () => {
 
 	it('should invoke the created hook', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const spy = vi.fn();
 
 		// exec
@@ -231,7 +230,7 @@ describe('addPlugins', () => {
 
 	it('should invoke the created hook after adding the plugin to the application', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const id = pluginId(task.id);
 
 		const spy = vi.fn(() => {
@@ -250,7 +249,7 @@ describe('addPlugins', () => {
 
 	it('should invoke the beforePluginRegistration hook', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const spy = vi.fn();
 
 		app.emitter.on('beforePluginRegistration', spy)
@@ -267,7 +266,7 @@ describe('addPlugins', () => {
 
 	it('should invoke the beforePluginRegistration hook before the plugin is added to the application', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const id = pluginId(task.id);
 
 		// checks
@@ -283,7 +282,7 @@ describe('addPlugins', () => {
 
 	it('should invoke the beforePluginRegistration hook before the beforeCreate hook', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const id = pluginId(task.id);
 
 		const spy = vi.fn();
@@ -305,7 +304,7 @@ describe('addPlugins', () => {
 
 	it('should invoke the pluginRegistered hook', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const spy = vi.fn();
 
 		app.emitter.on('pluginRegistered', spy)
@@ -322,7 +321,7 @@ describe('addPlugins', () => {
 
 	it('should invoke the pluginRegistered hook after the plugin is added to the application', ({task, autoDestroy}) => {
 		// setup
-		const app = autoDestroy(createApp({id: task.id, plugins: []}));
+		const app = autoDestroy(createApp([], {id: task.id}));
 		const id = pluginId(task.id);
 
 		const spy = vi.fn(() => {

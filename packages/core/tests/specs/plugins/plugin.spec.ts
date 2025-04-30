@@ -33,8 +33,9 @@ describe('plugin', () => {
 			.entries(hooks)
 			.forEach(([hook, spy]) => {
 				it(`should invoke the "${hook}" hook`, ({task}) => {
-					createApp({id: task.id, plugins: [ plugin, ]})
-						.destroy()
+					destroyApp(
+						createApp([plugin], {id: task.id})
+					);
 
 					expect(spy, `hook ${hook} should have been called`).toHaveBeenCalledOnce();
 					expect(spy, `hook ${hook} should have been called with ${String(pluginId)}`).toHaveBeenCalledWith(pluginId);
@@ -44,16 +45,14 @@ describe('plugin', () => {
 		// todo test for destroyed hook
 
 		it(`should invoke the "destroyed" hook`, ({task}) => {
-			const app = createApp({id: task.id, plugins: [
-					plugin,
-				]})
+			const app = createApp([ plugin ], {id: task.id});
 
 			const spy = vi.fn();
 			const pluginInstance = app[pluginSymbol].get(pluginId);
 			expect(pluginInstance).not.toBeUndefined();
 			(pluginInstance as DefinedPlugin).hooks.on('destroyed', () => spy(pluginId));
 
-			app.destroy();
+			destroyApp(app);
 
 			expect(spy, `hook destroyed should have been called`).toHaveBeenCalledOnce();
 			expect(spy, `hook destroyed should have been called with ${String(pluginId)}`).toHaveBeenCalledWith(pluginId);

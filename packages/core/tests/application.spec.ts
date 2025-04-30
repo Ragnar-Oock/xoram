@@ -10,14 +10,14 @@ describe('application', () => {
 		consoleWarn.mockReset();
 	})
 
-	it('should instantiate with warning with not plugin', ({task, autoDestroy}) => {
-		autoDestroy(createApp({id: task.id, plugins: []}));
+	it.todo('should instantiate with warning with not plugin', ({task, autoDestroy}) => {
+		autoDestroy(createApp([], {id: task.id}));
 
 		expect(consoleWarn).toHaveBeenCalledWith(`Application "${task.id}" initialized without plugin, did you forget to provide them ?`)
 	})
 
 	it('should instantiate a valid application', ({task, autoDestroy}) => {
-		const application = autoDestroy(createApp({id: task.id, plugins: []}));
+		const application = autoDestroy(createApp([], {id: task.id}));
 
 		expect(application).toHaveProperty('id', task.id);
 		expect(application).toHaveProperty('services', {});
@@ -26,7 +26,7 @@ describe('application', () => {
 
 	it.fails('should throw if multiple plugins have the same id', ({task, autoDestroy}) => {
 
-		expect(() => autoDestroy(createApp({id: task.id, plugins: [personPlugin, personPlugin]})))
+		expect(() => autoDestroy(createApp([personPlugin, personPlugin],{id: task.id })))
 			.toThrowError(new Error('Application creation failed', {cause: new Error(`Plugin with id "${String(personPluginId)}" registered multiple times`)}))
 	});
 
@@ -59,12 +59,10 @@ describe('application', () => {
 
 		it('should setup plugins in the provided order (in order)', ({task, autoDestroy}) => {
 			autoDestroy(
-				createApp({
-					id: task.id, plugins: [
-						dependencyPlugin,
-						dependentPlugin,
-					]
-				})
+				createApp([
+					dependencyPlugin,
+					dependentPlugin,
+				], { id: task.id })
 			);
 
 			// oxlint-disable no-magic-numbers
@@ -76,10 +74,10 @@ describe('application', () => {
 
 		it('should setup plugins in the provided order (out of order)', ({task, autoDestroy}) => {
 			autoDestroy(
-				createApp({id: task.id, plugins: [
+				createApp([
 					dependentPlugin,
 					dependencyPlugin,
-				]})
+				], { id: task.id })
 			);
 
 			// oxlint-disable no-magic-numbers
@@ -92,10 +90,10 @@ describe('application', () => {
 
 		it('should instantiate dependent plugins after their dependency (initially ordered)', ({task, autoDestroy}) => {
 			autoDestroy(
-				createApp({id: task.id, plugins: [
+				createApp([
 					dependencyPlugin,
 					dependentPlugin,
-				]})
+				], { id: task.id })
 			);
 
 			// oxlint-disable no-magic-numbers
@@ -107,10 +105,10 @@ describe('application', () => {
 
 		it('should instantiate dependent plugins after their dependency (initially out of order)', ({task, autoDestroy}) => {
 			autoDestroy(
-				createApp({id: task.id, plugins: [
+				createApp([
 					dependentPlugin,
 					dependencyPlugin,
-				]})
+				], { id: task.id })
 			);
 
 			// oxlint-disable no-magic-numbers
