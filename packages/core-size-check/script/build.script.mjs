@@ -1,6 +1,6 @@
 import {mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {spawn} from 'node:child_process';
-import {brotliCompressSync, gzipSync} from 'node:zlib'
+import {brotliCompressSync, deflateSync, gzipSync} from 'node:zlib'
 
 // clear dist folder
 rmSync('./dist', { recursive: true });
@@ -14,6 +14,7 @@ const built = readFileSync('./dist/core-size-check.iife.js');
 const raw = built.length
 const gzip = gzipSync(built).length
 const brotli = brotliCompressSync(built).length
+const zstd = deflateSync(built).length
 
 
 
@@ -21,6 +22,7 @@ const reportJSON = {
     raw: [`${raw.toString(10)}B`, `${(raw / 1024).toFixed(2)}KiB`, `${(raw / 1000).toFixed(2)}KB`],
     gzip: [`${gzip.toString(10)}B`, `${(gzip / 1024).toFixed(2)}KiB`, `${(gzip / 1000).toFixed(2)}KB`],
     brotli: [`${brotli.toString(10)}B`, `${(brotli / 1024).toFixed(2)}KiB`, `${(brotli / 1000).toFixed(2)}KB`],
+    zstd: [`${zstd.toString(10)}B`, `${(zstd / 1024).toFixed(2)}KiB`, `${(zstd / 1000).toFixed(2)}KB`],
 }
 
 const report = `
@@ -28,6 +30,7 @@ const report = `
 raw   : ${reportJSON.raw.join(' | ')}
 gzip  : ${reportJSON.gzip.join(' | ')}
 brotli: ${reportJSON.brotli.join(' | ')}
+zstd  : ${reportJSON.zstd.join(' | ')}
 `;
 
 console.log(report);
