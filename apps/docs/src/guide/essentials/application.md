@@ -7,9 +7,7 @@ business logic.
 ```js
 import {createApp} from '@zoram/core';
 
-const app = createApp({
-    plugins: [ /* your plugins goes here */]
-});
+const app = createApp([ /* your plugins goes here */]);
 ```
 ## Identifying an app
 
@@ -22,8 +20,10 @@ tools and the logs of the application.
 ```js
 import {createApp} from '@zoram/core';
 
-const app = createApp({
-    id: 'myApp',
-    plugins: [ /* your plugins goes here */]
-});
+const app = createApp(
+    [ /* your plugins goes here */], 
+    {
+        id: 'myApp'
+    }
+);
 ```
