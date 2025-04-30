@@ -749,6 +749,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@repo/core-size-check@workspace:packages/core-size-check":
+  version: 0.0.0-use.local
+  resolution: "@repo/core-size-check@workspace:packages/core-size-check"
+  dependencies:
+    "@zoram/core": "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "@repo/ui@npm:*, @repo/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@repo/ui@workspace:packages/ui"
@@ -1489,7 +1497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zoram/core@workspace:packages/core":
+"@zoram/core@workspace:*, @zoram/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@zoram/core@workspace:packages/core"
   dependencies:
