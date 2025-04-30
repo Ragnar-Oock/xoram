@@ -1,28 +1,30 @@
 import { test } from 'vitest';
-import { type Application, type ApplicationConfig, createApp } from '../../src';
+import { type Application, createApp, destroyApp, type PluginDefinition } from '../../src';
 
 export type Destroyable = {destroy: () => void};
 
 export type DestroyableTest = {
-	autoDestroy: <destroyable extends Destroyable>(destroyable: destroyable) => destroyable;
-	autoDestroyedApp: (plugins: ApplicationConfig['plugins']) => Application;
+	autoDestroy: (app: Application) => Application;
+	autoDestroyedApp: (plugins: PluginDefinition[]) => Application;
 }
 
 const testWithDestroyable = test.extend<DestroyableTest>({
 	// oxlint-disable-next-line no-empty-pattern
 	autoDestroy: async ({}, use) => {
-		let local: Destroyable | undefined;
+		let local: Application | undefined;
 
-		await use((destroyable) => {
-			local = destroyable
-			return destroyable;
+		await use((app) => {
+			local = app
+			return app;
 		});
 
-		local?.destroy();
+		if (local) {
+			destroyApp(local);
+		}
 	},
 	autoDestroyedApp: async ({autoDestroy, task}, use) => {
-		return await use((plugins: ApplicationConfig['plugins']) => {
-			return autoDestroy(createApp({id: task.id, plugins}))
+		return await use((plugins: PluginDefinition[]) => {
+			return autoDestroy(createApp(plugins, {id: task.id}))
 		})
 	}
 })

@@ -1,8 +1,8 @@
-import type { Service, ServiceNotifications } from '@zoram/core';
-import { addService, definePlugin, dependsOn, onBeforeDestroy, onCreated, onEvent } from '@zoram/core';
+import type { Service, ServiceNotifications } from '../src';
+import { addService, definePlugin, dependsOn, onBeforeDestroy, onCreated, onEvent } from '../src';
 import { emitter } from '../src/emitter';
 
-declare module '@zoram/core' {
+declare module '../src' {
 	interface ServiceCollection {
 		woo: Service<ServiceNotifications & {message: { msg }}>;
 		boris: Service<ServiceNotifications & {message: { msg }}>;

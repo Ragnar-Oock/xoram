@@ -1,7 +1,7 @@
 // oxlint-disable no-magic-numbers
-import type { ApplicationHooks } from '@zoram/core';
-import { addPlugins, createApp, definePlugin, dependsOn, onBeforeCreate, onCreated, pluginId } from '@zoram/core';
 import { describe, expect, vi } from 'vitest';
+import type { ApplicationHooks } from '../../../src';
+import { addPlugins, createApp, definePlugin, dependsOn, onBeforeCreate, onCreated, pluginId } from '../../../src';
 import { pluginSymbol } from '../../../src/application/application.type';
 import borisPlugin from '../../dummies/boris.plugin';
 import { noop } from '../../dummies/noop';

@@ -1,5 +1,5 @@
-import type { Service, ServiceNotifications } from '@zoram/core';
-import { addService, definePlugin } from '@zoram/core';
+import type { Service, ServiceNotifications } from '../../src';
+import { addService, definePlugin } from '../../src';
 import { emitter } from '../../src/emitter';
 
 export type Person = {
@@ -43,7 +43,7 @@ export interface PersonService extends Service<PersonServiceNotifications> {
 export const personPluginId = Symbol('person-plugin');
 export const personServiceId = Symbol('person-service');
 
-declare module '@zoram/core' {
+declare module '../../src' {
     interface ServiceCollection {
         [personServiceId]: PersonService;
         // person: PersonService;
