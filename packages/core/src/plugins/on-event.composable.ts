@@ -3,6 +3,7 @@ import { getActiveApp } from '../application/active-app';
 import type { Application, ServiceCollection } from '../application/application.type';
 import { handleError } from '../error-handling';
 import type { Service } from '../services/services.type';
+import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
 import { beforeDestroy, created } from './plugin-hooks.type';
 
@@ -64,6 +65,8 @@ export type MergedEvents<
 	notifications extends Notifications,
 	events extends (keyof notifications)[],
 > = UnionToIntersection<notifications[events[number]]>
+
+const onEventOutsidePlugin = 'onEvent was invoked outside of a plugin setup function or hook.';
 
 /**
  * Listen to multiple events the same source at once and cleanly stop to listen when the plugin is disposed off.
@@ -161,7 +164,7 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 	const plugin = getActivePlugin();
 	if (!plugin) {
 		if (import.meta.env.DEV) {
-			console.error(new Error('onEvent was invoked without an active plugin'));
+			warn(new Error(onEventOutsidePlugin));
 		}
 		return;
 	}
@@ -195,7 +198,7 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 		const app = getActiveApp();
 		if (!app) {
 			if (import.meta.env.DEV) {
-				console.warn(new Error('onEvent was invoked outside a plugin hook or setup function'));
+				warn(new Error(onEventOutsidePlugin));
 			}
 
 			return;
@@ -209,6 +212,4 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 		// @ts-expect-error event and handler 's type are resolved by the function overloads above
 		events.forEach(event => resolvedTarget.off(event, safeHandler))
 	})
-
-
 }

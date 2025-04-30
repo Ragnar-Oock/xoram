@@ -27,6 +27,22 @@ export interface ServiceCollection {
 
 export const pluginSymbol = Symbol('plugins');
 export const serviceSymbol = Symbol('services');
+/**
+ * Optional configuration options for an application.
+ * @public
+ */
+export type ApplicationOptions = {
+	/**
+	 * A name to identify an application in error messages and dev tools.
+	 */
+	id: string;
+	/**
+	 * Invoked when an error is caught by the application.
+	 * @param error
+	 */
+	onError: (error: unknown) => void;
+}
+
 export type Application = {
 	/**
 	 * The name of the application, will be useful when debugging if you have more than one
@@ -51,6 +67,11 @@ export type Application = {
 	 * @internal
 	 */
 	[pluginSymbol]: Map<PluginId, DefinedPlugin>;
+
+	/**
+	 * The `options` parameter as passed to {@link import('@zoram/core').createApp `createApp`}
+	 */
+	readonly options: Partial<ApplicationOptions>;
 }
 
 export type ApplicationConfig = {

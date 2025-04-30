@@ -1,4 +1,5 @@
 import type { Application } from '../application/application.type';
+import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
 import { beforeCreate, beforeDestroy, created, type PluginHooks } from './plugin-hooks.type';
 
@@ -8,7 +9,7 @@ function definePluginHooks(name: keyof PluginHooks): (callback: ((app: Applicati
     const plugin = getActivePlugin();
     if (!plugin) {
       if (import.meta.env.DEV) {
-        console.error(new Error(`${name} hook called without an active plugin instance`));
+        warn(new Error(`${name} hook called without an active plugin instance`));
       }
       return;
     }

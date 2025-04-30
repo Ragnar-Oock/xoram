@@ -1,4 +1,5 @@
 // oxlint-disable prefer-await-to-callbacks
+import { warn } from '../warn.helper';
 import { getActiveApp } from './active-app';
 import type { ApplicationHooks } from './application.type';
 
@@ -7,7 +8,7 @@ function defineApplicationHook<hook extends keyof ApplicationHooks>(name: hook):
 		const app = getActiveApp();
 		if (!app) {
 			if (import.meta.env.DEV) {
-				console.error(new Error(`${name} hook called without an active plugin instance`));
+				warn(new Error(`${name} hook called without an active plugin instance`));
 			}
 			return;
 		}

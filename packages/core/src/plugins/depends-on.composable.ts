@@ -1,3 +1,4 @@
+import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
 import type { PluginId } from './plugin.type';
 
@@ -11,16 +12,9 @@ import type { PluginId } from './plugin.type';
 export function dependsOn(dependency: PluginId): void {
   const activePlugin = getActivePlugin()
 
-  if (!activePlugin) {
+  if (!activePlugin || activePlugin.phase !== 'setup') {
     if (import.meta.env.DEV) {
-      console.warn(new Error("Invoked dependsOn with no activePlugin, dependsOn cannot be used outside of a plugin setup function"));
-    }
-    return;
-  }
-
-  if(activePlugin.phase !== 'setup') {
-    if (import.meta.env.DEV) {
-      console.warn(new Error("Invoked dependsOn outside of the setup phase, dependsOn cannot be used in hooks or outside of a plugin setup function"));
+      warn(new Error("Invoked dependsOn outside of a plugin's setup function, dependsOn can't be used in hooks or outside of a plugin setup function."));
     }
     return;
   }

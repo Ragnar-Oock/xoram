@@ -1,6 +1,7 @@
 import type { Application, ServiceCollection } from '../application';
 import { getActivePlugin } from '../plugins/active-plugin';
 import { beforeCreate, beforeDestroy } from '../plugins/plugin-hooks.type';
+import { warn } from '../warn.helper';
 import type { Service, ServiceId } from './services.type';
 
 export type ServiceFactory<service extends Service> = (application: Application) => service;
@@ -30,16 +31,9 @@ export function addService<id extends ServiceId>(id: id, service: ServiceCollect
 export function addService(serviceId: ServiceId, serviceOrFactory: Service | ServiceFactory<Service>): void {
 	const plugin = getActivePlugin();
 
-	if (!plugin) {
+	if (!plugin || plugin.phase !== 'setup') {
 		if (import.meta.env.DEV) {
-			console.warn(new Error('Invoked addService with no activePlugin'));
-		}
-		return;
-	}
-
-	if (plugin.phase !== 'setup') {
-		if (import.meta.env.DEV) {
-			console.warn(new Error('addService can\'t be invoked outside of a plugin\'s setup function'));
+			warn(new Error("addService can't be invoked outside of a plugin setup function."));
 		}
 		return;
 	}

@@ -1,4 +1,6 @@
 import { emitter } from '../emitter';
+import { handleError } from '../error-handling';
+import type { PluginDefinition } from '../plugins';
 import {
 	playBeforeCreateHook,
 	playBeforeDestroyHook,
@@ -6,8 +8,9 @@ import {
 	playDestroyedHook,
 } from '../plugins/play-plugin-hook';
 import { sortPluginsByDependencies } from '../plugins/sort';
+import { warn } from '../warn.helper';
 import { setActiveApp } from './active-app';
-import type { Application, ApplicationConfig, ServiceCollection } from './application.type';
+import type { Application, ApplicationOptions, ServiceCollection } from './application.type';
 import { pluginSymbol } from './application.type';
 
 let appCount = 0;
@@ -25,7 +28,8 @@ export function destroyApp(app: Application): void {
 	const {sorted, aborted} = sortPluginsByDependencies(plugins);
 
 	if (aborted) {
-		console.warn(new Error('Application destruction failed', {cause: aborted}))
+		// todo check if this can occur in normal use and remove it or change the message if it can't
+		handleError(new Error('Application destruction failed', {cause: aborted}), undefined, app);
 		return;
 	}
 
@@ -39,16 +43,16 @@ export function destroyApp(app: Application): void {
 /**
  * Create an application from a set of plugins
  *
- * @param config application configuration
+ * @param plugins the plugin list to create the application from
+ * @param options a set of options to configure how the application functions
  *
- * @todo re-evaluate signature of this function (id, plugins, options) might be easier to use
+ * @public
  */
-export function createApp(config: ApplicationConfig): Application {
-	const {id = `application_${appCount}`, plugins} = config;
+export function createApp(plugins: PluginDefinition[], options: ApplicationOptions): Application {
+	const {id = `app_${appCount}`} = options;
 
-	// oxlint-disable-next-line no-magic-numbers
-	if (Array.isArray(plugins) && plugins.length === 0 && import.meta.env.DEV) {
-		console.warn(`Application "${id}" initialized without plugin, did you forget to provide them ?`);
+	if (plugins.length === 0 && import.meta.env.DEV) {
+		warn(`Application "${id}" initialized without plugin, did you forget to provide them ?`);
 	}
 
 	const app = Object.seal({
@@ -56,6 +60,7 @@ export function createApp(config: ApplicationConfig): Application {
 		emitter: emitter(),
 		services: {} as Readonly<ServiceCollection>,
 		[pluginSymbol]: new Map(),
+		options
 	}) satisfies Application
 
 	const resetActiveApp = setActiveApp(app);

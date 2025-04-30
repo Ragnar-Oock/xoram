@@ -1,6 +1,7 @@
 import type { Application } from '../application';
 import { getActiveApp } from '../application/active-app';
 import { pluginSymbol } from '../application/application.type';
+import { warn } from '../warn.helper';
 import { playBeforeDestroyHook, playDestroyedHook } from './play-plugin-hook';
 import type { DefinedPlugin, PluginId } from './plugin.type';
 
@@ -59,7 +60,9 @@ export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app = getActi
 	}
 	const id = typeof idOrPlugin === 'symbol' ? app[pluginSymbol].get(idOrPlugin) : idOrPlugin;
 	if (!id) {
-		console.warn(new Error(`Tried to remove plugin with id "${String(idOrPlugin)}" but it's not registered in the app.`));
+		if (import.meta.env.DEV) {
+			warn(new Error(`Tried to remove plugin with id "${ String(idOrPlugin) }" but it's not registered in the app.`));
+		}
 		return;
 	}
 

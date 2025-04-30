@@ -1,13 +1,29 @@
 import type { Application, ApplicationHooks } from './application/application.type';
 import type { DefinedPlugin, PluginHooks } from './plugins';
+import { warn } from './warn.helper';
 
 
+// todo check if all error context are listed here and if they can all occur
 export type ErrorContext = keyof PluginHooks | keyof ApplicationHooks | 'onEvent' | 'unknown';
 
+/**
+ *
+ * @param error the error to handle
+ * @param plugin the plugin the error happened in, if it is known
+ * @param app the application instance the error happened in, if it is known
+ * @param context the context the error happened in
+ */
 export function handleError(
-	error: unknown,
+	error: string | Error,
 	plugin?: DefinedPlugin | undefined,
 	app?: Application | undefined,
-	context: ErrorContext = 'unknown'): void {
-	console.error(error, plugin, app, context);
+	context: ErrorContext = 'unknown'
+): void {
+	if (import.meta.env.DEV) {
+		warn(error, {plugin, app, context});
+	}
+	else {
+		console.error(error, plugin, app, context);
+	}
+	app?.options.onError?.(error);
 }
