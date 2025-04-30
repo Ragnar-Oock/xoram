@@ -1,6 +1,5 @@
 import type { Emitter } from 'mitt';
 import type { ApplicationPluginHooks, DefinedPlugin, PluginId } from '../plugins';
-import type { PluginDefinition } from '../plugins/define-plugin';
 import type { ApplicationServiceHooks } from '../services/services.type';
 
 export type ApplicationPluginEvent = {
@@ -73,14 +72,3 @@ export type Application = {
 	 */
 	readonly options: Partial<ApplicationOptions>;
 }
-
-export type ApplicationConfig = {
-	id?: string;
-	plugins: PluginDefinition[];
-}
-
-// region context
-
-// endregion
-
-

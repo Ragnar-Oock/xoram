@@ -48,7 +48,7 @@ export function destroyApp(app: Application): void {
  *
  * @public
  */
-export function createApp(plugins: PluginDefinition[], options: ApplicationOptions): Application {
+export function createApp(plugins: PluginDefinition[], options: Partial<ApplicationOptions> = {}): Application {
 	const {id = `app_${appCount}`} = options;
 
 	if (plugins.length === 0 && import.meta.env.DEV) {
