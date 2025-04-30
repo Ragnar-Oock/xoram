@@ -2,12 +2,27 @@
   "name": "@zoram/core",
   "version": "0.0.0",
   "description": "zoram core",
-  "main": "src/index.ts",
   "type": "module",
-  "types": "src/index.ts",
   "scripts": {
     "lint": "oxlint",
-    "test:watch": "vitest watch --typecheck"
+    "test:watch": "vitest watch --typecheck",
+    "build": "node ./script/build.script.mjs",
+    "build:prod": "vite build --mode production",
+    "build:dev": "NODE_ENV=development vite build --mode development"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./src/index.ts",
+        "default": "./dist/core.production.js"
+      }
+    },
+    "./dev": {
+      "import": {
+        "types": "./src/index.ts",
+        "default": "./dist/core.development.js"
+      }
+    }
   },
   "devDependencies": {
     "@repo/config-typescript": "workspace:*",
