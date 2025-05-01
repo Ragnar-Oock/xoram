@@ -1,23 +1,10 @@
 import mitt, { type Emitter } from 'mitt';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
-import {
-	addService,
-	createApp,
-	definePlugin,
-	defineService,
-	onEvent,
-	type Service,
-	type ServiceNotifications,
-} from '../../../src';
+import type { Service } from '../../../src'
+import { addService, createApp, definePlugin, defineService, onEvent } from '../../../src';
 
 const eventA = Object.freeze({a: 1, b: '2'});
 const eventB = Object.freeze({a: 3, c: '4'});
-
-type Prettify<T> = {
-	[K in keyof T]: T[K];
-} & {};
-
-type a = Prettify<Notifications & ServiceNotifications>;
 
 type Notifications = {
 	eventA: {a: 1, b: '2'};
