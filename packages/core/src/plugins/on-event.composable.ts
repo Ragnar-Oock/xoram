@@ -66,6 +66,8 @@ export type MergedEvents<
 	events extends (keyof notifications)[],
 > = UnionToIntersection<notifications[events[number]]>
 
+export type EventCleanup = () => void;
+
 const onEventOutsidePlugin = 'onEvent was invoked outside of a plugin setup function or hook.';
 
 /**
@@ -93,7 +95,7 @@ export function onEvent<
 	target: EventTarget<notifications>,
 	on: events,
 	handler: Handler<MergedEvents<notifications, events>>,
-): void;
+): EventCleanup;
 
 /**
  * Listen to all the events of a source at once and cleanly stop to listen when the plugin is disposed off.
@@ -122,7 +124,7 @@ export function onEvent<
 	target: EventTarget<notifications>,
 	on: '*',
 	handler: WildcardHandler<notifications>
-): void;
+): EventCleanup;
 
 /**
  * Listen to a specific event of a source and cleanly stop to listen when the plugin is disposed of.
@@ -149,7 +151,7 @@ export function onEvent<
 	target: EventTarget<notifications>,
 	on: event,
 	handler: Handler<notifications[event]>
-): void;
+): EventCleanup;
 
 /**
  * Use one of the overrides
@@ -160,21 +162,23 @@ export function onEvent<
  * @param handler the function to invoke when the event occurs
  * @internal
  */
-export function onEvent<notifications extends Notifications>(target: EventTarget<notifications>, on: string|string[], handler: (...args: never[]) => void): void {
-	const plugin = getActivePlugin();
+export function onEvent<notifications extends Notifications>(target: EventTarget<notifications>, on: string|string[], handler: (...args: never[]) => void): EventCleanup {
+	const plugin = getActivePlugin(),
+		events = (Array.isArray(on) ? on : [on]);
+	let safeHandler: (...args: never[]) => void,
+		off = () => {};
 	if (!plugin) {
 		if (import.meta.env.DEV) {
 			warn(new Error(onEventOutsidePlugin));
 		}
-		return;
+		return off;
 	}
 
 
-	let safeHandler: (...args: never[]) => void;
-	const events = (Array.isArray(on) ? on : [on]);
 
 	/**
 	 * @param app the application to use as context
+	 * @returns a clean up function to remove the added listeners
 	 */
 	const subscribe = (app: Application): void => {
 		const resolvedTarget = resolveSource(target, app);
@@ -189,6 +193,11 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 
 		// @ts-expect-error event and handler 's type are resolved by the function overloads above
 		events.forEach(event => resolvedTarget.on(event, safeHandler));
+
+		off = () => {
+			// @ts-expect-error event and handler 's type are resolved by the function overloads above
+			events.forEach(event => resolvedTarget.off(event, safeHandler))
+		}
 	};
 
 	if (plugin.phase === 'setup') {
@@ -201,15 +210,15 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 				warn(new Error(onEventOutsidePlugin));
 			}
 
-			return;
+			return off;
 		}
 
 		subscribe(app);
 	}
 
-	plugin.hooks.on(beforeDestroy, (app) => {
-		const resolvedTarget = resolveSource(target, app);
-		// @ts-expect-error event and handler 's type are resolved by the function overloads above
-		events.forEach(event => resolvedTarget.off(event, safeHandler))
+	plugin.hooks.on(beforeDestroy, () => {
+		off();
 	})
+
+	return off;
 }
