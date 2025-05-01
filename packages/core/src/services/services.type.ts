@@ -12,8 +12,8 @@ export interface ServiceNotifications {
 	[x: string | symbol]: unknown;
 }
 
-export interface Service<notifications extends ServiceNotifications = ServiceNotifications> {
-	emitter: Emitter<notifications>
+export interface Service<notifications extends Record<string, unknown> = Record<string, unknown>> {
+	emitter: Emitter<notifications & ServiceNotifications>
 }
 
 export type ApplicationServiceHooks = {
