@@ -165,14 +165,13 @@ export function onEvent<
 export function onEvent<notifications extends Notifications>(target: EventTarget<notifications>, on: string|string[], handler: (...args: never[]) => void): EventCleanup {
 	const plugin = getActivePlugin(),
 		events = (Array.isArray(on) ? on : [on]);
-	let safeHandler: (...args: never[]) => void,
-		off = () => {};
-	if (!plugin) {
-		if (import.meta.env.DEV) {
-			warn(new Error(onEventOutsidePlugin));
+		let off = () => {};
+		if (!plugin) {
+			if (import.meta.env.DEV) {
+				warn(new Error(onEventOutsidePlugin));
+			}
+			return off;
 		}
-		return off;
-	}
 
 
 
@@ -182,21 +181,13 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 	 */
 	const subscribe = (app: Application): void => {
 		const resolvedTarget = resolveSource(target, app);
-		safeHandler = (...args: never[]) => {
-			try {
-				handler(...args);
-			}
-			catch (error) {
-				handleError(error, plugin, app, 'onEvent')
-			}
-		}
 
 		// @ts-expect-error event and handler 's type are resolved by the function overloads above
-		events.forEach(event => resolvedTarget.on(event, safeHandler));
+		events.forEach(event => resolvedTarget.on(event, handler));
 
 		off = () => {
 			// @ts-expect-error event and handler 's type are resolved by the function overloads above
-			events.forEach(event => resolvedTarget.off(event, safeHandler))
+			events.forEach(event => resolvedTarget.off(event, handler))
 		}
 	};
 
@@ -210,7 +201,7 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 				warn(new Error(onEventOutsidePlugin));
 			}
 
-			return off;
+			return () => off();
 		}
 
 		subscribe(app);
@@ -220,5 +211,5 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 		off();
 	})
 
-	return off;
+	return () => off();
 }

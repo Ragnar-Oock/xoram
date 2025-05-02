@@ -27,3 +27,18 @@ export function handleError(
 	}
 	app?.options.onError?.(error);
 }
+
+export type SafeFunction<fn extends ((...args: unknown[]) => void)> = fn & { _safe: fn };
+export type MaybeSafeFunction<fn extends ((...args: unknown[]) => void)> = fn & { _safe?: fn }
+
+
+export const makeSafe = <fn extends ((...args: unknown[]) => void)>(func: MaybeSafeFunction<fn>): SafeFunction<fn> =>
+	func
+	&& (func._safe ??= (((...args) => {
+		try {
+			return func(...args);
+		}
+		catch (error) {
+			handleError(error as Error | string);
+		}
+	}) as fn)) as SafeFunction<fn>;
