@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "Zoram Documentation",
+  title: "Zoram",
   description: "Zoram - A lightweight plugin framework",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
@@ -38,8 +38,10 @@ export default defineConfig({
         {
           text: 'Plugins in-depth',
           items: [
+	          { text: 'Handling dependencies', link: '/guide/plugins-in-depth/handling-dependencies'},
             { text: 'Life Cycle', link: '/guide/plugins-in-depth/life-cycle'},
             { text: 'Registering services', link: '/guide/plugins-in-depth/adding-services' },
+            { text: 'Listening to events', link: '/guide/plugins-in-depth/listening-to-events' },
             { text: 'Application events', link: '/guide/plugins-in-depth/application-events' },
           ]
         },
@@ -55,7 +57,8 @@ export default defineConfig({
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/Ragnar-Oock/zoram' }
-    ]
+    ],
+	  outline: 'deep'
   },
   srcDir: 'src',
 	outDir: 'dist'
