@@ -1,5 +1,7 @@
+import { getActiveApp } from './application/active-app';
 import type { Application, ApplicationHooks } from './application/application.type';
 import type { DefinedPlugin, PluginHooks } from './plugins';
+import { getActivePlugin } from './plugins/active-plugin';
 import { warn } from './warn.helper';
 
 
@@ -15,9 +17,9 @@ export type ErrorContext = keyof PluginHooks | keyof ApplicationHooks | 'onEvent
  */
 export function handleError(
 	error: string | Error,
-	plugin?: DefinedPlugin | undefined,
-	app?: Application | undefined,
-	context: ErrorContext = 'unknown'
+	plugin: DefinedPlugin | undefined = getActivePlugin(),
+	app: Application | undefined = getActiveApp(),
+	context: ErrorContext = 'unknown',
 ): void {
 	if (import.meta.env.DEV) {
 		warn(error, {plugin, app, context});
