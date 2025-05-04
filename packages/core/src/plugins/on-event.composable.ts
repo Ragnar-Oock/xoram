@@ -1,21 +1,34 @@
 import type { Emitter, EventType, Handler, WildcardHandler } from 'mitt';
 import { getActiveApp } from '../application/active-app';
-import type { Application, ServiceCollection } from '../application/application.type';
-import { handleError } from '../error-handling';
-import type { Service } from '../services/services.type';
+import type { Application } from '../application/application.type';
+import type { Service, ServiceId } from '../services/services.type';
 import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
 import { beforeDestroy, created } from './plugin-hooks.type';
 
 export type Notifications = Record<EventType, unknown>;
-export type EventSource<notifications extends Notifications> = Emitter<notifications> | { emitter: Emitter<notifications> };
-export type EventSourceGetter<notifications extends Notifications> = ((application: Application) => EventSource<notifications>);
-export type EventTarget<notifications extends Notifications> = EventSource<notifications> | EventSourceGetter<notifications> | keyof ServiceCollection
+/**
+ * An object holding an emitter, usually an application instance or service instance
+ */
+export type EventSourceContainer<notifications extends Notifications> = { emitter: Emitter<notifications> };
+/**
+ * A direct emitter.
+ */
+export type EventSource<notifications extends Notifications> = Emitter<notifications>;
+/**
+ * A function returning a direct emitter or an object holding an emitter. The application passed as parameter is the
+ * current application context `onEvent` is called as part of.
+ */
+export type EventSourceGetter<notifications extends Notifications> = ((application: Application) => (EventSource<notifications> | EventSourceContainer<notifications>));
+
+export type EventTarget<notifications extends Notifications> = EventSource<notifications> | EventSourceContainer<notifications> | EventSourceGetter<notifications> | ServiceId
 
 function isMitt<notifications extends Notifications>(candidate: unknown): candidate is Emitter<notifications> {
 	// @ts-expect-error  all we care about here is that a `on` method exists on candidate
 	return typeof candidate?.on === 'function';
 }
+// null object emitter as used by onEvent
+const nullEmitter = <notifications extends Notifications>() => ({on: () => {}, off: () => {}} as unknown as Emitter<notifications>);
 
 /**
  * Tries to convert an {@link EventTarget} as passed to {@link onEvent `onEvent`} into a usable emitter.
@@ -26,23 +39,29 @@ function resolveSource<notifications extends Notifications>(
 	target: EventTarget<notifications>,
 	app: Application
 ): Emitter<notifications> {
+	let source;
 	switch (typeof target) {
 		case 'string':
 		case 'symbol': {
 			// service id syntax
-			const source = app.services[target] as Service | undefined;
-			if (!source) {
-				// find a better way to deal with this
-				throw new Error(`onEvent was invoked with an incorrect service id "${String(target)}".`)
+			source = app.services[target] as Service | undefined;
+
+			if (source) {
+				return source?.emitter as unknown as Emitter<notifications>
 			}
-			return source.emitter as unknown as Emitter<notifications>;
+			else {
+				if (import.meta.env.DEV) {
+					warn(new Error(`onEvent was invoked with an incorrect service id "${String(target)}".`));
+				}
+				return nullEmitter()
+			}
 		}
 		case 'function': {
 			// target getter syntax
-			const eventSource = target(app);
-			return isMitt<notifications>(eventSource)
-				? eventSource
-				: eventSource.emitter;
+			source = target(app);
+			return isMitt<notifications>(source)
+				? source
+				: source.emitter;
 		}
 		case 'object': {
 			// direct target syntax
@@ -52,7 +71,10 @@ function resolveSource<notifications extends Notifications>(
 		}
 
 		default: {
-			throw new TypeError(`incorrect target provided to onEvent, typeof target === ${typeof target}, expected string, symbol, function or object`);
+			if (import.meta.env.DEV) {
+				warn(new TypeError(`incorrect target provided to onEvent, typeof target === ${typeof target}, expected string, symbol, function or object`));
+			}
+			return nullEmitter();
 		}
 	}
 }
@@ -213,3 +235,7 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 
 	return () => off();
 }
+
+// TODO : log a warning when passing 0 event name with the multi event overload
+// TODO : see if an optional parameter would be treeshaken if unused and add an option to ignore this warning if so
+// TODO : log a warning when passing a single event name with the multi event overload
