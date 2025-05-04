@@ -45,157 +45,156 @@ function checkWildcardEvent<notifications extends Notifications>(emitter: Emitte
 
 describe('onEvent', () => {
 	let emitter: Emitter<Notifications>;
-	let spy: Mock;
+	let handler: Mock;
 	let serviceFactory: () => Service<Notifications>;
 
 	beforeEach(() => {
 		emitter = mitt();
-		spy = vi.fn();
+		handler = vi.fn();
 		serviceFactory = defineService<Notifications>()
 	});
 
-	describe('valid calls', () => {
+	describe('valid event registrations', () => {
 		// --- Direct emitter ---
 		it('should handle wildcard event listener with direct emitter', () => {
 			createApp([definePlugin(() => {
-				onEvent(emitter, '*', spy);
+				onEvent(emitter, '*', handler);
 			})]);
 
-			checkWildcardEvent(emitter, spy);
+			checkWildcardEvent(emitter, handler);
 		});
 
 		it('should handle single event listener with direct emitter', () => {
 			createApp([definePlugin(() => {
-				onEvent(emitter, 'eventA', spy);
+				onEvent(emitter, 'eventA', handler);
 			})]);
 
-			checkSingleEvent(emitter, spy);
+			checkSingleEvent(emitter, handler);
 		});
 
 		it('should handle multiple event listeners with direct emitter', () => {
 			createApp([definePlugin(() => {
-				onEvent(emitter, ['eventA', 'eventB'], spy);
+				onEvent(emitter, ['eventA', 'eventB'], handler);
 			})]);
 
-			checkMultiEvent(emitter, spy);
+			checkMultiEvent(emitter, handler);
 		});
 
 		// --- { emitter } object ---
 		it('should handle wildcard event listener with emitter wrapped in object', () => {
 			createApp([definePlugin(() => {
-				onEvent({ emitter }, '*', spy);
+				onEvent({ emitter }, '*', handler);
 			})]);
 
-			checkWildcardEvent(emitter, spy);
+			checkWildcardEvent(emitter, handler);
 		});
 
 		it('should handle single event listener with emitter wrapped in object', () => {
 			createApp([definePlugin(() => {
-				onEvent({ emitter }, 'eventA', spy);
+				onEvent({ emitter }, 'eventA', handler);
 			})]);
 
-			checkSingleEvent(emitter, spy);
+			checkSingleEvent(emitter, handler);
 		});
 
 		it('should handle multiple event listeners with emitter wrapped in object', () => {
 			createApp([definePlugin(() => {
-				onEvent({ emitter }, ['eventA', 'eventB'], spy);
+				onEvent({ emitter }, ['eventA', 'eventB'], handler);
 			})]);
 
-			checkMultiEvent(emitter, spy);
+			checkMultiEvent(emitter, handler);
 		});
 
 		// --- Getter: app => app.services.service.emitter ---
 		it('should handle wildcard event listener with direct emitter getter', () => {
 			const app = createApp([definePlugin(() => {
 				addService('service', serviceFactory);
-				onEvent(app => app.services.service.emitter, '*', spy);
+				onEvent(app => app.services.service.emitter, '*', handler);
 			})]);
-			checkWildcardEvent(app.services.service.emitter, spy);
+			checkWildcardEvent(app.services.service.emitter, handler);
 		});
 
 		it('should handle single event listener with direct emitter getter', () => {
 			const app = createApp([definePlugin(() => {
 				addService('service', serviceFactory);
-				onEvent(app => app.services.service.emitter, 'eventA', spy);
+				onEvent(app => app.services.service.emitter, 'eventA', handler);
 			})]);
 
-			checkSingleEvent(app.services.service.emitter, spy);
+			checkSingleEvent(app.services.service.emitter, handler);
 		});
 
 		it('should handle multiple event listeners with direct emitter getter', () => {
 			const app = createApp([definePlugin(() => {
 				addService('service', serviceFactory);
 
-				onEvent(app => app.services.service.emitter, ['eventA', 'eventB'], spy);
+				onEvent(app => app.services.service.emitter, ['eventA', 'eventB'], handler);
 			})]);
 
-			checkMultiEvent(app.services.service.emitter, spy);
+			checkMultiEvent(app.services.service.emitter, handler);
 		});
 
 		// --- Getter: app => app.services.service (returns object with emitter) ---
 		it('should handle wildcard event listener with service object getter', () => {
 			const app = createApp([definePlugin(() => {
 				addService('service', serviceFactory);
-				onEvent(app => app.services.service, '*', spy);
+				onEvent(app => app.services.service, '*', handler);
 			})]);
 
-			checkWildcardEvent(app.services.service.emitter, spy);
+			checkWildcardEvent(app.services.service.emitter, handler);
 		});
 
 		it('should handle single event listener with service object getter', () => {
 			const app = createApp([definePlugin(() => {
 				addService('service', serviceFactory);
-				onEvent(app => app.services.service, 'eventA', spy);
+				onEvent(app => app.services.service, 'eventA', handler);
 			})]);
 
-			checkSingleEvent(app.services.service.emitter, spy);
+			checkSingleEvent(app.services.service.emitter, handler);
 		});
 
 		it('should handle multiple event listeners with service object getter', () => {
 			const app = createApp([definePlugin(() => {
 				addService('service', serviceFactory);
-				onEvent(app => app.services.service, ['eventA', 'eventB'], spy);
+				onEvent(app => app.services.service, ['eventA', 'eventB'], handler);
 			})]);
 
-			checkMultiEvent(app.services.service.emitter, spy);
+			checkMultiEvent(app.services.service.emitter, handler);
 		});
 
 		// --- Service ID string ---
 		it('should handle wildcard event listener with service ID string', () => {
-			onEvent('service', '*', spy);
 			const app = createApp([definePlugin(() => {
 				addService('service', serviceFactory);
-				onEvent('service', '*', spy);
+				onEvent('service', '*', handler);
 			})]);
 
-			checkWildcardEvent(app.services.service.emitter, spy);
+			checkWildcardEvent(app.services.service.emitter, handler);
 		});
 
 		it('should handle single event listener with service ID string', () => {
-			onEvent('service', 'eventA', spy);
+			onEvent('service', 'eventA', handler);
 			const app = createApp([definePlugin(() => {
 				addService('service', serviceFactory);
-				onEvent('service', 'eventA', spy);
+				onEvent('service', 'eventA', handler);
 			})]);
 
-			checkSingleEvent(app.services.service.emitter, spy);
+			checkSingleEvent(app.services.service.emitter, handler);
 		});
 
 		it('should handle multiple event listeners with service ID string', () => {
 			const app = createApp([definePlugin(() => {
 				addService('service', serviceFactory);
-				onEvent('service', ['eventA', 'eventB'], spy);
+				onEvent('service', ['eventA', 'eventB'], handler);
 			})]);
 
-			checkMultiEvent(app.services.service.emitter, spy);
+			checkMultiEvent(app.services.service.emitter, handler);
 		});
 	});
 	describe('handler invocation', () => {
 		it('should not modify the this of the handler', () => {
 			const bob = {
 				handler() {
-					spy(this);
+					handler(this);
 				}
 			}
 
@@ -205,31 +204,31 @@ describe('onEvent', () => {
 
 			emitter.emit('eventA', eventA);
 
-			expect(spy).toHaveBeenCalledWith(bob);
+			expect(handler).toHaveBeenCalledWith(bob);
 		});
 	});
 })
 
 /**
-onEvent(emitter, '*', spy);
-onEvent(emitter, 'eventA', spy);
-onEvent(emitter, ['eventA', 'eventB'], spy);
+onEvent(emitter, '*', handler);
+onEvent(emitter, 'eventA', handler);
+onEvent(emitter, ['eventA', 'eventB'], handler);
 
-onEvent({emitter}, '*', spy);
-onEvent({emitter}, 'eventA', spy);
-onEvent({emitter}, ['eventA', 'eventB'], spy);
+onEvent({emitter}, '*', handler);
+onEvent({emitter}, 'eventA', handler);
+onEvent({emitter}, ['eventA', 'eventB'], handler);
 
-onEvent(app => app.services.service.emitter, '*', spy);
-onEvent(app => app.services.service.emitter, 'eventA', spy);
-onEvent(app => app.services.service.emitter, ['eventA', 'eventB'], spy);
+onEvent(app => app.services.service.emitter, '*', handler);
+onEvent(app => app.services.service.emitter, 'eventA', handler);
+onEvent(app => app.services.service.emitter, ['eventA', 'eventB'], handler);
 
-onEvent(app => app.services.service, '*', spy);
-onEvent(app => app.services.service, 'eventA', spy);
-onEvent(app => app.services.service, ['eventA', 'eventB'], spy);
+onEvent(app => app.services.service, '*', handler);
+onEvent(app => app.services.service, 'eventA', handler);
+onEvent(app => app.services.service, ['eventA', 'eventB'], handler);
 
-onEvent('service', '*', spy);
-onEvent('service', 'eventA', spy);
-onEvent('service', ['eventA', 'eventB'], spy);
+onEvent('service', '*', handler);
+onEvent('service', 'eventA', handler);
+onEvent('service', ['eventA', 'eventB'], handler);
  */
 
 /**
