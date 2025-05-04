@@ -61,5 +61,6 @@ export default defineConfig({
 	  outline: 'deep'
   },
   srcDir: 'src',
-	outDir: 'dist'
+	outDir: 'dist',
+	base: '/zoram/'
 })
