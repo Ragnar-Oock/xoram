@@ -11,8 +11,8 @@ either via the initial config or at a latter date via `addPlugin`.
 
 From here you will be able to :
 - register listeners to other hooks
-- register services
-- declare your dependency on other plugins
+- register services with [`addService`](./adding-services)
+- declare your dependency on other plugins with [`dependsOn`](./handling-dependencies)
 - interact with native APIs or external libraries
 
 and much more...
