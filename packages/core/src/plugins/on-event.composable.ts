@@ -4,6 +4,7 @@ import type { Application } from '../application/application.type';
 import type { Service, ServiceId } from '../services/services.type';
 import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
+import { toArray } from './array.helper';
 import { beforeDestroy, created } from './plugin-hooks.type';
 
 export type Notifications = Record<EventType, unknown>;
@@ -21,14 +22,23 @@ export type EventSource<notifications extends Notifications> = Emitter<notificat
  */
 export type EventSourceGetter<notifications extends Notifications> = ((application: Application) => (EventSource<notifications> | EventSourceContainer<notifications>));
 
-export type EventTarget<notifications extends Notifications> = EventSource<notifications> | EventSourceContainer<notifications> | EventSourceGetter<notifications> | ServiceId
+export type EventTarget<notifications extends Notifications> =
+	EventSource<notifications>
+	| EventSourceContainer<notifications>
+	| EventSourceGetter<notifications>
+	| ServiceId
 
 function isMitt<notifications extends Notifications>(candidate: unknown): candidate is Emitter<notifications> {
 	// @ts-expect-error  all we care about here is that a `on` method exists on candidate
 	return typeof candidate?.on === 'function';
 }
+
 // null object emitter as used by onEvent
-const nullEmitter = <notifications extends Notifications>() => ({on: () => {}, off: () => {}} as unknown as Emitter<notifications>);
+const nullEmitter = <notifications extends Notifications>() => ({
+	on: () => {
+	}, off: () => {
+	},
+} as unknown as Emitter<notifications>);
 
 /**
  * Tries to convert an {@link EventTarget} as passed to {@link onEvent `onEvent`} into a usable emitter.
@@ -37,7 +47,7 @@ const nullEmitter = <notifications extends Notifications>() => ({on: () => {}, o
  */
 function resolveSource<notifications extends Notifications>(
 	target: EventTarget<notifications>,
-	app: Application
+	app: Application,
 ): Emitter<notifications> {
 	let source;
 	switch (typeof target) {
@@ -47,13 +57,13 @@ function resolveSource<notifications extends Notifications>(
 			source = app.services[target] as Service | undefined;
 
 			if (source) {
-				return source?.emitter as unknown as Emitter<notifications>
+				return source?.emitter as unknown as Emitter<notifications>;
 			}
 			else {
 				if (import.meta.env.DEV) {
-					warn(new Error(`onEvent was invoked with an incorrect service id "${String(target)}".`));
+					warn(new Error(`onEvent was invoked with an incorrect service id "${ String(target) }".`));
 				}
-				return nullEmitter()
+				return nullEmitter();
 			}
 		}
 		case 'function': {
@@ -72,7 +82,7 @@ function resolveSource<notifications extends Notifications>(
 
 		default: {
 			if (import.meta.env.DEV) {
-				warn(new TypeError(`incorrect target provided to onEvent, typeof target === ${typeof target}, expected string, symbol, function or object`));
+				warn(new TypeError(`incorrect target provided to onEvent, typeof target === ${ typeof target }, expected string, symbol, function or object`));
 			}
 			return nullEmitter();
 		}
@@ -81,7 +91,7 @@ function resolveSource<notifications extends Notifications>(
 
 type UnionToIntersection<U> =
 // oxlint-disable-next-line no-explicit-any
-	(U extends any ? (x: U)=>void : never) extends ((x: infer I)=>void) ? I : never
+	(U extends any ? (x: U) => void : never) extends ((x: infer I) => void) ? I : never
 
 export type MergedEvents<
 	notifications extends Notifications,
@@ -145,7 +155,7 @@ export function onEvent<
 >(
 	target: EventTarget<notifications>,
 	on: '*',
-	handler: WildcardHandler<notifications>
+	handler: WildcardHandler<notifications>,
 ): EventCleanup;
 
 /**
@@ -172,7 +182,7 @@ export function onEvent<
 >(
 	target: EventTarget<notifications>,
 	on: event,
-	handler: Handler<notifications[event]>
+	handler: Handler<notifications[event]>,
 ): EventCleanup;
 
 /**
@@ -184,17 +194,17 @@ export function onEvent<
  * @param handler the function to invoke when the event occurs
  * @internal
  */
-export function onEvent<notifications extends Notifications>(target: EventTarget<notifications>, on: string|string[], handler: (...args: never[]) => void): EventCleanup {
+export function onEvent<notifications extends Notifications>(target: EventTarget<notifications>, on: string | string[], handler: (...args: never[]) => void): EventCleanup {
 	const plugin = getActivePlugin(),
-		events = (Array.isArray(on) ? on : [on]);
-		let off = () => {};
-		if (!plugin) {
-			if (import.meta.env.DEV) {
-				warn(new Error(onEventOutsidePlugin));
-			}
-			return off;
+		events = toArray(on);
+	let off = () => {
+	};
+	if (!plugin) {
+		if (import.meta.env.DEV) {
+			warn(new Error(onEventOutsidePlugin));
 		}
-
+		return off;
+	}
 
 
 	/**
@@ -209,12 +219,12 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 
 		off = () => {
 			// @ts-expect-error event and handler 's type are resolved by the function overloads above
-			events.forEach(event => resolvedTarget.off(event, handler))
-		}
+			events.forEach(event => resolvedTarget.off(event, handler));
+		};
 	};
 
 	if (plugin.phase === 'setup') {
-		plugin.hooks.on(created, subscribe)
+		plugin.hooks.on(created, subscribe);
 	}
 	else {
 		const app = getActiveApp();
@@ -231,7 +241,7 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 
 	plugin.hooks.on(beforeDestroy, () => {
 		off();
-	})
+	});
 
 	return () => off();
 }
