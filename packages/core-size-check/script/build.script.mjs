@@ -1,97 +1,76 @@
-import {mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
-import {spawn} from 'node:child_process';
-import {brotliCompressSync, deflateSync, gzipSync} from 'node:zlib'
+import {mkdirSync, readdirSync, rmSync, writeFileSync} from 'node:fs';
+import {brotliCompressSync, deflateSync, gzipSync} from 'node:zlib';
+import {normalize, parse} from 'node:path';
+import {build} from 'vite';
 
 // clear dist folder
-rmSync('./dist', { recursive: true });
+rmSync('./dist', {recursive: true});
 mkdirSync('./dist');
 
-await exec('vite', [`build`], { stdio: 'inherit' });
+// get build cases
+const cases = readdirSync(normalize('./src'));
 
-const built = readFileSync('./dist/core-size-check.iife.js');
+let fullReportJSON = {},
+    fullReportText = '';
 
+for (const buildCase of cases) {
+    console.log(`building : ${buildCase}`);
 
-const raw = built.length
-const gzip = gzipSync(built).length
-const brotli = brotliCompressSync(built).length
-const zstd = deflateSync(built).length
+    const artifact = await build({
+        base: `/${buildCase}/`,
+        build: {
+            outDir: `./dist/${buildCase}/`,
+            target: 'es2020',
+            rollupOptions: {
+                input: {
+                    main: `./src/${buildCase}/index.js`,
+                },
+            },
+            minify: 'terser', // terser gives better compression results at the cost of build time
+            reportCompressedSize: false, // we will compile that ourself just below
+            // write: false, // don't write the artefact to disk as we don't need it to persist
+        },
+    });
 
+    const {raw, gzip, zstd, brotli} = artifact.output
+        .map(({code}) => Buffer.from(code, 'utf-8'))
+        .map(buffer => ({
+            raw: buffer.length,
+            gzip: gzipSync(buffer).length,
+            brotli: brotliCompressSync(buffer).length,
+            zstd: deflateSync(buffer).length,
+        }))
+        .reduce((acc, cur) => ({
+                raw: acc.raw + cur.raw,
+                zstd: acc.zstd + cur.zstd,
+                gzip: acc.gzip + cur.gzip,
+                brotli: acc.brotli + cur.brotli,
+            }),
+            {raw: 0, zstd: 0, gzip: 0, brotli: 0});
 
+    const prettyName = parse(buildCase).name;
+    fullReportJSON[prettyName] = {raw, gzip, brotli, zstd};
+    fullReportText = `${fullReportText}
+-----${prettyName}-----
 
-const reportJSON = {
-    raw: [`${raw.toString(10)}B`, `${(raw / 1024).toFixed(2)}KiB`, `${(raw / 1000).toFixed(2)}KB`],
-    gzip: [`${gzip.toString(10)}B`, `${(gzip / 1024).toFixed(2)}KiB`, `${(gzip / 1000).toFixed(2)}KB`],
-    brotli: [`${brotli.toString(10)}B`, `${(brotli / 1024).toFixed(2)}KiB`, `${(brotli / 1000).toFixed(2)}KB`],
-    zstd: [`${zstd.toString(10)}B`, `${(zstd / 1024).toFixed(2)}KiB`, `${(zstd / 1000).toFixed(2)}KB`],
+@zoram/core build size report : ${prettyName}
+raw    : ${prettySize(raw, 7).join(' | ')}
+gzip   : ${prettySize(gzip, 7).join(' | ')}
+brotli : ${prettySize(brotli, 7).join(' | ')}
+zstd   : ${prettySize(zstd, 7).join(' | ')}
+
+`;
 }
 
-const report = `
-@zoram/core minimal build size report
-raw   : ${reportJSON.raw.join(' | ')}
-gzip  : ${reportJSON.gzip.join(' | ')}
-brotli: ${reportJSON.brotli.join(' | ')}
-zstd  : ${reportJSON.zstd.join(' | ')}
-`;
+console.log(fullReportText);
 
-console.log(report);
+writeFileSync('./dist/report.json', JSON.stringify(fullReportJSON, null, 2));
+writeFileSync('./dist/report.txt', fullReportText);
 
-writeFileSync('./dist/report.json', JSON.stringify(reportJSON));
-
-/**
- * run command in sub process, stolen from Vue's build scripts
- *
- * @param {string} command
- * @param {string[]} args
- * @param {object} [options]
- */
-export async function exec(command, args, options) {
-    return new Promise((resolve, reject) => {
-        const _process = spawn(command, args, {
-            stdio: [
-                'ignore', // stdin
-                'pipe', // stdout
-                'pipe', // stderr
-            ],
-            ...options,
-            shell: process.platform === 'win32',
-        })
-
-        /**
-         * @type {Buffer[]}
-         */
-        const stderrChunks = []
-        /**
-         * @type {Buffer[]}
-         */
-        const stdoutChunks = []
-
-        _process.stderr?.on('data', chunk => {
-            stderrChunks.push(chunk)
-        })
-
-        _process.stdout?.on('data', chunk => {
-            stdoutChunks.push(chunk)
-        })
-
-        _process.on('error', error => {
-            reject(error)
-        })
-
-        _process.on('exit', code => {
-            const ok = code === 0
-            const stderr = Buffer.concat(stderrChunks).toString().trim()
-            const stdout = Buffer.concat(stdoutChunks).toString().trim()
-
-            if (ok) {
-                const result = {ok, code, stderr, stdout}
-                resolve(result)
-            } else {
-                reject(
-                    new Error(
-                        `Failed to execute command: ${command} ${args.join(' ')}: ${stderr}`,
-                    ),
-                )
-            }
-        })
-    })
+function prettySize(size, length = 0) {
+    return [
+        `${size.toString(10).padStart(length, ' ')} B`,
+        `${(size / 1024).toFixed(2).padStart(length, ' ')} KiB`,
+        `${(size / 1000).toFixed(2).padStart(length, ' ')} KB`,
+    ];
 }
