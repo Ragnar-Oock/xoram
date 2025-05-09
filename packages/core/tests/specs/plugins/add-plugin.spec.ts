@@ -299,6 +299,20 @@ describe('addPlugins', () => {
 		// check
 		expect(spy).toHaveBeenCalledExactlyOnceWith({app, plugin: app[pluginSymbol].get(plugin.id)});
 	});
+
+	describe('edge cases', () => {
+		it('should warn when a non plugin is passed in', ({autoDestroy}) => {
+			const app = autoDestroy(createApp([]));
+			const notAPlugin = vi.fn();
+
+
+			expect(() => addPlugins(
+				// @ts-expect-error we are checking that this fails
+				[notAPlugin],
+				app,
+			)).toThrow(new Error(`Array items passed to addPlugins() should all be plugin definitions.`));
+		});
+	});
 });
 
 describe('addPlugin', () => {

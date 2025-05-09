@@ -1,6 +1,7 @@
 import { getActiveApp } from '../application/active-app';
 import type { Application } from '../application/application.type';
 import { pluginSymbol } from '../application/application.type';
+import { warn } from '../warn.helper';
 import type { PluginDefinition } from './define-plugin';
 import { playBeforeCreateHook, playCreatedHook } from './play-plugin-hook';
 import { sortPluginsByDependencies } from './sort';
@@ -41,7 +42,10 @@ export function addPlugins(definePlugins: PluginDefinition[], app = getActiveApp
 	const [sorted, aborted] = sortPluginsByDependencies(plugins, pluginCollection);
 
 	if (aborted) {
-		app.emitter.emit('failedPluginRegistration', {app, reason: aborted})
+		if (import.meta.env.DEV) {
+			warn(aborted);
+		}
+		app.emitter.emit('failedPluginRegistration', {app, reason: aborted});
 		return;
 	}
 
