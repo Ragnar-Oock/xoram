@@ -8,26 +8,30 @@ describe('application', () => {
 
 	afterEach(() => {
 		consoleWarn.mockReset();
-	})
+	});
 
-	it.todo('should instantiate with warning with not plugin', ({task, autoDestroy}) => {
-		autoDestroy(createApp([], {id: task.id}));
+	it.todo('should instantiate with warning with not plugin', ({ task, autoDestroy }) => {
+		autoDestroy(createApp([], { id: task.id }));
 
-		expect(consoleWarn).toHaveBeenCalledWith(`Application "${task.id}" initialized without plugin, did you forget to provide them ?`)
-	})
+		expect(consoleWarn)
+			.toHaveBeenCalledWith(`Application "${ task.id }" initialized without plugin, did you forget to provide them ?`);
+	});
 
-	it('should instantiate a valid application', ({task, autoDestroy}) => {
-		const application = autoDestroy(createApp([], {id: task.id}));
+	it('should instantiate a valid application', ({ task, autoDestroy }) => {
+		const application = autoDestroy(createApp([], { id: task.id }));
 
 		expect(application).toHaveProperty('id', task.id);
 		expect(application).toHaveProperty('services', {});
 		expect(application).toHaveProperty('emitter'); // check for emitter interface ?
 	});
 
-	it.fails('should throw if multiple plugins have the same id', ({task, autoDestroy}) => {
+	it.fails('should throw if multiple plugins have the same id', ({ task, autoDestroy }) => {
 
-		expect(() => autoDestroy(createApp([personPlugin, personPlugin],{id: task.id })))
-			.toThrowError(new Error('Application creation failed', {cause: new Error(`Plugin with id "${String(personPlugin.id)}" registered multiple times`)}))
+		expect(() => autoDestroy(createApp([ personPlugin, personPlugin ], { id: task.id })))
+			.toThrowError(new Error(
+				'Application creation failed',
+				{ cause: new Error(`Plugin with id "${ String(personPlugin.id) }" registered multiple times`) },
+			));
 	});
 
 	describe('plugin initialization order', () => {
@@ -36,14 +40,14 @@ describe('application', () => {
 
 			setupSpy('dependent');
 
-			onCreated(()=> {
+			onCreated(() => {
 				onCreatedSpy('dependent');
-			})
+			});
 		});
 		const dependencyPlugin = definePlugin('dependency', () => {
 			setupSpy('dependency');
 
-			onCreated(()=> {
+			onCreated(() => {
 				onCreatedSpy('dependency');
 			});
 		});
@@ -53,14 +57,14 @@ describe('application', () => {
 		afterEach(() => {
 			setupSpy.mockReset();
 			onCreatedSpy.mockReset();
-		})
+		});
 
-		it('should setup plugins in the provided order (in order)', ({task, autoDestroy}) => {
+		it('should setup plugins in the provided order (in order)', ({ task, autoDestroy }) => {
 			autoDestroy(
 				createApp([
 					dependencyPlugin,
 					dependentPlugin,
-				], { id: task.id })
+				], { id: task.id }),
 			);
 
 			// oxlint-disable no-magic-numbers
@@ -70,12 +74,12 @@ describe('application', () => {
 			// oxlint-enable no-magic-numbers
 		});
 
-		it('should setup plugins in the provided order (out of order)', ({task, autoDestroy}) => {
+		it('should setup plugins in the provided order (out of order)', ({ task, autoDestroy }) => {
 			autoDestroy(
 				createApp([
 					dependentPlugin,
 					dependencyPlugin,
-				], { id: task.id })
+				], { id: task.id }),
 			);
 
 			// oxlint-disable no-magic-numbers
@@ -86,12 +90,12 @@ describe('application', () => {
 
 		});
 
-		it('should instantiate dependent plugins after their dependency (initially ordered)', ({task, autoDestroy}) => {
+		it('should instantiate dependent plugins after their dependency (initially ordered)', ({ task, autoDestroy }) => {
 			autoDestroy(
 				createApp([
 					dependencyPlugin,
 					dependentPlugin,
-				], { id: task.id })
+				], { id: task.id }),
 			);
 
 			// oxlint-disable no-magic-numbers
@@ -101,19 +105,22 @@ describe('application', () => {
 			// oxlint-enable no-magic-numbers
 		});
 
-		it('should instantiate dependent plugins after their dependency (initially out of order)', ({task, autoDestroy}) => {
-			autoDestroy(
-				createApp([
-					dependentPlugin,
-					dependencyPlugin,
-				], { id: task.id })
-			);
+		it(
+			'should instantiate dependent plugins after their dependency (initially out of order)',
+			({ task, autoDestroy }) => {
+				autoDestroy(
+					createApp([
+						dependentPlugin,
+						dependencyPlugin,
+					], { id: task.id }),
+				);
 
-			// oxlint-disable no-magic-numbers
-			expect(onCreatedSpy).toHaveBeenCalledTimes(2);
-			expect(onCreatedSpy).toHaveBeenNthCalledWith(1, 'dependency');
-			expect(onCreatedSpy).toHaveBeenNthCalledWith(2, 'dependent');
-			// oxlint-enable no-magic-numbers
-		});
-	})
+				// oxlint-disable no-magic-numbers
+				expect(onCreatedSpy).toHaveBeenCalledTimes(2);
+				expect(onCreatedSpy).toHaveBeenNthCalledWith(1, 'dependency');
+				expect(onCreatedSpy).toHaveBeenNthCalledWith(2, 'dependent');
+				// oxlint-enable no-magic-numbers
+			},
+		);
+	});
 });

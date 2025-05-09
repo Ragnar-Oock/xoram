@@ -10,15 +10,16 @@ import type { PluginId } from './plugin.type';
  * @public
  */
 export function dependsOn(dependency: PluginId): void {
-  const activePlugin = getActivePlugin()
+	const activePlugin = getActivePlugin();
 
-  if (!activePlugin || activePlugin.phase !== 'setup') {
-    if (import.meta.env.DEV) {
-      warn(new Error("Invoked dependsOn outside of a plugin's setup function, dependsOn can't be used in hooks or outside of a plugin setup function."));
-    }
-    return;
-  }
+	if (!activePlugin || activePlugin.phase !== 'setup') {
+		if (import.meta.env.DEV) {
+			warn(new Error(
+				'Invoked dependsOn outside of a plugin\'s setup function, dependsOn can\'t be used in hooks or outside of a plugin setup function.'));
+		}
+		return;
+	}
 
-  activePlugin.dependencies.push(dependency);
-  return;
+	activePlugin.dependencies.push(dependency);
+	return;
 }

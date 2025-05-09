@@ -9,7 +9,7 @@ import type { DefinedPlugin, PluginId } from './plugin.type';
 function getDependents(app: Application, plugin: DefinedPlugin): DefinedPlugin[] {
 	const pluginMap = app[pluginSymbol];
 
-	const dependents: DefinedPlugin[] = [plugin];
+	const dependents: DefinedPlugin[] = [ plugin ];
 
 	for (const registered of pluginMap.values()) {
 		if (registered.dependencies.includes(plugin.id)) {
@@ -56,7 +56,7 @@ export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app: Applicat
 export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app = getActiveApp()): void {
 	if (!app) {
 		// todo decide if we throw or not
-		throw new Error('removePlugin invoked without application context')
+		throw new Error('removePlugin invoked without application context');
 	}
 	const id = typeof idOrPlugin === 'symbol' ? app[pluginSymbol].get(idOrPlugin) : idOrPlugin;
 	if (!id) {

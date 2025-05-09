@@ -33,7 +33,7 @@ export function addPlugins(definePlugins: PluginDefinition[], app: Application):
  */
 export function addPlugins(definePlugins: PluginDefinition[], app = getActiveApp()): void {
 	if (!app) {
-		throw new TypeError('addPlugin called outside of an application context and no app instance passed as parameter.') // todo handle that better
+		throw new TypeError('addPlugin called outside of an application context and no app instance passed as parameter.'); // todo handle that better
 	}
 
 	const pluginCollection = app[pluginSymbol];
@@ -51,7 +51,7 @@ export function addPlugins(definePlugins: PluginDefinition[], app = getActiveApp
 
 	sorted
 		.map(plugin => playBeforeCreateHook(app, plugin))
-		.map(plugin => playCreatedHook(app, plugin))
+		.map(plugin => playCreatedHook(app, plugin));
 }
 
 /**

@@ -126,9 +126,11 @@ describe('asyncPlugin', () => {
 		it('should invoke "when" during the "active" phase of the returned plugin', () => {
 			let pluginPhase;
 
-			createApp([asyncPlugin(async () => purePlugin, async () => {
-				pluginPhase = getActivePlugin()?.phase;
-			})]);
+			createApp([
+				asyncPlugin(async () => purePlugin, async () => {
+					pluginPhase = getActivePlugin()?.phase;
+				}),
+			]);
 
 			expect(pluginPhase).toBe('active');
 		});
@@ -248,7 +250,10 @@ describe('asyncPlugin', () => {
 
 			await done.promise;
 
-			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(...warnParams, new Error('asyncPlugin() received no plugin from the importer, did you forget to return them ?'));
+			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(
+				...warnParams,
+				new Error('asyncPlugin() received no plugin from the importer, did you forget to return them ?'),
+			);
 		});
 		it('should not invoke the importer when "when" resolves after the app is destroyed', async () => {
 			const importer = vi.fn(async () => purePlugin);
@@ -352,7 +357,11 @@ describe('asyncPlugin', () => {
 			await done.promise;
 
 			// todo factorise this check somewhere
-			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(...warnParams, new Error('asyncPlugin() called with a synchronous importer. This will prevent the plugins added asynchronously from being split into their own chunk when building.'));
+			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(
+				...warnParams,
+				new Error(
+					'asyncPlugin() called with a synchronous importer. This will prevent the plugins added asynchronously from being split into their own chunk when building.'),
+			);
 			expect(app[pluginSymbol].has(purePlugin.id)).toBeTruthy();
 		});
 		it('should warn if "when" is synchronous and proceed as usual', async () => {
@@ -368,7 +377,11 @@ describe('asyncPlugin', () => {
 
 			await done.promise;
 
-			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(...warnParams, new Error('asyncPlugin() called with synchronous condition. If you want to load plugins synchronously use addPlugins() instead.'));
+			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(
+				...warnParams,
+				new Error(
+					'asyncPlugin() called with synchronous condition. If you want to load plugins synchronously use addPlugins() instead.'),
+			);
 			expect(app[pluginSymbol].has(purePlugin.id)).toBeTruthy();
 		});
 		it('should warn if importer returns 0 plugin and proceed as usual', async () => {
@@ -383,7 +396,10 @@ describe('asyncPlugin', () => {
 
 			await done.promise;
 
-			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(...warnParams, new Error('asyncPlugin() received no plugin from the importer, did you forget to return them ?'));
+			expect(warnSpy).toHaveBeenCalledExactlyOnceWith(
+				...warnParams,
+				new Error('asyncPlugin() received no plugin from the importer, did you forget to return them ?'),
+			);
 		});
 	});
 });

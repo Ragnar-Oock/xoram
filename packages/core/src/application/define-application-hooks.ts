@@ -8,14 +8,15 @@ function defineApplicationHook<hook extends keyof ApplicationHooks>(name: hook):
 		const app = getActiveApp();
 		if (!app) {
 			if (import.meta.env.DEV) {
-				warn(new Error(`${name} hook called without an active plugin instance`));
+				warn(new Error(`${ name } hook called without an active plugin instance`));
 			}
 			return;
 		}
 
 		app.emitter.on(name, callback);
-	}
+	};
 }
+
 //
 // /**
 //  * Add a callback to be called between the dependency resolution and adding the plugins to the application

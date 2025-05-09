@@ -5,17 +5,17 @@ import { beforeCreate, beforeDestroy, created, type PluginHooks } from './plugin
 
 function definePluginHooks(name: keyof PluginHooks): (callback: ((app: Application) => void)) => void {
 // oxlint-disable-next-line prefer-await-to-callbacks
-  return (callback): void => {
-    const plugin = getActivePlugin();
-    if (!plugin) {
-      if (import.meta.env.DEV) {
-        warn(new Error(`${name} hook called without an active plugin instance`));
-      }
-      return;
-    }
+	return (callback): void => {
+		const plugin = getActivePlugin();
+		if (!plugin) {
+			if (import.meta.env.DEV) {
+				warn(new Error(`${ name } hook called without an active plugin instance`));
+			}
+			return;
+		}
 
-    plugin.hooks.on(name, callback);
-  }
+		plugin.hooks.on(name, callback);
+	};
 }
 
 /**
@@ -30,4 +30,3 @@ export const onBeforeDestroy = definePluginHooks(beforeDestroy);
  * Add a callback to be called when the plugin is added to the application
  */
 export const onCreated = definePluginHooks(created);
-

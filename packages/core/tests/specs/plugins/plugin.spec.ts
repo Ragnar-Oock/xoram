@@ -1,7 +1,7 @@
 import type { Mock } from 'vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { DefinedPlugin, PluginHooks } from '../../../src';
-import { createApp, definePlugin, destroyApp, onBeforeCreate, onBeforeDestroy, onCreated } from '../../../src'
+import { createApp, definePlugin, destroyApp, onBeforeCreate, onBeforeDestroy, onCreated } from '../../../src';
 import { pluginSymbol } from '../../../src/application/application.type';
 
 
@@ -14,7 +14,7 @@ describe('plugin', () => {
 		const hooks = {
 			beforeCreate: vi.fn(),
 			created: vi.fn(),
-			beforeDestroy: vi.fn()
+			beforeDestroy: vi.fn(),
 		} as const satisfies Omit<{ [hook in keyof PluginHooks]: Mock }, 'destroyed' | 'setup'>;
 
 		const plugin = definePlugin(pluginId, () => {
@@ -27,25 +27,25 @@ describe('plugin', () => {
 			Object
 				.values(hooks)
 				.forEach(spy => spy.mockReset());
-		})
+		});
 
 		Object
 			.entries(hooks)
-			.forEach(([hook, spy]) => {
-				it(`should invoke the "${hook}" hook`, ({task}) => {
+			.forEach(([ hook, spy ]) => {
+				it(`should invoke the "${ hook }" hook`, ({ task }) => {
 					destroyApp(
-						createApp([plugin], {id: task.id})
+						createApp([ plugin ], { id: task.id }),
 					);
 
-					expect(spy, `hook ${hook} should have been called`).toHaveBeenCalledOnce();
+					expect(spy, `hook ${ hook } should have been called`).toHaveBeenCalledOnce();
 					// todo test for app parameter
 				});
-			})
+			});
 
 		// todo test for destroyed hook
 
-		it(`should invoke the "destroyed" hook`, ({task}) => {
-			const app = createApp([ plugin ], {id: task.id});
+		it(`should invoke the "destroyed" hook`, ({ task }) => {
+			const app = createApp([ plugin ], { id: task.id });
 
 			const spy = vi.fn();
 			const pluginInstance = app[pluginSymbol].get(plugin.id);
@@ -55,7 +55,7 @@ describe('plugin', () => {
 			destroyApp(app);
 
 			expect(spy, `hook destroyed should have been called`).toHaveBeenCalledOnce();
-			expect(spy, `hook destroyed should have been called with ${String(plugin.id)}`).toHaveBeenCalledWith(plugin.id);
+			expect(spy, `hook destroyed should have been called with ${ String(plugin.id) }`).toHaveBeenCalledWith(plugin.id);
 		});
 	});
 });

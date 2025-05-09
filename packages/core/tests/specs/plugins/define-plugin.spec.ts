@@ -32,8 +32,8 @@ describe('definePlugin', () => {
 		});
 	});
 	describe('overload 2 (id, setup)', () => {
-		it('should accept a string and a function with no argument', ({task}) => {
-			expectTypeOf(definePlugin).toEqualTypeOf<(id: string, setup: () => void) => (() => DefinedPlugin)>()
+		it('should accept a string and a function with no argument', ({ task }) => {
+			expectTypeOf(definePlugin).toEqualTypeOf<(id: string, setup: () => void) => (() => DefinedPlugin)>();
 			expect(() => definePlugin(task.id, noop)).not.toThrow();
 		});
 		it('should not invoke the setup function', () => {
@@ -56,14 +56,14 @@ describe('definePlugin', () => {
 
 			expect(defined.id).toBeTypeOf('symbol');
 		});
-		it('should use the provided id in as the label of the symbol used for id', ({task}) => {
+		it('should use the provided id in as the label of the symbol used for id', ({ task }) => {
 			const defined = definePlugin(task.id, noop);
 
 			expect(defined.id.description).toBe(task.id);
 		});
 	});
 	describe('invalid overloads', () => {
-		it('should fail with just an id', ({task}) => {
+		it('should fail with just an id', ({ task }) => {
 			expectTypeOf(definePlugin).not.toEqualTypeOf<(id: symbol) => (() => DefinedPlugin)>();
 			// @ts-expect-error definePlugin can't take just an id as parameter
 			expect(() => definePlugin(task.id)).toThrow(new TypeError('invalid definePlugin overload usage'));
@@ -93,7 +93,7 @@ describe('PluginDefinition', () => {
 			expect(plugin.phase).toBe('setup');
 		});
 		it('should invoke the setup function when called', () => {
-			const setup = vi.fn()
+			const setup = vi.fn();
 			const definition = definePlugin(setup);
 
 			definition();
@@ -119,36 +119,36 @@ describe('PluginDefinition', () => {
 		});
 	});
 	describe('from overload 2 (id, setup)', () => {
-		it('should return a plugin object', ({task}) => {
+		it('should return a plugin object', ({ task }) => {
 			const definition = definePlugin(task.id, noop);
 
 			const plugin = definition();
 
 			expect(plugin).toBeTypeOf('object');
 		});
-		it('should set the phase to `setup`', ({task}) => {
+		it('should set the phase to `setup`', ({ task }) => {
 			const definition = definePlugin(task.id, noop);
 
 			const plugin = definition();
 
 			expect(plugin.phase).toBe('setup');
 		});
-		it('should invoke the setup function when called', ({task}) => {
-			const setup = vi.fn()
+		it('should invoke the setup function when called', ({ task }) => {
+			const setup = vi.fn();
 			const definition = definePlugin(task.id, setup);
 
 			definition();
 
 			expect(setup).toHaveBeenCalledExactlyOnceWith(); // setup takes no argument
 		});
-		it('should catch errors from the setup function', ({task}) => {
+		it('should catch errors from the setup function', ({ task }) => {
 			const definition = definePlugin(task.id, () => {
 				throw new Error('catch me');
 			});
 
 			expect(() => definition()).not.toThrow();
 		});
-		it('should provide the plugin object via activePlugin', ({task}) => {
+		it('should provide the plugin object via activePlugin', ({ task }) => {
 			let activePlugin;
 			const definition = definePlugin(task.id, () => {
 				activePlugin = getActivePlugin();

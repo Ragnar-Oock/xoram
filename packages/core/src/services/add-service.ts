@@ -33,7 +33,7 @@ export function addService(serviceId: ServiceId, serviceOrFactory: Service | Ser
 
 	if (!plugin || plugin.phase !== 'setup') {
 		if (import.meta.env.DEV) {
-			warn(new Error("addService can't be invoked outside of a plugin setup function."));
+			warn(new Error('addService can\'t be invoked outside of a plugin setup function.'));
 		}
 		return;
 	}
@@ -42,16 +42,16 @@ export function addService(serviceId: ServiceId, serviceOrFactory: Service | Ser
 		const service = typeof serviceOrFactory === 'function' ? serviceOrFactory(app) : serviceOrFactory;
 
 		// todo move this to app ?
-		app.emitter.emit('beforeServiceAdded', {app, service, serviceId});
+		app.emitter.emit('beforeServiceAdded', { app, service, serviceId });
 		// @ts-expect-error service collection overloads are readonly for some reason
 		app.services[serviceId] = service;
-		app.emitter.emit('serviceAdded', {app, service, serviceId});
-	})
+		app.emitter.emit('serviceAdded', { app, service, serviceId });
+	});
 
 	plugin.hooks.on(beforeDestroy, app => {
 		// todo emit remove service events
 		// todo move this to app ?
 
 		delete app.services[serviceId];
-	})
+	});
 }

@@ -66,10 +66,10 @@ export function definePlugin(_idOrSetup: PluginSetup | string, _setup?: PluginSe
 
 		const reset = setActivePlugin(plugin);
 		try {
-			setup()
+			setup();
 		}
 		catch (error) {
-			handleError(error, plugin, getActiveApp(), 'setup')
+			handleError(error, plugin, getActiveApp(), 'setup');
 		}
 		reset();
 

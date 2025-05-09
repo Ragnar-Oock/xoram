@@ -29,9 +29,12 @@ export type PluginSortingResult = Readonly<[
  *
  * @internal
  */
-export function sortPluginsByDependencies(plugins: DefinedPlugin[], existingPlugins?: Map<PluginId, DefinedPlugin>): PluginSortingResult {
+export function sortPluginsByDependencies(
+	plugins: DefinedPlugin[],
+	existingPlugins?: Map<PluginId, DefinedPlugin>,
+): PluginSortingResult {
 	const sorted: DefinedPlugin[] = [];
-	const unmarked: DefinedPlugin[] = [...plugins];
+	const unmarked: DefinedPlugin[] = [ ...plugins ];
 	const map = new Map<PluginId, DefinedPlugin>(existingPlugins?.entries());
 	const temporarilyMarked = new Set<PluginId>();
 	const permanentlyMarked = new Set<PluginId>(map.keys());
@@ -50,7 +53,7 @@ export function sortPluginsByDependencies(plugins: DefinedPlugin[], existingPlug
 		}
 		if (temporarilyMarked.has(pluginId)) {
 			// todo list dependency cycle
-			aborted = new Error(`The plugin "${String(pluginId)}" declares a dependency that directly or indirectly depends on it.`);
+			aborted = new Error(`The plugin "${ String(pluginId) }" declares a dependency that directly or indirectly depends on it.`);
 			return;
 		}
 		temporarilyMarked.add(pluginId);
@@ -58,7 +61,7 @@ export function sortPluginsByDependencies(plugins: DefinedPlugin[], existingPlug
 			const dependency = map.get(dependencyId);
 
 			if (!dependency) {
-				aborted = new Error(`The plugin "${String(pluginId)}" depends on "${String(dependencyId)}" but it is not in the list of provided plugins. Did you forget to register it ?`);
+				aborted = new Error(`The plugin "${ String(pluginId) }" depends on "${ String(dependencyId) }" but it is not in the list of provided plugins. Did you forget to register it ?`);
 				break;
 			}
 
@@ -75,6 +78,6 @@ export function sortPluginsByDependencies(plugins: DefinedPlugin[], existingPlug
 
 	return [
 		sorted,
-		aborted
+		aborted,
 	] as Readonly<PluginSortingResult>;
 }

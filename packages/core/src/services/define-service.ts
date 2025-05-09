@@ -8,13 +8,13 @@ export function defineService<
 	notification extends Record<string, unknown> = Record<string, never>,
 	service extends Record<string, unknown> = Record<string, unknown>
 >(
-	setup?: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => service
+	setup?: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => service,
 ): (app: Application) => Service<notification> & service {
 	return (app): Service<notification> & service => {
 		const emitter = createEmitter<notification & ServiceNotifications>();
 		return {
 			...(setup ? setup(app, emitter) : {} as service),
 			emitter,
-		}
-	}
+		};
+	};
 }

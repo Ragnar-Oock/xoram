@@ -13,7 +13,7 @@ export interface ServiceNotifications {
 }
 
 export interface Service<notifications extends Record<string, unknown> = Record<string, unknown>> {
-	emitter: Emitter<notifications & ServiceNotifications>
+	emitter: Emitter<notifications & ServiceNotifications>;
 }
 
 export type ApplicationServiceHooks = {
@@ -52,4 +52,4 @@ export type ApplicationServiceHooks = {
 	};
 }
 
-export type ServiceId = keyof ServiceCollection & symbol;
+export type ServiceId = keyof ServiceCollection & (symbol | string);
