@@ -98,8 +98,7 @@ describe('PluginDefinition', () => {
 
 			definition();
 
-			expect(setup).toHaveBeenCalledOnce();
-			expect(setup).toHaveBeenCalledWith();
+			expect(setup).toHaveBeenCalledExactlyOnceWith(); // setup takes no argument
 		});
 		it('should catch errors from the setup function', () => {
 			const definition = definePlugin(() => {
@@ -140,8 +139,7 @@ describe('PluginDefinition', () => {
 
 			definition();
 
-			expect(setup).toHaveBeenCalledOnce();
-			expect(setup).toHaveBeenCalledWith();
+			expect(setup).toHaveBeenCalledExactlyOnceWith(); // setup takes no argument
 		});
 		it('should catch errors from the setup function', ({task}) => {
 			const definition = definePlugin(task.id, () => {

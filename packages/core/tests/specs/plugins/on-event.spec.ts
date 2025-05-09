@@ -21,8 +21,7 @@ declare module '../../../src' {
 function checkSingleEvent<notifications extends Notifications>(emitter: Emitter<notifications>, spy: Mock): void {
 	emitter.emit('eventA', eventA);
 
-	expect(spy).toHaveBeenCalledOnce();
-	expect(spy).toHaveBeenCalledWith(eventA);
+	expect(spy).toHaveBeenCalledExactlyOnceWith(eventA);
 }
 
 function checkMultiEvent<notifications extends Notifications>(emitter: Emitter<notifications>, spy: Mock): void {

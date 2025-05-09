@@ -149,8 +149,7 @@ describe('addPlugins', () => {
 		addPlugins([definePlugin(setup)], app);
 
 		// check
-		expect(setup).toHaveBeenCalledOnce();
-		expect(setup).toHaveBeenCalledWith(); // setup takes no arguments
+		expect(setup).toHaveBeenCalledExactlyOnceWith(); // setup takes no arguments
 	});
 
 	it('should invoke the beforeCreate hook', ({task, autoDestroy}) => {
@@ -164,8 +163,7 @@ describe('addPlugins', () => {
 		})], app);
 
 		// check
-		expect(spy).toHaveBeenCalledOnce();
-		expect(spy).toHaveBeenCalledWith(app);
+		expect(spy).toHaveBeenCalledExactlyOnceWith(app);
 	});
 
 	it('should invoke the beforeCreate hook before adding the plugin to the application', ({task, autoDestroy}) => {
@@ -183,8 +181,7 @@ describe('addPlugins', () => {
 		addPlugins([plugin], app);
 
 		// check
-		expect(spy).toHaveBeenCalledOnce();
-		expect(spy).toHaveBeenCalledWith(app);
+		expect(spy).toHaveBeenCalledExactlyOnceWith(app);
 	});
 
 	it('should invoke the created hook', ({task, autoDestroy}) => {
@@ -198,9 +195,8 @@ describe('addPlugins', () => {
 		})], app);
 
 		// check
-		expect(spy).toHaveBeenCalledOnce();
-		expect(spy).toHaveBeenCalledWith(app);
-	})
+		expect(spy).toHaveBeenCalledExactlyOnceWith(app);
+	});
 
 	it('should invoke the created hook after adding the plugin to the application', ({task, autoDestroy}) => {
 		// setup
@@ -217,8 +213,7 @@ describe('addPlugins', () => {
 		addPlugins([plugin], app);
 
 		// check
-		expect(spy).toHaveBeenCalledOnce();
-		expect(spy).toHaveBeenCalledWith(app);
+		expect(spy).toHaveBeenCalledExactlyOnceWith(app);
 	});
 
 	it('should invoke the beforePluginRegistration hook', ({task, autoDestroy}) => {
@@ -233,8 +228,7 @@ describe('addPlugins', () => {
 		addPlugins([plugin], app);
 
 		// check
-		expect(spy).toHaveBeenCalledOnce();
-		expect(spy).toHaveBeenCalledWith({app, plugin: app[pluginSymbol].get(plugin.id)});
+		expect(spy).toHaveBeenCalledExactlyOnceWith({app, plugin: app[pluginSymbol].get(plugin.id)});
 	});
 
 	it('should invoke the beforePluginRegistration hook before the plugin is added to the application', ({task, autoDestroy}) => {
@@ -285,8 +279,7 @@ describe('addPlugins', () => {
 		addPlugins([plugin], app);
 
 		// check
-		expect(spy).toHaveBeenCalledOnce();
-		expect(spy).toHaveBeenCalledWith({app, plugin: app[pluginSymbol].get(plugin.id)});
+		expect(spy).toHaveBeenCalledExactlyOnceWith({app, plugin: app[pluginSymbol].get(plugin.id)});
 	});
 
 	it('should invoke the pluginRegistered hook after the plugin is added to the application', ({autoDestroy}) => {
@@ -304,8 +297,7 @@ describe('addPlugins', () => {
 		addPlugins([plugin], app);
 
 		// check
-		expect(spy).toHaveBeenCalledOnce();
-		expect(spy).toHaveBeenCalledWith({app, plugin: app[pluginSymbol].get(plugin.id)});
+		expect(spy).toHaveBeenCalledExactlyOnceWith({app, plugin: app[pluginSymbol].get(plugin.id)});
 	});
 });
 
