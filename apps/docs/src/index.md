@@ -8,23 +8,22 @@ hero:
   tagline: A plugin engine that gets out of your way
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Quick start
+      link: /guide/quick-start
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Explore the sources
+      link: https://github.com/Ragnar-Oock/zoram
 
 features:
-  - title: Plugins
+  - title: Plugin based
     details: Facilitate separation of concerns and reusability
     link: /guide/essentials/plugins
     icon: 🧩
-  - title: Services
-    details: Expose logic between plugins
-    link: /guide/essentials/services
-    icon: 🛒
+  - title: Runtime injection
+    details: Split your apps in smaller chunks to improve performance
+    icon: 🚀
   - title: Lightweight
-    details: As little as ~1Kb 
+    details: As little as ~1Kb
     icon: 🪶
 ---
 
