@@ -71,4 +71,9 @@ export type Application = {
 	 * The `options` parameter as passed to {@link import('@zoram/core').createApp `createApp`}
 	 */
 	readonly options: Partial<ApplicationOptions>;
+
+	/**
+	 * Is the application still active ?
+	 */
+	alive: boolean;
 }

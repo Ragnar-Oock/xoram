@@ -38,6 +38,8 @@ export function destroyApp(app: Application): void {
 	pluginsToDestroy
 		.map(plugin => playBeforeDestroyHook(app, plugin))
 		.map(plugin => playDestroyedHook(app, plugin));
+
+	app.alive = false;
 }
 
 /**
@@ -61,6 +63,7 @@ export function createApp(plugins: PluginDefinition[], options: Partial<Applicat
 		services: {} as Readonly<ServiceCollection>,
 		[pluginSymbol]: new Map(),
 		options,
+		alive: true,
 	}) satisfies Application;
 
 	const resetActiveApp = setActiveApp(app);
