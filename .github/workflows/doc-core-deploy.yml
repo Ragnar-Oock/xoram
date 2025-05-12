@@ -9,6 +9,7 @@ on:
     branches: [ main ]
     paths:
       - apps/docs/**
+      - packages/*/types/*.api.json
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -49,7 +50,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Build with VitePress
-        run: yarn exec turbo build --filter docs
+        run: yarn exec turbo build:doc
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

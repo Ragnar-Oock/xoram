@@ -6,10 +6,11 @@
   "scripts": {
     "lint": "oxlint",
     "test:watch": "vitest watch --typecheck",
-    "build": "node ./script/build.script.mjs",
-    "build:prod": "vite build --mode production",
-    "build:dev": "NODE_ENV=development vite build --mode development",
-    "build:types": "tsc --project tsconfig.types.json"
+    "build:code:prod": "vite build --mode production",
+    "build:code:dev": "NODE_ENV=development vite build --mode development",
+    "build:code": "node ./script/build.script.mjs",
+    "build:types": "tsc --project tsconfig.types.json && api-extractor run --local --verbose",
+    "build:doc": "api-documenter markdown --input-folder ./types --output-folder ../../apps/docs/src/api-reference"
   },
   "exports": {
     ".": {

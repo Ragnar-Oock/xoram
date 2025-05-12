@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build:code build:types build:doc",
     "dev": "turbo run dev",
     "lint": "turbo run lint"
   },
@@ -20,6 +20,7 @@
     "config/*"
   ],
   "dependencies": {
+    "@microsoft/api-documenter": "^7.26.26",
     "@microsoft/api-extractor": "^7.52.7"
   }
 }

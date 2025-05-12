@@ -1,10 +1,37 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**"]
+    "build:code": {
+      "dependsOn": [
+        "^build:code"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        "dist/**"
+      ],
+      "cache": true
+    },
+    "build:types": {
+      "dependsOn": [
+        "^build:code"
+      ],
+      "outputs": [
+        "temp/types/**",
+        "types/**"
+      ],
+      "cache": true
+    },
+    "build:doc": {
+      "dependsOn": [
+        "^build:types"
+      ],
+      "outputs": [
+        "$TURBO_ROOT$/apps/docs/src/api-reference/**"
+      ],
+      "cache": false
     },
     "lint": {},
     "dev": {

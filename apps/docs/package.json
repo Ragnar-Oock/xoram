@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
-    "build": "vitepress build",
+    "build:doc": "vitepress build",
     "preview": "vitepress preview",
     "lint": "oxlint \"src/**/*.ts\""
   },
   "dependencies": {
-    "@repo/ui": "*"
+    "@repo/ui": "workspace:*",
+    "@zoram/core": "workspace:*"
   },
   "devDependencies": {
     "@repo/config-typescript": "*",

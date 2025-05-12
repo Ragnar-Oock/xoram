@@ -10,3 +10,4 @@ dist-ssr
 server/dist
 public/dist
 /.yarn/install-state.gz
+**/tsdoc-metadata.json

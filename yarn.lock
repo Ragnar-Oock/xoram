@@ -695,6 +695,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@microsoft/api-documenter@npm:^7.26.26":
+  version: 7.26.26
+  resolution: "@microsoft/api-documenter@npm:7.26.26"
+  dependencies:
+    "@microsoft/api-extractor-model": "npm:7.30.6"
+    "@microsoft/tsdoc": "npm:~0.15.1"
+    "@rushstack/node-core-library": "npm:5.13.1"
+    "@rushstack/terminal": "npm:0.15.3"
+    "@rushstack/ts-command-line": "npm:5.0.1"
+    js-yaml: "npm:~3.13.1"
+    resolve: "npm:~1.22.1"
+  bin:
+    api-documenter: bin/api-documenter
+  checksum: 10c0/65f37959275895a6a36537f4d5bbc107c5debd8e618f8f042b5a26376be6c4fd8e6d4f6cb8b0eeae16e1da200ee2506afd3bcf45534c4ea3abcb6e20f2dab905
+  languageName: node
+  linkType: hard
+
 "@microsoft/api-extractor-model@npm:7.30.6":
   version: 7.30.6
   resolution: "@microsoft/api-extractor-model@npm:7.30.6"
@@ -856,7 +873,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@repo/ui@npm:*, @repo/ui@workspace:packages/ui":
+"@repo/ui@npm:*, @repo/ui@workspace:*, @repo/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@repo/ui@workspace:packages/ui"
   dependencies:
@@ -1811,7 +1828,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"argparse@npm:~1.0.9":
+"argparse@npm:^1.0.7, argparse@npm:~1.0.9":
   version: 1.0.10
   resolution: "argparse@npm:1.0.10"
   dependencies:
@@ -2046,7 +2063,8 @@ __metadata:
   resolution: "docs@workspace:apps/docs"
   dependencies:
     "@repo/config-typescript": "npm:*"
-    "@repo/ui": "npm:*"
+    "@repo/ui": "workspace:*"
+    "@zoram/core": "workspace:*"
     typescript: "npm:^5.8.3"
     vite: "npm:^6.3.3"
     vitepress: "npm:^1.6.3"
@@ -2282,6 +2300,16 @@ __metadata:
   bin:
     esbuild: bin/esbuild
   checksum: 10c0/87ce0b78699c4d192b8cf7e9b688e9a0da10e6f58ff85a368bf3044ca1fa95626c98b769b5459352282e0065585b6f994a5e6699af5cccf9d31178960e2b58fd
+  languageName: node
+  linkType: hard
+
+"esprima@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "esprima@npm:4.0.1"
+  bin:
+    esparse: ./bin/esparse.js
+    esvalidate: ./bin/esvalidate.js
+  checksum: 10c0/ad4bab9ead0808cf56501750fd9d3fb276f6b105f987707d059005d57e182d18a7c9ec7f3a01794ebddcca676773e42ca48a32d67a250c9d35e009ca613caba3
   languageName: node
   linkType: hard
 
@@ -2613,6 +2641,18 @@ __metadata:
   version: 1.4.0
   resolution: "jju@npm:1.4.0"
   checksum: 10c0/f3f444557e4364cfc06b1abf8331bf3778b26c0c8552ca54429bc0092652172fdea26cbffe33e1017b303d5aa506f7ede8571857400efe459cb7439180e2acad
+  languageName: node
+  linkType: hard
+
+"js-yaml@npm:~3.13.1":
+  version: 3.13.1
+  resolution: "js-yaml@npm:3.13.1"
+  dependencies:
+    argparse: "npm:^1.0.7"
+    esprima: "npm:^4.0.0"
+  bin:
+    js-yaml: bin/js-yaml.js
+  checksum: 10c0/6a4f78b998d2eb58964cc5e051c031865bf292dc3c156a8057cf468d9e60a8739f4e8f607a267e97f09eb8d08263b8262df57eddb16b920ec5a04a259c3b4960
   languageName: node
   linkType: hard
 
@@ -4226,6 +4266,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "with-vite@workspace:."
   dependencies:
+    "@microsoft/api-documenter": "npm:^7.26.26"
     "@microsoft/api-extractor": "npm:^7.52.7"
     oxlint: "npm:^0.16.8"
     turbo: "npm:^2.5.2"
