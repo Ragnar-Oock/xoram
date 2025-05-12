@@ -1,6 +1,11 @@
 import type { Emitter } from 'mitt';
 import type { Application, ServiceCollection } from '../application';
 
+/**
+ * Events that all {@link Service `services`} are subject to emit.
+ *
+ * @public
+ */
 export interface ServiceNotifications {
 	'before_destroy': {
 		/**
@@ -12,10 +17,17 @@ export interface ServiceNotifications {
 	[x: string | symbol]: unknown;
 }
 
+/**
+ * @public
+ */
 export interface Service<notifications extends Record<string, unknown> = Record<string, unknown>> {
 	emitter: Emitter<notifications & ServiceNotifications>;
 }
 
+/**
+ * Service related hooks emitted by the application.
+ * @public
+ */
 export type ApplicationServiceHooks = {
 	/**
 	 * Fired before a service is added to the application
@@ -51,5 +63,7 @@ export type ApplicationServiceHooks = {
 		serviceId: ServiceId,
 	};
 }
-
+/**
+ * @public
+ */
 export type ServiceId = keyof ServiceCollection & (symbol | string);

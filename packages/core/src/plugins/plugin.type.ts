@@ -1,6 +1,13 @@
 import type { Emitter } from 'mitt';
-import type { PluginHooks } from './plugin-hooks.type';
+import type { _PluginHooks } from './plugin-hooks.type';
 
+/**
+ * A plugin's unique identifier.
+ *
+ * ⚠️ Do not mistake this with {@link definePlugin `definePlugin`}'s `name` parameter.
+ *
+ * @public
+ */
 export type PluginId = symbol;
 /**
  * The phase of the plugin during it's life cycle, phase transition can only occur in one order and always lead to a
@@ -13,10 +20,15 @@ export type PluginId = symbol;
  * 5. **destroyed**: the plugin has been removed from the application, it should not be used anymore and references to
  * it should be removed so it can be garbage collected
  *
- * @see {@link PluginHooks} for details on the hooks emitted for each transition
+ * @see {@link _PluginHooks} for details on the hooks emitted for each transition
  *
+ * @public
  */
 export type PluginPhase = 'setup' | 'mount' | 'active' | 'teardown' | 'destroyed';
+/**
+ * An instance of a plugin as returned by a {@link PluginDefinition `PluginDefinition`}.
+ * @public
+ */
 export type DefinedPlugin = {
 	/**
 	 * Identifies a plugin in an application.
@@ -30,8 +42,9 @@ export type DefinedPlugin = {
 	dependencies: PluginId[];
 	/**
 	 * A Mitt instance to manage the plugin's life cycle hooks
+	 * @internal
 	 */
-	hooks: Emitter<PluginHooks>;
+	hooks: Emitter<_PluginHooks>;
 	/**
 	 * The current phase of the plugin. Some built-in functions will react differently depending on this value.
 	 */

@@ -1,5 +1,7 @@
 export { addPlugins, addPlugin } from './add-plugin';
 
+export type { OneOrMore } from './array.helper';
+
 export { defineAsyncPlugin } from './define-async-plugin';
 
 export {
@@ -18,11 +20,19 @@ export {
 
 export { dependsOn } from './depends-on.composable';
 
+export type {
+	Notifications,
+	EventSourceContainer,
+	EventSourceGetter,
+	MergedEvents,
+	EventCleanup,
+	EventTarget,
+	EventSource,
+	UnionToIntersection,
+} from './on-event.composable';
 export { onEvent } from './on-event.composable';
 
-export type { PluginSortingResult } from './sort';
-
-export type { ApplicationPluginHooks, PluginHooks, PluginHook } from './plugin-hooks.type';
+export type { ApplicationPluginHooks, _PluginHooks, PluginHook } from './plugin-hooks.type';
 
 export type { DefinedPlugin, PluginId, PluginPhase } from './plugin.type';
 

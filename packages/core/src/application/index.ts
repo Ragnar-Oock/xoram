@@ -5,6 +5,7 @@ export type {
 	ServiceCollection,
 	ApplicationHooks,
 	ApplicationPluginEvent,
+	ApplicationOptions,
 } from './application.type';
 
 // export { onFailedPluginRegistration } from "./define-application-hooks";

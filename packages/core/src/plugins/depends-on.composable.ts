@@ -4,8 +4,8 @@ import type { PluginId } from './plugin.type';
 
 /**
  * Mark the plugin as depending on the given dependency.
- * @param dependency the id of the other plugin you depend on. Make sure to have at least one import in your module
- * pointing to the dependency so typescript knows to load its types.
+ * @param dependency - the id of the other plugin you depend on. Make sure to have at least one import in your module
+ *   pointing to the dependency so typescript knows to load its types.
  *
  * @public
  */

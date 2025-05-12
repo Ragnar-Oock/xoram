@@ -8,21 +8,33 @@ import type { OneOrMore } from './array.helper';
 import { toArray } from './array.helper';
 import { beforeDestroy, created } from './plugin-hooks.type';
 
+/**
+ * @public
+ */
 export type Notifications = Record<EventType, unknown>;
 /**
  * An object holding an emitter, usually an application instance or service instance
+ *
+ * @public
  */
 export type EventSourceContainer<notifications extends Notifications> = { emitter: Emitter<notifications> };
 /**
  * A direct emitter.
+ *
+ * @public
  */
 export type EventSource<notifications extends Notifications> = Emitter<notifications>;
 /**
  * A function returning a direct emitter or an object holding an emitter. The application passed as parameter is the
  * current application context `onEvent` is called as part of.
+ *
+ * @public
  */
 export type EventSourceGetter<notifications extends Notifications> = ((application: Application) => (EventSource<notifications> | EventSourceContainer<notifications>));
 
+/**
+ * @public
+ */
 export type EventTarget<notifications extends Notifications> =
 	EventSource<notifications>
 	| EventSourceContainer<notifications>
@@ -43,8 +55,8 @@ const nullEmitter = <notifications extends Notifications>() => ({
 
 /**
  * Tries to convert an {@link EventTarget} as passed to {@link onEvent `onEvent`} into a usable emitter.
- * @param target the target to convert to an emitter
- * @param app the application to use as context
+ * @param target - the target to convert to an emitter
+ * @param app - the application to use as context
  */
 function resolveSource<notifications extends Notifications>(
 	target: EventTarget<notifications>,
@@ -90,15 +102,24 @@ function resolveSource<notifications extends Notifications>(
 	}
 }
 
-type UnionToIntersection<U> =
+/**
+ * @public
+ */
+export type UnionToIntersection<U> =
 // oxlint-disable-next-line no-explicit-any
 	(U extends any ? (x: U) => void : never) extends ((x: infer I) => void) ? I : never
 
+/**
+ * @public
+ */
 export type MergedEvents<
 	notifications extends Notifications,
 	events extends (keyof notifications)[],
 > = UnionToIntersection<notifications[events[number]]>
 
+/**
+ * @public
+ */
 export type EventCleanup = () => void;
 
 const onEventOutsidePlugin = 'onEvent was invoked outside of a plugin setup function or hook.';
@@ -107,6 +128,7 @@ const onEventOutsidePlugin = 'onEvent was invoked outside of a plugin setup func
  * Listen to multiple events the same source at once and cleanly stop to listen when the plugin is disposed off.
  *
  * @example
+ * ```ts
  * // target getter
  * onEvent(app => app.services.myService, ['an-event', 'another-event'], console.log);
  * onEvent(({services}) => services.myService, ['an-event', 'another-event'], console.log);
@@ -114,10 +136,11 @@ const onEventOutsidePlugin = 'onEvent was invoked outside of a plugin setup func
  * onEvent(myCustomEmitter, ['an-event', 'another-event'], console.log);
  * // service id
  * onEvent('myService', ['an-event', 'another-event'], console.log);
+ * ```
  *
- * @param target something to listen events on
- * @param on a list of events to listen to
- * @param handler callback to invoke when any of the events in `on` is emitted by `target`
+ * @param target - something to listen events on
+ * @param on - a list of events to listen to
+ * @param handler - callback to invoke when any of the events in `on` is emitted by `target`
  *
  * @public
  */
@@ -137,6 +160,7 @@ export function onEvent<
  * events consider passing an array of those events.
  *
  * @example
+ * ```ts
  * // target getter
  * onEvent(app => app.services.myService, '*', console.log);
  * onEvent(({services}) => services.myService, '*', console.log);
@@ -144,10 +168,11 @@ export function onEvent<
  * onEvent(myCustomEmitter, '*', console.log);
  * // service id
  * onEvent('myService', '*', console.log);
+ * ```
  *
- * @param target something to listen events on
- * @param on ask to subscribe to everything
- * @param handler callback to invoke when any event is emitted by `target`
+ * @param target - something to listen events on
+ * @param on - ask to subscribe to everything
+ * @param handler - callback to invoke when any event is emitted by `target`
  *
  * @public
  */
@@ -163,6 +188,7 @@ export function onEvent<
  * Listen to a specific event of a source and cleanly stop to listen when the plugin is disposed of.
  *
  * @example
+ * ```ts
  * // target getter
  * onEvent(app => app.services.myService, 'an-event', console.log);
  * onEvent(({services}) => services.myService, 'an-event', console.log);
@@ -170,10 +196,11 @@ export function onEvent<
  * onEvent(myCustomEmitter, 'an-event', console.log);
  * // service id
  * onEvent('myService', 'an-event', console.log);
+ * ```
  *
- * @param target target something to listen events on
- * @param on the name of the event to listen to
- * @param handler callback to invoke when the event is emitted by `target`
+ * @param target - target something to listen events on
+ * @param on - the name of the event to listen to
+ * @param handler - callback to invoke when the event is emitted by `target`
  *
  * @public
  */
@@ -190,9 +217,9 @@ export function onEvent<
  * Use one of the overrides
  *
  * Listen to event only for the lifetime of the plugin
- * @param target the thing to listen for events on
- * @param on the events to listen for
- * @param handler the function to invoke when the event occurs
+ * @param target - the thing to listen for events on
+ * @param on - the events to listen for
+ * @param handler - the function to invoke when the event occurs
  * @internal
  */
 export function onEvent<notifications extends Notifications>(
@@ -213,7 +240,7 @@ export function onEvent<notifications extends Notifications>(
 
 
 	/**
-	 * @param app the application to use as context
+	 * @param app - the application to use as context
 	 * @returns a clean up function to remove the added listeners
 	 */
 	const subscribe = (app: Application): void => {

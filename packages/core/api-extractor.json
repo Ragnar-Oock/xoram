@@ -138,8 +138,7 @@
     /**
      * (REQUIRED) Whether to generate an API report.
      */
-    "enabled": true
-
+    "enabled": true,
     /**
      * The base filename for the API report files, to be combined with "reportFolder" or "reportTempFolder"
      * to produce the full file path.  The "reportFileName" should not include any path separators such as
@@ -180,8 +179,7 @@
      * SUPPORTED TOKENS: <projectFolder>, <packageName>, <unscopedPackageName>
      * DEFAULT VALUE: "<projectFolder>/etc/"
      */
-    // "reportFolder": "<projectFolder>/etc/",
-
+    "reportFolder": "<projectFolder>/types/",
     /**
      * Specifies the folder where the temporary report file is written.  The file name portion is determined by
      * the "reportFileName" setting.
@@ -411,6 +409,10 @@
       "default": {
         "logLevel": "warning"
         // "addToApiReportFile": false
+      },
+      "ae-forgotten-export": {
+        logLevel: "warning",
+        addToApiReportFile: true
       }
 
       // "ae-extra-release-tag": {
@@ -431,6 +433,12 @@
       "default": {
         "logLevel": "warning"
         // "addToApiReportFile": false
+      },
+      "tsdoc-link-tag-destination-syntax": {
+        logLevel: "none"
+      },
+      "tsdoc-reference-missing-dot": {
+        logLevel: "none"
       }
 
       // "tsdoc-link-tag-unescaped-text": {

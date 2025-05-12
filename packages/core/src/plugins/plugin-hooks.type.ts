@@ -1,7 +1,9 @@
 import type { Application, ApplicationPluginEvent } from '../application';
 
 /**
- * Events emitted by the application and relating to plugins
+ * Plugin related hooks emitted by the application.
+ *
+ * @public
  */
 export type ApplicationPluginHooks = {
 	/**
@@ -39,14 +41,14 @@ export type ApplicationPluginHooks = {
 /**
  * Implements life cycles for the plugin.
  *
- * @todo figure out the parameters to pass in and clean up declaration
+ * @public
  */
 export type PluginHook = (app: Application) => void;
 /**
  * Used internally to manage plugin life cycle.
  * @internal
  */
-export type PluginHooks = {
+export type _PluginHooks = {
 	setup: never;
 	/**
 	 * Fires after the transition from the {@link PluginPhase `setup` phase} to the {@link PluginPhase `mount` phase}.

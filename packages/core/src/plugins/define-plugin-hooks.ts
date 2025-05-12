@@ -1,9 +1,10 @@
 import type { Application } from '../application/application.type';
 import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
-import { beforeCreate, beforeDestroy, created, type PluginHooks } from './plugin-hooks.type';
+import type { _PluginHooks } from './plugin-hooks.type';
+import { beforeCreate, beforeDestroy, created } from './plugin-hooks.type';
 
-function definePluginHooks(name: keyof PluginHooks): (callback: ((app: Application) => void)) => void {
+function definePluginHooks(name: keyof _PluginHooks): (callback: ((app: Application) => void)) => void {
 // oxlint-disable-next-line prefer-await-to-callbacks
 	return (callback): void => {
 		const plugin = getActivePlugin();
@@ -20,13 +21,19 @@ function definePluginHooks(name: keyof PluginHooks): (callback: ((app: Applicati
 
 /**
  * Add a callback to be called between the dependency resolution and adding the plugins to the application
+ *
+ * @public
  */
 export const onBeforeCreate = definePluginHooks(beforeCreate);
 /**
  * Add a callback to be called before the plugin is removed from the application
+ *
+ * @public
  */
 export const onBeforeDestroy = definePluginHooks(beforeDestroy);
 /**
  * Add a callback to be called when the plugin is added to the application
+ *
+ * @public
  */
 export const onCreated = definePluginHooks(created);

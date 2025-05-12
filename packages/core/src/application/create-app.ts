@@ -18,7 +18,7 @@ let appCount = 0;
 /**
  * Tear down an application and it's plugins
  *
- * @param app the application to destroy
+ * @param app - the application to destroy
  *
  * @public
  */
@@ -45,8 +45,8 @@ export function destroyApp(app: Application): void {
 /**
  * Create an application from a set of plugins
  *
- * @param plugins the plugin list to create the application from
- * @param options a set of options to configure how the application functions
+ * @param plugins - the plugin list to create the application from
+ * @param options - a set of options to configure how the application functions
  *
  * @public
  */

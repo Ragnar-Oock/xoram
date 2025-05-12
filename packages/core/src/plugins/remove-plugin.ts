@@ -30,14 +30,17 @@ function getDependents(app: Application, plugin: DefinedPlugin): DefinedPlugin[]
 /**
  * Remove a plugin and all those depending on it in reverse topological order.
  *
- * @param idOrPlugin the plugin to remove or its id
+ * @param idOrPlugin - the plugin to remove or its id
+ *
  * @public
  */
 export function removePlugin(idOrPlugin: PluginId | DefinedPlugin): void;
 /**
  * Remove a plugin and all those depending on it in reverse topological order.
- * @param idOrPlugin the plugin to remove or its id
- * @param app the app to remove the plugin from
+ *
+ * @param idOrPlugin - the plugin to remove or its id
+ * @param app - the app to remove the plugin from
+ *
  * @public
  */
 export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app: Application): void;
@@ -48,8 +51,8 @@ export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app: Applicat
  *
  * @todo make sure we need the plugin parameter signature, remove it if not
  *
- * @param idOrPlugin a plugin id or registered plugin to remove from the active app
- * @param app the app to remove the plugin from
+ * @param idOrPlugin - a plugin id or registered plugin to remove from the active app
+ * @param app - the app to remove the plugin from
  *
  * @internal
  */

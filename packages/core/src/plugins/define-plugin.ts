@@ -7,6 +7,8 @@ import type { DefinedPlugin, PluginId, PluginPhase } from './plugin.type';
 
 /**
  * Describes how a plugin is created.
+ *
+ * @public
  */
 export type PluginSetup = () => void;
 
@@ -14,6 +16,8 @@ export type PluginSetup = () => void;
  * A factory function that returns a defined plugin ready to be added to an application.
  *
  * @see definePlugin
+ *
+ * @public
  */
 export type PluginDefinition = {
 	(): DefinedPlugin;
@@ -23,22 +27,26 @@ export type PluginDefinition = {
 /**
  * Define an anonymous plugin using a generated id
  *
- * @param setup the plugin setup function
+ * @param setup - the plugin setup function
+ *
+ * @public
  */
 export function definePlugin(setup: PluginSetup): PluginDefinition;
 /**
  * Define a named plugin using a provided name.
  *
- * @param name the name of the plugin to recognize it by in logs, errors and tools. Will be used as the description of
+ * @param name - the name of the plugin to recognize it by in logs, errors and tools. Will be used as the description of
  *   the symbol used for identifying the plugin.
- * @param setup the plugin setup function
+ * @param setup - the plugin setup function
+ *
+ * @public
  */
 export function definePlugin(name: string, setup: PluginSetup): PluginDefinition;
 /**
  * Use one of the overloads
  *
- * @param _nameOrSetup a name for the (name, setup) overload or a setup function for the (setup) overload
- * @param _setup a setup function for the (name, setup) overload
+ * @param _nameOrSetup - a name for the (name, setup) overload or a setup function for the (setup) overload
+ * @param _setup - a setup function for the (name, setup) overload
  *
  * @internal
  */

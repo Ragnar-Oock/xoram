@@ -28,12 +28,14 @@ export type AsyncPluginErrors = keyof AsyncPluginError;
 /**
  * Load a set of plugins in the application when a condition is met
  *
- * @param importer a function to load the plugins asynchronously
- * @param when the condition to await
- * @param dependencies a list of plugins that the condition depends on
- * @param done called once the plugins are added to the app, only used during testing
+ * @param importer - a function to load the plugins asynchronously
+ * @param when - the condition to await
+ * @param dependencies - a list of plugins that the condition depends on
+ * @param done - called once the plugins are added to the app, only used during testing
  *
  * @returns a plugin to set up the condition and load the plugin when it is met
+ *
+ * @public
  */
 export function defineAsyncPlugin(
 	importer: () => Promise<OneOrMore<PluginDefinition>>,

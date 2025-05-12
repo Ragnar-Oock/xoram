@@ -10,7 +10,7 @@ import { sortPluginsByDependencies } from './sort';
 /**
  * Register a set of plugins into the active application after it has been initialized.
  *
- * @param definePlugins the plugin definitions to register in the application
+ * @param definePlugins - the plugin definitions to register in the application
  *
  * @public
  */
@@ -18,8 +18,8 @@ export function addPlugins(definePlugins: PluginDefinition[]): void;
 /**
  * Register a set of plugins into the active application after it has been initialized.
  *
- * @param definePlugins the plugin definitions to register in the application
- * @param app the application to register the plugin into, you should not need to pass this argument in normal use
+ * @param definePlugins - the plugin definitions to register in the application
+ * @param app - the application to register the plugin into, you should not need to pass this argument in normal use
  *
  * @public
  */
@@ -27,8 +27,8 @@ export function addPlugins(definePlugins: PluginDefinition[], app: Application):
 /**
  * Register a set of plugins into the active application after it has been initialized.
  *
- * @param definePlugins the plugin definitions to register in the application
- * @param app the application to register the plugin into, you should not need to pass this argument in normal use
+ * @param definePlugins - the plugin definitions to register in the application
+ * @param app - the application to register the plugin into, you should not need to pass this argument in normal use
  *
  * @internal
  */
@@ -66,15 +66,16 @@ export function addPlugins(definePlugins: PluginDefinition[], app = getActiveApp
 /**
  * Register a plugin into the active application after it has been initialized.
  *
- * @param definePlugin the plugin definition to register in the application.
+ * @param definePlugin - the plugin definition to register in the application.
+ *
  * @public
  */
 export function addPlugin(definePlugin: PluginDefinition): void;
 /**
  * Register a plugin into the active application after it has been initialized.
  *
- * @param definePlugin the plugin definition to register in the application.
- * @param app the application to register the plugin into, you should not need to pass this argument in normal use
+ * @param definePlugin - the plugin definition to register in the application.
+ * @param app - the application to register the plugin into, you should not need to pass this argument in normal use
  *
  * @public
  */
@@ -82,8 +83,9 @@ export function addPlugin(definePlugin: PluginDefinition, app: Application): voi
 /**
  * use one of the overrides
  *
- * @param definePlugin the plugin to add
- * @param app the app context to use
+ * @param definePlugin - the plugin to add
+ * @param app - the app context to use
+ *
  * @internal
  *
  */

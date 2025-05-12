@@ -1,6 +1,6 @@
 import type { Mock } from 'vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { DefinedPlugin, PluginHooks } from '../../../src';
+import type { _PluginHooks, DefinedPlugin } from '../../../src';
 import { createApp, definePlugin, destroyApp, onBeforeCreate, onBeforeDestroy, onCreated } from '../../../src';
 import { pluginSymbol } from '../../../src/application/application.type';
 
@@ -15,7 +15,7 @@ describe('plugin', () => {
 			beforeCreate: vi.fn(),
 			created: vi.fn(),
 			beforeDestroy: vi.fn(),
-		} as const satisfies Omit<{ [hook in keyof PluginHooks]: Mock }, 'destroyed' | 'setup'>;
+		} as const satisfies Omit<{ [hook in keyof _PluginHooks]: Mock }, 'destroyed' | 'setup'>;
 
 		const plugin = definePlugin(pluginId, () => {
 			onBeforeCreate(() => hooks.beforeCreate());

@@ -1,13 +1,13 @@
 import { getActiveApp } from './application/active-app';
 import type { Application, ApplicationHooks } from './application/application.type';
-import type { DefinedPlugin, PluginHooks } from './plugins';
+import type { _PluginHooks, DefinedPlugin } from './plugins';
 import { getActivePlugin } from './plugins/active-plugin';
 import type { AsyncPluginErrors } from './plugins/define-async-plugin';
 import { warn } from './warn.helper';
 
 
 // todo check if all error context are listed here and if they can all occur
-export type ErrorContext = keyof PluginHooks | keyof ApplicationHooks | AsyncPluginErrors | 'onEvent' | 'unknown';
+export type ErrorContext = keyof _PluginHooks | keyof ApplicationHooks | AsyncPluginErrors | 'onEvent' | 'unknown';
 
 /**
  *
@@ -23,7 +23,7 @@ export function handleError(
 	context: ErrorContext = 'unknown',
 ): void {
 	if (import.meta.env.DEV) {
-		warn(error, {plugin, app, context});
+		warn(error, { plugin, app, context });
 	}
 	else {
 		console.error(error, plugin, app, context);
