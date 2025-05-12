@@ -1,15 +1,15 @@
-import {addService, asyncPlugin, createApp, definePlugin, defineService} from "@zoram/core";
+import {addService, createApp, defineAsyncPlugin, definePlugin, defineService} from '@zoram/core';
 
 
-export const pluginB = definePlugin(()=>{
-    addService('service', defineService())
+export const pluginB = definePlugin(() => {
+	addService('service', defineService());
 });
 let res;
 createApp([
-    pluginB,
-    asyncPlugin(
-        async () => ([( await import('./plugin-a.js')).default]),
-        () => new Promise(resolve => res = resolve))
+	pluginB,
+	defineAsyncPlugin(
+		async () => (await import('./plugin-a.js')).default,
+		() => new Promise(resolve => res = resolve)),
 ]);
 
 res();

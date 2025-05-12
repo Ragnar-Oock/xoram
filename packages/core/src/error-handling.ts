@@ -2,7 +2,7 @@ import { getActiveApp } from './application/active-app';
 import type { Application, ApplicationHooks } from './application/application.type';
 import type { DefinedPlugin, PluginHooks } from './plugins';
 import { getActivePlugin } from './plugins/active-plugin';
-import type { AsyncPluginErrors } from './plugins/async-plugin';
+import type { AsyncPluginErrors } from './plugins/define-async-plugin';
 import { warn } from './warn.helper';
 
 

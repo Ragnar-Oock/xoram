@@ -22,7 +22,7 @@ export type AsyncPluginErrors = 'asyncPluginCondition' | 'asyncPluginImport'
  *
  * @returns a plugin to set up the condition and load the plugin when it is met
  */
-export function asyncPlugin(
+export function defineAsyncPlugin(
 	importer: () => Promise<PluginDefinition | PluginDefinition[]>,
 	when: (app: Application) => Promise<void>,
 	dependencies?: PluginId[],

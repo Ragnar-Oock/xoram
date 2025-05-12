@@ -1,12 +1,5 @@
 import { beforeEach, describe, expect, it, type Mock, type MockInstance, vi } from 'vitest';
-import {
-	asyncPlugin as defineAsyncPlugin,
-	createApp,
-	definePlugin,
-	dependsOn,
-	destroyApp,
-	removePlugin,
-} from '../../../src';
+import { createApp, defineAsyncPlugin, definePlugin, dependsOn, destroyApp, removePlugin } from '../../../src';
 import { pluginSymbol } from '../../../src/application/application.type';
 import { getActivePlugin } from '../../../src/plugins/active-plugin';
 import { noop } from '../../dummies/noop';
@@ -396,7 +389,7 @@ describe('defineAsyncPlugin', () => {
 
 
 			expectPrettyWarn(warnSpy, new Error(
-				'asyncPlugin() called with synchronous condition. If you want to load plugins synchronously use addPlugins() instead.'));
+				'defineAsyncPlugin() called with synchronous condition. If you want to load plugins synchronously use addPlugins() instead.'));
 			expect(app[pluginSymbol].has(purePlugin.id)).toBeTruthy();
 		});
 		it('should warn if importer returns empty array and proceed as usual', async () => {

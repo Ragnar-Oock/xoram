@@ -1,6 +1,6 @@
 export { addPlugins, addPlugin } from './add-plugin';
 
-export { asyncPlugin } from './async-plugin';
+export { defineAsyncPlugin } from './define-async-plugin';
 
 export {
 	definePlugin,
