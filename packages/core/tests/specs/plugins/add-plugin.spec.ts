@@ -6,7 +6,8 @@ import { pluginSymbol } from '../../../src/application/application.type';
 import borisPlugin from '../../dummies/boris.plugin';
 import { noop } from '../../dummies/noop';
 import personPlugin from '../../dummies/person.plugin';
-import { it } from '../../fixture/test-with-destroyable';
+import { expectPrettyWarn } from '../../fixture/expect.fixture';
+import { it } from '../../fixture/test.fixture';
 
 // TODO:
 // - test addPlugin
@@ -14,13 +15,13 @@ import { it } from '../../fixture/test-with-destroyable';
 // - test hooks are invoked safely (no error bubbling up)
 
 describe('addPlugins', () => {
-	it('should add plugins without dependencies', ({autoDestroy}) => {
+	it('should add plugins without dependencies', ({ autoDestroy }) => {
 		// setup
 		const app = autoDestroy(createApp([
 			definePlugin(() => {
 				onCreated(() => {
 					// exec
-					addPlugins([personPlugin]);
+					addPlugins([ personPlugin ]);
 				});
 			}),
 		]));
@@ -29,7 +30,7 @@ describe('addPlugins', () => {
 		expect(app[pluginSymbol].has(personPlugin.id)).toBe(true);
 	});
 
-	it('should add plugins that depend on instanced plugins', ({task, autoDestroy}) => {
+	it('should add plugins that depend on instanced plugins', ({ task, autoDestroy }) => {
 		// setup
 		const app = autoDestroy(createApp(
 			[
@@ -37,26 +38,26 @@ describe('addPlugins', () => {
 				definePlugin(() => {
 					onCreated(() => {
 						// exec
-						addPlugins([borisPlugin]);
+						addPlugins([ borisPlugin ]);
 					});
 				}),
-			], {id: task.id}));
+			], { id: task.id }));
 
 		// validate
 		expect(app[pluginSymbol].has(borisPlugin.id)).toBe(true);
 	});
 
-	it('should add plugins that depends on plugins of the same batch', ({task, autoDestroy}) => {
+	it('should add plugins that depends on plugins of the same batch', ({ task, autoDestroy }) => {
 		// setup
 		const app = autoDestroy(
 			createApp([
 				definePlugin(() => {
 					onCreated(() => {
 						// exec
-						addPlugins([borisPlugin, personPlugin]);
+						addPlugins([ borisPlugin, personPlugin ]);
 					});
 				}),
-			], {id: task.id}));
+			], { id: task.id }));
 
 		// check
 		expect(app[pluginSymbol].has(personPlugin.id)).toBe(true);
@@ -84,7 +85,7 @@ describe('addPlugins', () => {
 						]);
 					});
 				}),
-			], {id: task.id}));
+			], { id: task.id }));
 
 		// check
 		expect(app[pluginSymbol].has(personPlugin.id)).toBe(true);
@@ -94,7 +95,7 @@ describe('addPlugins', () => {
 
 	it(
 		'should gracefully fail if plugins of the batch have a circular dependency between themselves',
-		({autoDestroy}) => {
+		({ autoDestroy }) => {
 			const pluginA = definePlugin(() => {
 				dependsOn(pluginB.id);
 			});
@@ -109,7 +110,7 @@ describe('addPlugins', () => {
 			app.emitter.on('failedPluginRegistration', spyOnFailedPluginRegistration);
 
 			// exec / check
-			expect(() => addPlugins([pluginA, pluginB], app)).not.toThrow();
+			expect(() => addPlugins([ pluginA, pluginB ], app)).not.toThrow();
 			// check
 			expect(spyOnFailedPluginRegistration).toHaveBeenCalledExactlyOnceWith({
 				app,
@@ -121,51 +122,51 @@ describe('addPlugins', () => {
 	// we can't introduce dependency cycles in an app where all plugin dependencies are already met
 	// that won't be true when we add optional dependencies, will that pose any issue ?
 
-	it('should accept an application context', ({autoDestroy}) => {
+	it('should accept an application context', ({ autoDestroy }) => {
 		// setup
 		const app = autoDestroy(createApp([]));
 
 		// exec / check
-		expect(() => addPlugins([definePlugin(noop)], app)).not.toThrow();
+		expect(() => addPlugins([ definePlugin(noop) ], app)).not.toThrow();
 	});
 
 	it(
 		'should error out if no application context is provided and execution is outside of an application context',
 		() => {
 			// exec / check
-			expect(() => addPlugins([definePlugin(noop)]))
+			expect(() => addPlugins([ definePlugin(noop) ]))
 				.toThrow(new TypeError(
 					'addPlugin called outside of an application context and no app instance passed as parameter.'));
 		},
 	);
 
-	it('should add the plugin to the application', ({task, autoDestroy}) => {
+	it('should add the plugin to the application', ({ task, autoDestroy }) => {
 		// setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const plugin = definePlugin(task.id, noop);
 
 		// exec
-		addPlugins([plugin], app);
+		addPlugins([ plugin ], app);
 
 		// check
 		expect(app[pluginSymbol].has(plugin.id)).toBeTruthy();
 	});
 
-	it('should build the plugin', ({task, autoDestroy}) => {
+	it('should build the plugin', ({ task, autoDestroy }) => {
 		//setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const setup = vi.fn();
 
 		// exec
-		addPlugins([definePlugin(setup)], app);
+		addPlugins([ definePlugin(setup) ], app);
 
 		// check
 		expect(setup).toHaveBeenCalledExactlyOnceWith(); // setup takes no arguments
 	});
 
-	it('should invoke the beforeCreate hook', ({task, autoDestroy}) => {
+	it('should invoke the beforeCreate hook', ({ task, autoDestroy }) => {
 		// setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const spy = vi.fn();
 
 		// exec
@@ -179,9 +180,9 @@ describe('addPlugins', () => {
 		expect(spy).toHaveBeenCalledExactlyOnceWith(app);
 	});
 
-	it('should invoke the beforeCreate hook before adding the plugin to the application', ({task, autoDestroy}) => {
+	it('should invoke the beforeCreate hook before adding the plugin to the application', ({ task, autoDestroy }) => {
 		// setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const plugin = definePlugin(() => {
 			onBeforeCreate(spy);
 		});
@@ -191,15 +192,15 @@ describe('addPlugins', () => {
 		});
 
 		// exec
-		addPlugins([plugin], app);
+		addPlugins([ plugin ], app);
 
 		// check
 		expect(spy).toHaveBeenCalledExactlyOnceWith(app);
 	});
 
-	it('should invoke the created hook', ({task, autoDestroy}) => {
+	it('should invoke the created hook', ({ task, autoDestroy }) => {
 		// setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const spy = vi.fn();
 
 		// exec
@@ -213,9 +214,9 @@ describe('addPlugins', () => {
 		expect(spy).toHaveBeenCalledExactlyOnceWith(app);
 	});
 
-	it('should invoke the created hook after adding the plugin to the application', ({task, autoDestroy}) => {
+	it('should invoke the created hook after adding the plugin to the application', ({ task, autoDestroy }) => {
 		// setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const plugin = definePlugin(() => {
 			onCreated(spy);
 		});
@@ -225,25 +226,25 @@ describe('addPlugins', () => {
 		});
 
 		// exec
-		addPlugins([plugin], app);
+		addPlugins([ plugin ], app);
 
 		// check
 		expect(spy).toHaveBeenCalledExactlyOnceWith(app);
 	});
 
-	it('should invoke the beforePluginRegistration hook', ({task, autoDestroy}) => {
+	it('should invoke the beforePluginRegistration hook', ({ task, autoDestroy }) => {
 		// setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const spy = vi.fn();
 
 		app.emitter.on('beforePluginRegistration', spy);
 
 		// exec
 		const plugin = definePlugin(noop);
-		addPlugins([plugin], app);
+		addPlugins([ plugin ], app);
 
 		// check
-		expect(spy).toHaveBeenCalledExactlyOnceWith({app, plugin: app[pluginSymbol].get(plugin.id)});
+		expect(spy).toHaveBeenCalledExactlyOnceWith({ app, plugin: app[pluginSymbol].get(plugin.id) });
 	});
 
 	it('should invoke the beforePluginRegistration hook before the plugin is added to the application', ({
@@ -251,7 +252,7 @@ describe('addPlugins', () => {
 		autoDestroy,
 	}) => {
 		// setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const plugin = definePlugin(noop);
 
 		// checks
@@ -262,12 +263,12 @@ describe('addPlugins', () => {
 		app.emitter.on('beforePluginRegistration', spy);
 
 		// exec
-		addPlugins([plugin], app);
+		addPlugins([ plugin ], app);
 	});
 
-	it('should invoke the beforePluginRegistration hook before the beforeCreate hook', ({task, autoDestroy}) => {
+	it('should invoke the beforePluginRegistration hook before the beforeCreate hook', ({ task, autoDestroy }) => {
 		// setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const spy = vi.fn();
 
 		app.emitter.on('beforePluginRegistration', () => spy('beforePluginRegistration'));
@@ -287,22 +288,22 @@ describe('addPlugins', () => {
 		// oxlint-enable
 	});
 
-	it('should invoke the pluginRegistered hook', ({task, autoDestroy}) => {
+	it('should invoke the pluginRegistered hook', ({ task, autoDestroy }) => {
 		// setup
-		const app = autoDestroy(createApp([], {id: task.id}));
+		const app = autoDestroy(createApp([], { id: task.id }));
 		const spy = vi.fn();
 
 		app.emitter.on('pluginRegistered', spy);
 
 		// exec
 		const plugin = definePlugin(task.id, noop);
-		addPlugins([plugin], app);
+		addPlugins([ plugin ], app);
 
 		// check
-		expect(spy).toHaveBeenCalledExactlyOnceWith({app, plugin: app[pluginSymbol].get(plugin.id)});
+		expect(spy).toHaveBeenCalledExactlyOnceWith({ app, plugin: app[pluginSymbol].get(plugin.id) });
 	});
 
-	it('should invoke the pluginRegistered hook after the plugin is added to the application', ({autoDestroy}) => {
+	it('should invoke the pluginRegistered hook after the plugin is added to the application', ({ autoDestroy }) => {
 		// setup
 		const app = autoDestroy(createApp([]));
 		const plugin = definePlugin(noop);
@@ -314,23 +315,25 @@ describe('addPlugins', () => {
 		app.emitter.on('pluginRegistered', spy);
 
 		// exec
-		addPlugins([plugin], app);
+		addPlugins([ plugin ], app);
 
 		// check
-		expect(spy).toHaveBeenCalledExactlyOnceWith({app, plugin: app[pluginSymbol].get(plugin.id)});
+		expect(spy).toHaveBeenCalledExactlyOnceWith({ app, plugin: app[pluginSymbol].get(plugin.id) });
 	});
 
 	describe('edge cases', () => {
-		it('should warn when a non plugin is passed in', ({autoDestroy}) => {
-			const app = autoDestroy(createApp([]));
+		it('should warn when a non plugin is passed in', ({ autoDestroy, warnSpy }) => {
+			const app = autoDestroy(createApp([ personPlugin ]));
 			const notAPlugin = vi.fn();
-
 
 			expect(() => addPlugins(
 				// @ts-expect-error we are checking that this fails
-				[notAPlugin],
+				[ notAPlugin ],
 				app,
-			)).toThrow(new Error(`Array items passed to addPlugins() should all be plugin definitions.`));
+			)).not.toThrow();
+
+			// expect(warnSpy).toHaveBeenCalledExactlyOnceWith('addPlugin() was passed a non plugin item', notAPlugin);
+			expectPrettyWarn(warnSpy, 'addPlugin() was passed a non plugin item', notAPlugin);
 		});
 	});
 });

@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, vi } from 'vitest';
 import { createApp, definePlugin, dependsOn, onCreated } from '../src';
 import personPlugin from './dummies/person.plugin';
-import { it } from './fixture/test-with-destroyable';
+import { expectPrettyWarn } from './fixture/expect.fixture';
+import { it } from './fixture/test.fixture';
 
 describe('application', () => {
 	const consoleWarn = vi.spyOn(console, 'warn');
@@ -10,11 +11,13 @@ describe('application', () => {
 		consoleWarn.mockReset();
 	});
 
-	it.todo('should instantiate with warning with not plugin', ({ task, autoDestroy }) => {
+	it('should instantiate with warning with not plugin', ({ task, autoDestroy, warnSpy }) => {
 		autoDestroy(createApp([], { id: task.id }));
 
-		expect(consoleWarn)
-			.toHaveBeenCalledWith(`Application "${ task.id }" initialized without plugin, did you forget to provide them ?`);
+		expectPrettyWarn(
+			warnSpy,
+			`Application "${ task.id }" initialized without plugin, did you forget to provide them ?`,
+		);
 	});
 
 	it('should instantiate a valid application', ({ task, autoDestroy }) => {

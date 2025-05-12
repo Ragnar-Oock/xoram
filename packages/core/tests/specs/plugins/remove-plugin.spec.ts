@@ -5,7 +5,7 @@ import { getActiveApp, setActiveApp } from '../../../src/application/active-app'
 import { pluginSymbol } from '../../../src/application/application.type';
 import borisPlugin from '../../dummies/boris.plugin';
 import personPlugin from '../../dummies/person.plugin';
-import { it } from '../../fixture/test-with-destroyable';
+import { it } from '../../fixture/test.fixture';
 
 describe('removePlugin', () => {
 	type TestCase = [ name: string, exec: (app: Application) => void ];
