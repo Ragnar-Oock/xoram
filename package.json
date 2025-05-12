@@ -18,5 +18,8 @@
     "apps/*",
     "packages/*",
     "config/*"
-  ]
+  ],
+  "dependencies": {
+    "@microsoft/api-extractor": "^7.52.7"
+  }
 }
