@@ -28,7 +28,10 @@ export function addService<id extends ServiceId>(id: id, service: ServiceCollect
  *
  * @internal
  */
-export function addService(serviceId: ServiceId, serviceOrFactory: Service | ServiceFactory<Service>): void {
+export function addService<id extends ServiceId>(
+	serviceId: id,
+	serviceOrFactory: ServiceCollection[id] | ServiceFactory<ServiceCollection[id]>,
+): void {
 	const plugin = getActivePlugin();
 
 	if (!plugin || plugin.phase !== 'setup') {
