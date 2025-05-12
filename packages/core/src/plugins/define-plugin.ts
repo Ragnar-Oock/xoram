@@ -27,30 +27,30 @@ export type PluginDefinition = {
  */
 export function definePlugin(setup: PluginSetup): PluginDefinition;
 /**
- * Define a named plugin using a provided id.
+ * Define a named plugin using a provided name.
  *
- * @param id the name of the plugin to recognize it by in logs, errors and tools. Will be used as the description of
+ * @param name the name of the plugin to recognize it by in logs, errors and tools. Will be used as the description of
  *   the symbol used for identifying the plugin.
  * @param setup the plugin setup function
  */
-export function definePlugin(id: string, setup: PluginSetup): PluginDefinition;
+export function definePlugin(name: string, setup: PluginSetup): PluginDefinition;
 /**
  * Use one of the overloads
  *
- * @param _idOrSetup an id for the (id, setup) overload or a setup function for the (setup) overload
- * @param _setup a setup function for the (id, setup) overload
+ * @param _nameOrSetup a name for the (name, setup) overload or a setup function for the (setup) overload
+ * @param _setup a setup function for the (name, setup) overload
  *
  * @internal
  */
-export function definePlugin(_idOrSetup: PluginSetup | string, _setup?: PluginSetup): PluginDefinition {
+export function definePlugin(_nameOrSetup: PluginSetup | string, _setup?: PluginSetup): PluginDefinition {
 	let id: PluginId, setup: PluginSetup;
-	if (typeof _idOrSetup === 'string' && typeof _setup === 'function') {
-		id = Symbol(_idOrSetup);
+	if (typeof _nameOrSetup === 'string' && typeof _setup === 'function') {
+		id = Symbol(_nameOrSetup);
 		setup = _setup;
 	}
-	else if (typeof _idOrSetup === 'function' && _setup === undefined) {
+	else if (typeof _nameOrSetup === 'function' && _setup === undefined) {
 		id = Symbol();
-		setup = _idOrSetup;
+		setup = _nameOrSetup;
 	}
 	else {
 		throw new TypeError('invalid definePlugin overload usage'); // todo make a better error
@@ -69,7 +69,7 @@ export function definePlugin(_idOrSetup: PluginSetup | string, _setup?: PluginSe
 			setup();
 		}
 		catch (error) {
-			handleError(error, plugin, getActiveApp(), 'setup');
+			handleError(error as Error | string, plugin, getActiveApp(), 'setup');
 		}
 		reset();
 
