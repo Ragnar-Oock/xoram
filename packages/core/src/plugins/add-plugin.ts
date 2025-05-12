@@ -2,8 +2,9 @@ import { getActiveApp } from '../application/active-app';
 import type { Application } from '../application/application.type';
 import { pluginSymbol } from '../application/application.type';
 import { warn } from '../warn.helper';
-import type { PluginDefinition } from './define-plugin';
+import { type PluginDefinition } from './define-plugin';
 import { playBeforeCreateHook, playCreatedHook } from './play-plugin-hook';
+import { isPluginLike } from './plugin.helper';
 import { sortPluginsByDependencies } from './sort';
 
 /**
@@ -38,14 +39,22 @@ export function addPlugins(definePlugins: PluginDefinition[], app = getActiveApp
 
 	const pluginCollection = app[pluginSymbol];
 
-	const plugins = definePlugins.map(setup => setup());
-	const [sorted, aborted] = sortPluginsByDependencies(plugins, pluginCollection);
+	const plugins = definePlugins
+		.filter(definition => {
+			const isPlugin = isPluginLike(definition);
+			if (import.meta.env.DEV && !isPlugin) {
+				warn('addPlugin() was passed a non plugin item', definition);
+			}
+			return isPlugin;
+		})
+		.map(setup => setup());
+	const [ sorted, aborted ] = sortPluginsByDependencies(plugins, pluginCollection);
 
 	if (aborted) {
 		if (import.meta.env.DEV) {
 			warn(aborted);
 		}
-		app.emitter.emit('failedPluginRegistration', {app, reason: aborted});
+		app.emitter.emit('failedPluginRegistration', { app, reason: aborted });
 		return;
 	}
 
@@ -79,5 +88,5 @@ export function addPlugin(definePlugin: PluginDefinition, app: Application): voi
  *
  */
 export function addPlugin(definePlugin: PluginDefinition, app = getActiveApp()): void {
-	addPlugins([definePlugin], app as Application);
+	addPlugins([ definePlugin ], app as Application);
 }
