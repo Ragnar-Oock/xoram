@@ -4,6 +4,7 @@ import type { Application } from '../application/application.type';
 import type { Service, ServiceId } from '../services/services.type';
 import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
+import type { OneOrMore } from './array.helper';
 import { toArray } from './array.helper';
 import { beforeDestroy, created } from './plugin-hooks.type';
 
@@ -194,7 +195,11 @@ export function onEvent<
  * @param handler the function to invoke when the event occurs
  * @internal
  */
-export function onEvent<notifications extends Notifications>(target: EventTarget<notifications>, on: string | string[], handler: (...args: never[]) => void): EventCleanup {
+export function onEvent<notifications extends Notifications>(
+	target: EventTarget<notifications>,
+	on: OneOrMore<string>,
+	handler: (...args: never[]) => void,
+): EventCleanup {
 	const plugin = getActivePlugin(),
 		events = toArray(on);
 	let off = () => {
