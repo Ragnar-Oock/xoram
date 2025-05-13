@@ -76,5 +76,5 @@ export default defineConfig({
 	},
 	srcDir: 'src',
 	outDir: 'dist',
-	base: '/zoram/',
+	base: '/',
 });
