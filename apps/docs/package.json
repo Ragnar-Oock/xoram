@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
-    "@zoram/core": "workspace:*"
+    "@zoram/core": "workspace:*",
+    "@repo/core-size-check": "workspace:*"
   },
   "devDependencies": {
     "@repo/config-typescript": "*",
