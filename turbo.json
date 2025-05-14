@@ -16,7 +16,7 @@
     },
     "build:types": {
       "dependsOn": [
-        "^build:code"
+        "^build:types"
       ],
       "outputs": [
         "temp/types/**",
@@ -26,6 +26,7 @@
     },
     "build:doc": {
       "dependsOn": [
+        "build:types",
         "^build:types",
         "^build:doc"
       ],
