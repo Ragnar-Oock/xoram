@@ -118,6 +118,8 @@ export type MergedEvents<
 > = UnionToIntersection<notifications[events[number]]>
 
 /**
+ * An idempotent cleanup function returned by `onEvent`. It allows you to remove any listener setup by the `onEvent`
+ * call before the plugin's teardown phase.
  * @public
  */
 export type EventCleanup = () => void;
@@ -267,20 +269,27 @@ export function onEvent<notifications extends Notifications>(
 		};
 	};
 
-	if (plugin.phase === 'setup') {
-		plugin.hooks.on(created, subscribe);
-	}
-	else {
-		const app = getActiveApp();
-		if (!app) {
-			if (import.meta.env.DEV) {
-				warn(new Error(onEventOutsidePlugin));
+	switch (plugin.phase) {
+		case 'setup':
+		case 'mount':
+			plugin.hooks.on(created, subscribe);
+			break;
+		case 'active':
+			const app = getActiveApp();
+			if (!app) {
+				if (import.meta.env.DEV) {
+					warn(new Error(onEventOutsidePlugin));
+				}
+
+				return () => off();
 			}
 
-			return () => off();
-		}
-
-		subscribe(app);
+			subscribe(app);
+			break;
+		default:
+			if (import.meta.env.DEV) {
+				warn(new Error(`Calling onEvent() during the ${ plugin.phase } phase of a plugin is a noop, did you use the wrong hook ?`));
+			}
 	}
 
 	plugin.hooks.on(beforeDestroy, () => {
