@@ -5,6 +5,8 @@
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/docs/src/api-reference" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/docs/.vitepress/cache/deps" />
       <excludePattern pattern=".turbo" />
     </content>
     <orderEntry type="inheritedJdk" />
