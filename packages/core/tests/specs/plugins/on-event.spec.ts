@@ -7,6 +7,7 @@ import {
 	definePlugin,
 	defineService,
 	dependsOn,
+	destroyApp,
 	onBeforeCreate,
 	onBeforeDestroy,
 	onCreated,
@@ -99,6 +100,15 @@ describe('onEvent', () => {
 			],
 		],
 		[
+			'overload 1:3 (+single event) onEvent(emitter, [\'eventA\'], handler)',
+			(callback) => [
+				onEvent(emitter, [ 'eventA' ], (...args) => {
+					handler(...args);
+					callback?.();
+				}), () => emitter,
+			],
+		],
+		[
 			'overload 2:1 onEvent({emitter}, \'*\', handler)',
 			(callback) => [
 				onEvent({ emitter }, '*', (...args) => {
@@ -120,6 +130,15 @@ describe('onEvent', () => {
 			'overload 2:3 onEvent({emitter}, [\'eventA\', \'eventB\'], handler)',
 			(callback) => [
 				onEvent({ emitter }, [ 'eventA', 'eventB' ], (...args) => {
+					handler(...args);
+					callback?.();
+				}), () => emitter,
+			],
+		],
+		[
+			'overload 2:3 (+single event) onEvent({emitter}, [\'eventA\'], handler)',
+			(callback) => [
+				onEvent({ emitter }, [ 'eventA' ], (...args) => {
 					handler(...args);
 					callback?.();
 				}), () => emitter,
@@ -153,6 +172,15 @@ describe('onEvent', () => {
 			],
 		],
 		[
+			'overload 3:3 (+single event) onEvent(app => app.services.service.emitter, [\'eventA\'], handler)',
+			(callback) => [
+				onEvent(app => app.services.service.emitter, [ 'eventA' ], (...args) => {
+					handler(...args);
+					callback?.();
+				}), getServiceEmitter,
+			],
+		],
+		[
 			'overload 4:1 onEvent(app => app.services.service, \'*\', handler)',
 			(callback) => [
 				onEvent(app => app.services.service, '*', (...args) => {
@@ -180,6 +208,15 @@ describe('onEvent', () => {
 			],
 		],
 		[
+			'overload 4:3 (+single event) onEvent(app => app.services.service, [\'eventA\'], handler)',
+			(callback) => [
+				onEvent(app => app.services.service, [ 'eventA' ], (...args) => {
+					handler(...args);
+					callback?.();
+				}), getServiceEmitter,
+			],
+		],
+		[
 			'overload 5:1 onEvent(\'service\', \'*\', handler)',
 			(callback) => [
 				onEvent('service', '*', (...args) => {
@@ -201,6 +238,15 @@ describe('onEvent', () => {
 			'overload 5:3 onEvent(\'service\', [\'eventA\', \'eventB\'], handler)',
 			(callback) => [
 				onEvent('service', [ 'eventA', 'eventB' ], (...args) => {
+					handler(...args);
+					callback?.();
+				}), getServiceEmitter,
+			],
+		],
+		[
+			'overload 5:3 (+single event) onEvent(\'service\', [\'eventA\'], handler)',
+			(callback) => [
+				onEvent('service', [ 'eventA' ], (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -414,19 +460,109 @@ describe('onEvent', () => {
 
 			expect(handler).toHaveBeenCalledWith(bob);
 		});
-		it.todo('should invoke the handler that was passed in', () => {
+		it('should invoke the handler that was passed in', () => {
+			createApp([
+				definePlugin(() => {
+					onEvent(emitter, 'eventA', handler);
+				}),
+			]);
+
+			emitter.emit('eventA', eventA);
+
+			expect(handler).toHaveBeenCalledOnce();
 		});
-		it.todo('should invoke the handler only when one of the specified events is emitted by the target', () => {
+		it('should invoke the handler only when one of the specified events is emitted by the target', () => {
+			createApp([
+				definePlugin(() => {
+					onEvent(emitter, 'eventA', handler);
+				}),
+			]);
+
+			emitter.emit('eventA', eventA);
+			emitter.emit('eventB', eventB);
+
+			expect(handler).toHaveBeenCalledOnce();
 		});
-		it.todo('should invoke the handler every time the event is emitted', () => {
+		it('should invoke the handler every time the event is emitted', () => {
+			createApp([
+				definePlugin(() => {
+					onEvent(emitter, 'eventA', handler);
+				}),
+			]);
+
+			emitter.emit('eventA', eventA);
+			emitter.emit('eventA', eventA);
+
+			expect(handler).toHaveBeenCalledTimes(2);
 		});
-		it.todo('should invoke the handler with the event payload (single and multi overloads)', () => {
+		it('should invoke the handler with the event payload (single overloads)', () => {
+			createApp([
+				definePlugin(() => {
+					onEvent(emitter, 'eventA', handler);
+				}),
+			]);
+
+			emitter.emit('eventA', eventA);
+
+			expect(handler).toHaveBeenCalledWith(eventA);
 		});
-		it.todo('should invoke the handler with the event name and payload (wildcard overload)', () => {
+		it('should invoke the handler with the event payload (multi overloads)', () => {
+			createApp([
+				definePlugin(() => {
+					onEvent(emitter, [ 'eventA', 'eventB' ], handler);
+				}),
+			]);
+
+			emitter.emit('eventA', eventA);
+
+			expect(handler).toHaveBeenCalledExactlyOnceWith(eventA);
 		});
-		it.todo('should be scoped to the target emitter', () => {
+		it('should invoke the handler with the event payload (multi overloads with single event)', () => {
+			createApp([
+				definePlugin(() => {
+					onEvent(emitter, [ 'eventA' ], handler);
+				}),
+			]);
+
+			emitter.emit('eventA', eventA);
+
+			expect(handler).toHaveBeenCalledExactlyOnceWith(eventA);
 		});
-		it.todo('should not be invoked after cleanup', () => {
+		it('should invoke the handler with the event name and payload (wildcard overload)', () => {
+			createApp([
+				definePlugin(() => {
+					onEvent(emitter, '*', handler);
+				}),
+			]);
+
+			emitter.emit('eventA', eventA);
+
+			expect(handler).toHaveBeenCalledExactlyOnceWith('eventA', eventA);
+		});
+		it('should be scoped to the target emitter', () => {
+			const service = defineService<Notifications>()();
+			createApp([
+				definePlugin(() => {
+					onEvent(emitter, '*', handler);
+				}),
+			]);
+
+			service.emitter.emit('eventA', eventA);
+
+			expect(handler).toHaveBeenCalledTimes(0);
+		});
+		it('should not be invoked after cleanup', () => {
+			destroyApp(
+				createApp([
+					definePlugin(() => {
+						onEvent(emitter, '*', handler);
+					}),
+				]),
+			);
+
+			emitter.emit('eventA', eventA);
+
+			expect(handler).toHaveBeenCalledTimes(0);
 		});
 	});
 
