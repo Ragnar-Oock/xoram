@@ -431,13 +431,6 @@
         "logLevel": "warning"
         // "addToApiReportFile": false
       },
-      "tsdoc-link-tag-destination-syntax": {
-        logLevel: "none"
-      },
-      "tsdoc-reference-missing-dot": {
-        logLevel: "none"
-      }
-
       // "tsdoc-link-tag-unescaped-text": {
       //   "logLevel": "warning",
       //   "addToApiReportFile": true
