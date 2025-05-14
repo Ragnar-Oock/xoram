@@ -36,7 +36,7 @@ export const myService = defineService();
 Note the generic parameter passed to `defineService` in the typescript version,
 it is used to type the events that you will emit from the service. You can learn
 more about typed event
-on [their dedicated page](/guide/plugins-in-depth/typing-events).
+on [their dedicated page](/guide/concepts-in-depth/typing-events).
 
 ## Defining a service
 
@@ -69,7 +69,7 @@ the `addService` function.
 You can't use `addService` at any other time because it would mean that a plugin
 that depends on yours might try to access your service before it is added to the
 app. If you need to delay the registration of a service use
-an [AsyncPlugin](../plugins-in-depth/asynchronous-plugins.md) instead.
+an [AsyncPlugin](../concepts-in-depth/asynchronous-plugins.md) instead.
 
 ```js
 import {myService} from './my-service';
@@ -98,7 +98,7 @@ depending on your service can access it reliably.
 other time can lead to errors if another plugin tries to access your service
 before it's been registered and is thus not allowed. If you need to register the
 service asynchronously, consider using
-an [AsyncPlugin](/guide/plugins-in-depth/asynchronous-plugins).
+an [AsyncPlugin](/guide/concepts-in-depth/asynchronous-plugins).
 
 :::
 

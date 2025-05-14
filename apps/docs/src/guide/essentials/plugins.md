@@ -22,7 +22,7 @@ export default definePlugin(/* setup */ () => {
 ::: info
 
 The setup function is called as part of the `setup` phase of the plugin, you can
-learn more about that on the [life cycles](/guide/plugins-in-depth/life-cycle)
+learn more about that on the [life cycles](/guide/concepts-in-depth/life-cycle)
 page.
 
 :::
