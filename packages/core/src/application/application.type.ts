@@ -59,7 +59,7 @@ export const serviceSymbol = Symbol('services');
  * Optional configuration options for an application.
  * @public
  */
-export type ApplicationOptions = {
+export interface ApplicationOptions {
 	/**
 	 * A name to identify an application in error messages and dev tools.
 	 */
@@ -77,7 +77,7 @@ export type ApplicationOptions = {
  *
  * @public
  */
-export type Application = {
+export interface Application {
 	/**
 	 * The name of the application, will be useful when debugging if you have more than one
 	 * application in a given environment.

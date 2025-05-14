@@ -35,11 +35,12 @@ export type PluginId = symbol;
  * @internal
  */
 export type _PluginPhase = 'setup' | 'mount' | 'active' | 'teardown' | 'destroyed';
+
 /**
  * An instance of a plugin as returned by a {@link PluginDefinition | `PluginDefinition`}.
  * @public
  */
-export type DefinedPlugin = {
+export interface DefinedPlugin {
 	/**
 	 * Identifies a plugin in an application.
 	 * It is used internally to resolve dependencies between plugins.

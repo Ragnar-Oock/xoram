@@ -22,10 +22,17 @@ export type PluginSetup = () => void;
  *
  * @public
  */
-export type PluginDefinition = {
+export interface PluginDefinition {
+	/**
+	 * The plugin's constructor
+	 */
 	(): DefinedPlugin;
+
+	/**
+	 * The unique id of the plugin, it is the same as the one on the {@link DefinedPlugin} returned by the constructor.
+	 */
 	id: PluginId;
-};
+}
 
 /**
  * Define an anonymous plugin using a generated id
