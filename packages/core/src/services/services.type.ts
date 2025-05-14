@@ -21,9 +21,14 @@ export interface ServiceNotifications {
 }
 
 /**
+ * The minimal requirement for a service.
+ * A service matching this interface precisely (i.e. without any other public member) is referred to as a `Topic`.
  * @public
  */
 export interface Service<notifications extends Record<string, unknown> = Record<string, unknown>> {
+	/**
+	 * The event emitter that enables the use of {@link (onEvent:1)}/{@link (onEvent:2)}/{@link (onEvent:3)} on services.
+	 */
 	emitter: Emitter<notifications & ServiceNotifications>;
 }
 
