@@ -2,7 +2,7 @@ import { getActiveApp } from '../application/active-app';
 import { emitter } from '../emitter';
 import { handleError } from '../error-handling';
 import { setActivePlugin } from './active-plugin';
-import type { DefinedPlugin, PluginId, PluginPhase } from './plugin.type';
+import type { _PluginPhase, DefinedPlugin, PluginId } from './plugin.type';
 
 
 /**
@@ -14,6 +14,9 @@ export type PluginSetup = () => void;
 
 /**
  * A factory function that returns a defined plugin ready to be added to an application.
+ *
+ * Created by calling {@link (definePlugin:1)} or
+ * {@link (definePlugin:2) | definePlugin(id, setup)}
  *
  * @see definePlugin
  *
@@ -42,14 +45,7 @@ export function definePlugin(setup: PluginSetup): PluginDefinition;
  * @public
  */
 export function definePlugin(name: string, setup: PluginSetup): PluginDefinition;
-/**
- * Use one of the overloads
- *
- * @param _nameOrSetup - a name for the (name, setup) overload or a setup function for the (setup) overload
- * @param _setup - a setup function for the (name, setup) overload
- *
- * @internal
- */
+
 export function definePlugin(_nameOrSetup: PluginSetup | string, _setup?: PluginSetup): PluginDefinition {
 	let id: PluginId, setup: PluginSetup;
 	if (typeof _nameOrSetup === 'string' && typeof _setup === 'function') {
@@ -69,7 +65,7 @@ export function definePlugin(_nameOrSetup: PluginSetup | string, _setup?: Plugin
 			id,
 			dependencies: [],
 			hooks: emitter(),
-			phase: 'setup' as PluginPhase,
+			phase: 'setup' as _PluginPhase,
 		} satisfies DefinedPlugin;
 
 		const reset = setActivePlugin(plugin);

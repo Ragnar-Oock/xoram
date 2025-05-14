@@ -32,8 +32,8 @@ export type {
 } from './on-event.composable';
 export { onEvent } from './on-event.composable';
 
-export type { ApplicationPluginHooks, _PluginHooks, PluginHook } from './plugin-hooks.type';
+export type { ApplicationPluginHooks, _PluginHooks } from './plugin-hooks.type';
 
-export type { DefinedPlugin, PluginId, PluginPhase } from './plugin.type';
+export type { DefinedPlugin, PluginId, _PluginPhase } from './plugin.type';
 
 export { removePlugin } from './remove-plugin';
