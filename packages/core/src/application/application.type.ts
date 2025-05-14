@@ -16,6 +16,7 @@ export type ApplicationPluginEvent = {
 	plugin: DefinedPlugin,
 }
 /**
+ * Event's emitted by the {@link Application}'s own event emitter.
  * @public
  */
 export type ApplicationHooks = ApplicationServiceHooks & ApplicationPluginHooks;
@@ -23,6 +24,25 @@ export type ApplicationHooks = ApplicationServiceHooks & ApplicationPluginHooks;
 /**
  * Register your service in this interface by augmenting it
  * @public
+ *
+ * @example
+ * ```ts
+ * import {ServiceCollection} from '@zoram/core';
+ *
+ * export type MyServiceNotifications = {
+ *   // your service events if any
+ * }
+ *
+ * export interface MyService extends Service<MyServiceNotifications> {
+ *   // your service's public members if any
+ * }
+ *
+ * declare module '@zoram/core' {
+ *   // a comment here will show up in the intellisence when accessing app.services.myService
+ *   myService: MyService;
+ *   myTopic: Service<MyServiceNotifications>;
+ * }
+ * ```
  */
 // oxlint-disable-next-line no-empty-interface, no-empty-object-type
 export interface ServiceCollection {
