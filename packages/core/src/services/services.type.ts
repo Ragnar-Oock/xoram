@@ -34,6 +34,7 @@ export interface Service<notifications extends Record<string, unknown> = Record<
 export type ApplicationServiceHooks = {
 	/**
 	 * Fired before a service is added to the application
+	 * @eventProperty
 	 *
 	 * @todo make it preventable ?
 	 */
@@ -44,6 +45,7 @@ export type ApplicationServiceHooks = {
 	};
 	/**
 	 * Fired when a service has been added to the application
+	 * @eventProperty
 	 */
 	serviceAdded: {
 		app: Application,
@@ -52,6 +54,7 @@ export type ApplicationServiceHooks = {
 	};
 	/**
 	 * Fired before a service is removed from the application, can be used to do some cleanup.
+	 * @eventProperty
 	 */
 	beforeServiceRemoved: {
 		app: Application,
@@ -60,6 +63,7 @@ export type ApplicationServiceHooks = {
 	};
 	/**
 	 * Fired after the service has been removed from the application
+	 * @eventProperty
 	 */
 	serviceRemoved: {
 		app: Application,

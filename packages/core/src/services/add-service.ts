@@ -5,6 +5,8 @@ import { warn } from '../warn.helper';
 import type { Service, ServiceId } from './services.type';
 
 /**
+ * Build and return a service object, the provided app can be used to access already registered services or to listen
+ * to {@link ApplicationHooks}.
  * @public
  */
 export type ServiceFactory<service extends Service> = (application: Application) => service;

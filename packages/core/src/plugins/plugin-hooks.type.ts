@@ -10,26 +10,32 @@ export type ApplicationPluginHooks = {
 	 * Fired before a plugin is added to the application, the plugin is in its {@link _PluginPhase | `mount` phase} and
 	 * the
 	 * {@link _PluginHooks#beforeCreate | `beforeCreate` hook} has not been invoked yet.
+	 *
+	 * @eventProperty
 	 */
 	beforePluginRegistration: ApplicationPluginEvent;
 	/**
 	 * Fired after the transition to the plugin's {@link _PluginPhase | `active` phase}, after it's
 	 * {@link _PluginHooks#created | `created` hook} has been invoked and the plugin added to the application.
+	 * @eventProperty
 	 */
 	pluginRegistered: ApplicationPluginEvent
 	/**
 	 * Fired after a plugin enters its {@link _PluginPhase | `teardown` phase} but before it's
 	 * {@link _PluginHooks#beforeDestroy | `beforeDestroyed` hook} is invoked.
+	 * @eventProperty
 	 */
 	beforePluginRemoved: ApplicationPluginEvent;
 	/**
 	 * Fired after the transition to the plugin's {@link _PluginPhase | `destroyed` phase}, after it's
 	 * {@link _PluginHooks#destroyed | `destroyed` hook} has been invoked and the plugin removed from the application.
+	 * @eventProperty
 	 */
 	pluginRemoved: ApplicationPluginEvent;
 
 	/**
 	 * Fired after a plugin registration was attempted but could not succeed.
+	 * @eventProperty
 	 *
 	 * @see onFailedPluginRegistration
 	 */

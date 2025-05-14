@@ -33,6 +33,7 @@ function getDependents(app: Application, plugin: DefinedPlugin): DefinedPlugin[]
  * @param idOrPlugin - the plugin to remove or its id
  *
  * @public
+ * {@label REMOVE_PLUGIN}
  */
 export function removePlugin(idOrPlugin: PluginId | DefinedPlugin): void;
 /**
@@ -42,6 +43,8 @@ export function removePlugin(idOrPlugin: PluginId | DefinedPlugin): void;
  * @param app - the app to remove the plugin from
  *
  * @public
+ *
+ * {@label REMOVE_PLUGIN_WITH_CONTEXT}
  */
 export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app: Application): void;
 /**

@@ -15,7 +15,7 @@ export type PluginSetup = () => void;
 /**
  * A factory function that returns a defined plugin ready to be added to an application.
  *
- * Created by calling {@link (definePlugin:1)} or
+ * Created by calling {@link (definePlugin:1) | definePlugin(setup)} or
  * {@link (definePlugin:2) | definePlugin(id, setup)}
  *
  * @see definePlugin
