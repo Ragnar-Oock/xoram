@@ -873,15 +873,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@repo/ui@npm:*, @repo/ui@workspace:*, @repo/ui@workspace:packages/ui":
-  version: 0.0.0-use.local
-  resolution: "@repo/ui@workspace:packages/ui"
-  dependencies:
-    "@repo/config-typescript": "workspace:*"
-    typescript: "npm:^5.8.3"
-  languageName: unknown
-  linkType: soft
-
 "@rollup/rollup-android-arm-eabi@npm:4.39.0":
   version: 4.39.0
   resolution: "@rollup/rollup-android-arm-eabi@npm:4.39.0"
@@ -2064,7 +2055,6 @@ __metadata:
   dependencies:
     "@repo/config-typescript": "npm:*"
     "@repo/core-size-check": "workspace:*"
-    "@repo/ui": "workspace:*"
     "@zoram/core": "workspace:*"
     typescript: "npm:^5.8.3"
     vite: "npm:^6.3.3"
@@ -4217,17 +4207,6 @@ __metadata:
   checksum: 10c0/4bbb5caf3f04fed933b01c100804f3693ff902984a3152ea1359a972264fa3240f6551d32f0163a79c64df3715b4d6691818c9f652cdd41b2473c69e2b0a373d
   languageName: node
   linkType: hard
-
-"web@workspace:apps/web":
-  version: 0.0.0-use.local
-  resolution: "web@workspace:apps/web"
-  dependencies:
-    "@repo/config-typescript": "npm:*"
-    "@repo/ui": "npm:*"
-    typescript: "npm:^5.8.3"
-    vite: "npm:^6.3.3"
-  languageName: unknown
-  linkType: soft
 
 "which@npm:^2.0.1":
   version: 2.0.2
