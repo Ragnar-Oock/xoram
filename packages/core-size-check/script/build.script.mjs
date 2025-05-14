@@ -1,12 +1,13 @@
-import {mkdirSync, readdirSync, rmSync, writeFileSync} from 'node:fs';
+import {existsSync, mkdirSync, readdirSync, rmSync, writeFileSync} from 'node:fs';
 import {brotliCompressSync, deflateSync, gzipSync} from 'node:zlib';
 import {normalize, parse} from 'node:path';
 import {build} from 'vite';
 
 // clear dist folder
-rmSync('./dist', {recursive: true});
-mkdirSync('./dist');
-
+if (existsSync('./dist')) {
+	rmSync('./dist', {recursive: true});
+	mkdirSync('./dist');
+}
 // get build cases
 const cases = readdirSync(normalize('./src'));
 
