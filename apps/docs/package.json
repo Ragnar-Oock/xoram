@@ -10,9 +10,8 @@
     "lint": "oxlint \"src/**/*.ts\""
   },
   "dependencies": {
-    "@repo/ui": "workspace:*",
-    "@zoram/core": "workspace:*",
-    "@repo/core-size-check": "workspace:*"
+    "@repo/core-size-check": "workspace:*",
+    "@zoram/core": "workspace:*"
   },
   "devDependencies": {
     "@repo/config-typescript": "*",
