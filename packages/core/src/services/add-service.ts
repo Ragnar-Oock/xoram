@@ -12,7 +12,7 @@ export type ServiceFactory<service extends Service> = (application: Application)
 /**
  * Register a service the depends on another or on the application.
  *
- * @param id - the id to register the service under, **MUST** be unique
+ * @param id - the id to register the service under, <b>MUST</b> be unique
  * @param serviceFactory - a function taking in the application instance and returning a ready to use service
  *
  * @public
@@ -21,7 +21,7 @@ export function addService<id extends ServiceId>(id: id, serviceFactory: Service
 /**
  * Register a self-contained service with no dependency.
  *
- * @param id - the id to register the service under, **MUST** be unique
+ * @param id - the id to register the service under, <b>MUST</b> be unique
  * @param service -  a ready to use service instance
  *
  * @public

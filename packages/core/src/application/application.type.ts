@@ -50,7 +50,7 @@ export type ApplicationOptions = {
 }
 
 /**
- * An application instance as returned by {@link import('@zoram/core').createApp `createApp`}.
+ * An application instance as returned by {@link @zoram/core#createApp | `createApp`}.
  *
  * @public
  */
@@ -80,7 +80,7 @@ export type Application = {
 	[pluginSymbol]: Map<PluginId, DefinedPlugin>;
 
 	/**
-	 * The `options` parameter as passed to {@link import('@zoram/core').createApp `createApp`}
+	 * The `options` parameter as passed to {@link @zoram/core#createApp | `createApp`}
 	 */
 	readonly options: Partial<ApplicationOptions>;
 

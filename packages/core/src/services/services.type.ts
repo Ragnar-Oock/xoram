@@ -2,11 +2,14 @@ import type { Emitter } from 'mitt';
 import type { Application, ServiceCollection } from '../application';
 
 /**
- * Events that all {@link Service `services`} are subject to emit.
+ * Events that all {@link Service | `services`} are subject to emit.
  *
  * @public
  */
 export interface ServiceNotifications {
+	/**
+	 * @eventProperty
+	 */
 	'before_destroy': {
 		/**
 		 * The service that emitted the event
