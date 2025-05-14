@@ -1,10 +1,12 @@
-import {mkdirSync, readFileSync, rmSync} from 'node:fs';
+import {existsSync, mkdirSync, readFileSync, rmSync} from 'node:fs';
 import {spawn} from 'node:child_process';
 
 
 // clear dist folder
-rmSync('./dist', {recursive: true});
-mkdirSync('./dist');
+if (existsSync('./dist')) {
+	rmSync('./dist', {recursive: true});
+	mkdirSync('./dist');
+}
 
 const pkg = JSON.parse(readFileSync('package.json', {encoding: 'utf-8'}));
 
