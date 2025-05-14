@@ -864,7 +864,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@repo/core-size-check@workspace:packages/core-size-check":
+"@repo/core-size-check@workspace:*, @repo/core-size-check@workspace:packages/core-size-check":
   version: 0.0.0-use.local
   resolution: "@repo/core-size-check@workspace:packages/core-size-check"
   dependencies:
@@ -2063,6 +2063,7 @@ __metadata:
   resolution: "docs@workspace:apps/docs"
   dependencies:
     "@repo/config-typescript": "npm:*"
+    "@repo/core-size-check": "workspace:*"
     "@repo/ui": "workspace:*"
     "@zoram/core": "workspace:*"
     typescript: "npm:^5.8.3"
