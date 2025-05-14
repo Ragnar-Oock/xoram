@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "size checks",
   "scripts": {
-    "build": "node ./script/build.script.mjs"
+    "build:code": "node ./script/build.script.mjs"
   },
   "type": "module",
   "private": true,
