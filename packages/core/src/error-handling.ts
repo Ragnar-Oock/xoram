@@ -2,12 +2,12 @@ import { getActiveApp } from './application/active-app';
 import type { Application, ApplicationHooks } from './application/application.type';
 import type { _PluginHooks, DefinedPlugin } from './plugins';
 import { getActivePlugin } from './plugins/active-plugin';
-import type { AsyncPluginErrors } from './plugins/define-async-plugin';
+import type { _AsyncPluginErrors } from './plugins/define-async-plugin';
 import { warn } from './warn.helper';
 
 
 // todo check if all error context are listed here and if they can all occur
-export type ErrorContext = keyof _PluginHooks | keyof ApplicationHooks | AsyncPluginErrors | 'onEvent' | 'unknown';
+export type ErrorContext = keyof _PluginHooks | keyof ApplicationHooks | _AsyncPluginErrors | 'onEvent' | 'unknown';
 
 /**
  *

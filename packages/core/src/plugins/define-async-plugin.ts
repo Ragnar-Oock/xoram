@@ -11,19 +11,23 @@ import { dependsOn } from './depends-on.composable';
 import type { DefinedPlugin, PluginId } from './plugin.type';
 import { removePlugin } from './remove-plugin';
 
-export type AsyncPluginError = {
+/**
+ * @internal
+ */
+export type _AsyncPluginError = {
 	/**
-	 * @deprecated
+	 * sent when the `when` callback of `defineAsyncPlugin` throws synchronously or returns a rejecting promise
 	 */
 	asyncPluginCondition: never;
 	/**
-	 * sent when the importer function passed to `defineAsyncPlugin` fails
+	 * sent when the importer function passed to `defineAsyncPlugin` throw synchronously or returns a rejecting promise
 	 */
 	asyncPluginImport: never;
 }
-
-export type AsyncPluginErrors = keyof AsyncPluginError;
-
+/**
+ * @internal
+ */
+export type _AsyncPluginErrors = keyof _AsyncPluginError;
 
 /**
  * Load a set of plugins in the application when a condition is met
@@ -31,12 +35,40 @@ export type AsyncPluginErrors = keyof AsyncPluginError;
  * @param importer - a function to load the plugins asynchronously
  * @param when - the condition to await
  * @param dependencies - a list of plugins that the condition depends on
- * @param done - called once the plugins are added to the app, only used during testing
  *
  * @returns a plugin to set up the condition and load the plugin when it is met
  *
  * @public
+ *
+ * {@label DEFINE_ASYNC_PLUGIN}
  */
+export function defineAsyncPlugin(
+	importer: () => Promise<OneOrMore<PluginDefinition>>,
+	when: (app: Application) => Promise<void>,
+	dependencies?: PluginId[],
+): PluginDefinition;
+
+/**
+ * Load a set of plugins in the application when a condition is met.
+ *
+ * This override is only available during testing.
+ *
+ * @param importer - a function to load the plugins asynchronously
+ * @param when - the condition to await
+ * @param dependencies - a list of plugins that the condition depends on
+ * @param done - called once the plugins are added to the app, only used during testing
+ *
+ * @internal
+ *
+ * {@label DEFINE_ASYNC_PLUGIN_INTERNAL}
+ */
+export function defineAsyncPlugin(
+	importer: () => Promise<OneOrMore<PluginDefinition>>,
+	when: (app: Application) => Promise<void>,
+	dependencies?: PluginId[],
+	done?: (app: Application, plugin: DefinedPlugin) => void,
+): PluginDefinition;
+
 export function defineAsyncPlugin(
 	importer: () => Promise<OneOrMore<PluginDefinition>>,
 	when: (app: Application) => Promise<void>,
