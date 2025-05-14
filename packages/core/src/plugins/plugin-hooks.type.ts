@@ -1,4 +1,4 @@
-import type { Application, ApplicationPluginEvent } from '../application';
+import type { Application, ApplicationPluginLifeCycleEvent } from '../application';
 
 /**
  * Plugin related hooks emitted by the application.
@@ -13,25 +13,25 @@ export type ApplicationPluginHooks = {
 	 *
 	 * @eventProperty
 	 */
-	beforePluginRegistration: ApplicationPluginEvent;
+	beforePluginRegistration: ApplicationPluginLifeCycleEvent;
 	/**
 	 * Fired after the transition to the plugin's {@link _PluginPhase | `active` phase}, after it's
 	 * {@link _PluginHooks#created | `created` hook} has been invoked and the plugin added to the application.
 	 * @eventProperty
 	 */
-	pluginRegistered: ApplicationPluginEvent
+	pluginRegistered: ApplicationPluginLifeCycleEvent
 	/**
 	 * Fired after a plugin enters its {@link _PluginPhase | `teardown` phase} but before it's
 	 * {@link _PluginHooks#beforeDestroy | `beforeDestroyed` hook} is invoked.
 	 * @eventProperty
 	 */
-	beforePluginRemoved: ApplicationPluginEvent;
+	beforePluginRemoved: ApplicationPluginLifeCycleEvent;
 	/**
 	 * Fired after the transition to the plugin's {@link _PluginPhase | `destroyed` phase}, after it's
 	 * {@link _PluginHooks#destroyed | `destroyed` hook} has been invoked and the plugin removed from the application.
 	 * @eventProperty
 	 */
-	pluginRemoved: ApplicationPluginEvent;
+	pluginRemoved: ApplicationPluginLifeCycleEvent;
 
 	/**
 	 * Fired after a plugin registration was attempted but could not succeed.

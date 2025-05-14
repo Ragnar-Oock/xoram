@@ -3,9 +3,11 @@ import type { ApplicationPluginHooks, DefinedPlugin, PluginId } from '../plugins
 import type { ApplicationServiceHooks, Service } from '../services/services.type';
 
 /**
+ * The payload of an event emitted by the application as part of a plugin's life cycle.
+ * @see https://zoram.dev/guide/concepts-in-depth/life-cycle
  * @public
  */
-export type ApplicationPluginEvent = {
+export type ApplicationPluginLifeCycleEvent = {
 	/**
 	 * The application that emitted the event and that is set as a context for the plugin to use.
 	 */
@@ -52,6 +54,7 @@ export interface ServiceCollection {
 
 export const pluginSymbol = Symbol('plugins');
 export const serviceSymbol = Symbol('services');
+
 /**
  * Optional configuration options for an application.
  * @public

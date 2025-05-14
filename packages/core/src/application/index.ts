@@ -4,7 +4,7 @@ export type {
 	Application,
 	ServiceCollection,
 	ApplicationHooks,
-	ApplicationPluginEvent,
+	ApplicationPluginLifeCycleEvent,
 	ApplicationOptions,
 } from './application.type';
 
