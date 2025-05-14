@@ -23,17 +23,20 @@ function definePluginHooks(name: keyof _PluginHooks): (callback: ((app: Applicat
  * Add a callback to be called between the dependency resolution and adding the plugins to the application
  *
  * @public
+ * @see https://zoram.dev/guide/concepts-in-depth/life-cycle
  */
 export const onBeforeCreate = definePluginHooks(beforeCreate);
 /**
  * Add a callback to be called before the plugin is removed from the application
  *
  * @public
+ * @see https://zoram.dev/guide/concepts-in-depth/life-cycle
  */
 export const onBeforeDestroy = definePluginHooks(beforeDestroy);
 /**
  * Add a callback to be called when the plugin is added to the application
  *
  * @public
+ * @see https://zoram.dev/guide/concepts-in-depth/life-cycle
  */
 export const onCreated = definePluginHooks(created);

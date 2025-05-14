@@ -125,7 +125,7 @@ export type EventCleanup = () => void;
 const onEventOutsidePlugin = 'onEvent was invoked outside of a plugin setup function or hook.';
 
 /**
- * Listen to multiple events the same source at once and cleanly stop to listen when the plugin is disposed off.
+ * Listen to multiple events from the same source at once and cleanly stop to listen when the plugin is disposed off.
  *
  * @example
  * ```ts
@@ -143,6 +143,10 @@ const onEventOutsidePlugin = 'onEvent was invoked outside of a plugin setup func
  * @param handler - callback to invoke when any of the events in `on` is emitted by `target`
  *
  * @public
+ *
+ * {@label ON_MULTIPLE_EVENT}
+ *
+ * @see https://zoram.dev/guide/concepts-in-depth/listening-to-events#listening-to-a-set-of-events
  */
 export function onEvent<
 	notifications extends Notifications,
@@ -175,6 +179,10 @@ export function onEvent<
  * @param handler - callback to invoke when any event is emitted by `target`
  *
  * @public
+ *
+ * {@label ON_ANY_EVENT}
+ *
+ * @see https://zoram.dev/guide/concepts-in-depth/listening-to-events#listening-to-all-events
  */
 export function onEvent<
 	notifications extends Notifications,
@@ -203,6 +211,10 @@ export function onEvent<
  * @param handler - callback to invoke when the event is emitted by `target`
  *
  * @public
+ *
+ * {@label ON_SINGLE_EVENT}
+ *
+ * @see https://zoram.dev/guide/concepts-in-depth/listening-to-events
  */
 export function onEvent<
 	notifications extends Notifications,

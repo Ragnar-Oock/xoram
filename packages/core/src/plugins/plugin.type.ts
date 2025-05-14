@@ -30,6 +30,7 @@ export type PluginId = symbol;
  * to it should be removed so it can be garbage collected.
  *
  * @see {@link _PluginHooks} for a listing of all the hooks emitted by a plugin.
+ * @see http://localhost:5173/guide/concepts-in-depth/life-cycle
  *
  * @internal
  */
