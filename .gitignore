@@ -11,4 +11,12 @@ server/dist
 public/dist
 /.yarn/install-state.gz
 **/tsdoc-metadata.json
+
+# === packages stuff ===
+
+# exclude temporary files
 /packages/**/temp/
+# exclude generated types declaration
+/packages/**/types/
+# preserve api report file
+!/packages/**/types/*.api.md

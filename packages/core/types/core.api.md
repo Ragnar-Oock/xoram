@@ -28,40 +28,42 @@ export function addService<id extends ServiceId>(id: id, serviceFactory: Service
 export function addService<id extends ServiceId>(id: id, service: ServiceCollection[id]): void;
 
 // @public
-export type Application = {
-    readonly id: string;
-    readonly emitter: Emitter<ApplicationHooks>;
-    readonly services: Readonly<ServiceCollection>;
+export interface Application {
+    // @internal
     [pluginSymbol]: Map<PluginId, DefinedPlugin>;
-    readonly options: Partial<ApplicationOptions>;
     alive: boolean;
-};
+    // @internal
+    readonly emitter: Emitter<ApplicationHooks>;
+    readonly id: string;
+    readonly options: Partial<ApplicationOptions>;
+    readonly services: Readonly<ServiceCollection>;
+}
 
-// @public (undocumented)
+// @public
 export type ApplicationHooks = ApplicationServiceHooks & ApplicationPluginHooks;
 
 // @public
-export type ApplicationOptions = {
+export interface ApplicationOptions {
     id: string;
     onError: (error: unknown) => void;
-};
-
-// @public (undocumented)
-export type ApplicationPluginEvent = {
-    app: Application;
-    plugin: DefinedPlugin;
-};
+}
 
 // @public
 export type ApplicationPluginHooks = {
-    beforePluginRegistration: ApplicationPluginEvent;
-    pluginRegistered: ApplicationPluginEvent;
-    beforePluginRemoved: ApplicationPluginEvent;
-    pluginRemoved: ApplicationPluginEvent;
+    beforePluginRegistration: ApplicationPluginLifeCycleEvent;
+    pluginRegistered: ApplicationPluginLifeCycleEvent;
+    beforePluginRemoved: ApplicationPluginLifeCycleEvent;
+    pluginRemoved: ApplicationPluginLifeCycleEvent;
     failedPluginRegistration: {
         app: Application;
         reason: Error;
     };
+};
+
+// @public
+export type ApplicationPluginLifeCycleEvent = {
+    app: Application;
+    plugin: DefinedPlugin;
 };
 
 // @public
@@ -91,15 +93,20 @@ export type ApplicationServiceHooks = {
 export function createApp(plugins: PluginDefinition[], options?: Partial<ApplicationOptions>): Application;
 
 // @public
+export function defineAsyncPlugin(importer: () => Promise<OneOrMore<PluginDefinition>>, when: (app: Application) => Promise<void>, dependencies?: PluginId[]): PluginDefinition;
+
+// @internal
 export function defineAsyncPlugin(importer: () => Promise<OneOrMore<PluginDefinition>>, when: (app: Application) => Promise<void>, dependencies?: PluginId[], done?: (app: Application, plugin: DefinedPlugin) => void): PluginDefinition;
 
 // @public
-export type DefinedPlugin = {
-    id: PluginId;
+export interface DefinedPlugin {
     dependencies: PluginId[];
+    // @internal
     hooks: Emitter<_PluginHooks>;
-    phase: PluginPhase;
-};
+    id: PluginId;
+    // @internal
+    phase: _PluginPhase;
+}
 
 // @public
 export function definePlugin(setup: PluginSetup): PluginDefinition;
@@ -119,7 +126,7 @@ export function dependsOn(dependency: PluginId): void;
 // @public
 export function destroyApp(app: Application): void;
 
-// @public (undocumented)
+// @public
 export type EventCleanup = () => void;
 
 // @public
@@ -166,13 +173,10 @@ export function onEvent<notifications extends Notifications>(target: EventTarget
 export function onEvent<notifications extends Notifications, event extends keyof notifications>(target: EventTarget_2<notifications>, on: event, handler: Handler<notifications[event]>): EventCleanup;
 
 // @public
-export type PluginDefinition = {
+export interface PluginDefinition {
     (): DefinedPlugin;
     id: PluginId;
-};
-
-// @public
-export type PluginHook = (app: Application) => void;
+}
 
 // @internal
 export type _PluginHooks = {
@@ -186,8 +190,8 @@ export type _PluginHooks = {
 // @public
 export type PluginId = symbol;
 
-// @public
-export type PluginPhase = 'setup' | 'mount' | 'active' | 'teardown' | 'destroyed';
+// @internal
+export type _PluginPhase = 'setup' | 'mount' | 'active' | 'teardown' | 'destroyed';
 
 // @public
 export type PluginSetup = () => void;
@@ -198,9 +202,8 @@ export function removePlugin(idOrPlugin: PluginId | DefinedPlugin): void;
 // @public
 export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app: Application): void;
 
-// @public (undocumented)
+// @public
 export interface Service<notifications extends Record<string, unknown> = Record<string, unknown>> {
-    // (undocumented)
     emitter: Emitter<notifications & ServiceNotifications>;
 }
 
@@ -210,7 +213,7 @@ export interface ServiceCollection {
     [id: string | symbol]: Service;
 }
 
-// @public (undocumented)
+// @public
 export type ServiceFactory<service extends Service> = (application: Application) => service;
 
 // @public (undocumented)
@@ -220,7 +223,7 @@ export type ServiceId = keyof ServiceCollection & (symbol | string);
 export interface ServiceNotifications {
     // (undocumented)
     [x: string | symbol]: unknown;
-    // (undocumented)
+    // @eventProperty (undocumented)
     'before_destroy': {
         service: Service;
     };

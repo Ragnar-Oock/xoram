@@ -15,13 +15,13 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./src/index.ts",
+        "types": "./types/core.public.d.ts",
         "default": "./dist/core.production.js"
       }
     },
     "./dev": {
       "import": {
-        "types": "./src/index.ts",
+        "types": "./types/core.public.d.ts",
         "default": "./dist/core.development.js"
       }
     }
