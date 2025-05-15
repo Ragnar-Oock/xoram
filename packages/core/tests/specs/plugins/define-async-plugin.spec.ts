@@ -235,6 +235,26 @@ describe('defineAsyncPlugin', () => {
 			expect(app[pluginSymbol].has(purePlugin.id)).toBeTruthy();
 			expect(app[pluginSymbol].has(dependentPlugin.id)).toBeTruthy();
 		});
+		it('should provide the app to "importer"', async () => {
+			const importer = vi.fn(async () => purePlugin);
+			const app = createApp([
+				defineAsyncPlugin(importer, async () => void 0, [], () => done.resolve()),
+			]);
+
+			await done.promise;
+
+			expect(importer).toHaveBeenCalledExactlyOnceWith(app);
+		});
+		it('should provide the app to "when"', async () => {
+			const when = vi.fn(async () => void 0);
+			const app = createApp([
+				defineAsyncPlugin(async () => purePlugin, when, [], () => done.resolve()),
+			]);
+
+			await done.promise;
+
+			expect(when).toHaveBeenCalledExactlyOnceWith(app);
+		});
 		it('should accept a list of dependencies', async () => {
 			const app = createApp([
 				purePlugin,

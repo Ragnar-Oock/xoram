@@ -43,7 +43,7 @@ export type _AsyncPluginErrors = keyof _AsyncPluginError;
  * {@label DEFINE_ASYNC_PLUGIN}
  */
 export function defineAsyncPlugin(
-	importer: () => Promise<OneOrMore<PluginDefinition>>,
+	importer: (app: Application) => Promise<OneOrMore<PluginDefinition>>,
 	when: (app: Application) => Promise<void>,
 	dependencies?: PluginId[],
 ): PluginDefinition;
@@ -63,14 +63,14 @@ export function defineAsyncPlugin(
  * {@label DEFINE_ASYNC_PLUGIN_INTERNAL}
  */
 export function defineAsyncPlugin(
-	importer: () => Promise<OneOrMore<PluginDefinition>>,
+	importer: (app: Application) => Promise<OneOrMore<PluginDefinition>>,
 	when: (app: Application) => Promise<void>,
 	dependencies?: PluginId[],
 	done?: (app: Application, plugin: DefinedPlugin) => void,
 ): PluginDefinition;
 
 export function defineAsyncPlugin(
-	importer: () => Promise<OneOrMore<PluginDefinition>>,
+	importer: (app: Application) => Promise<OneOrMore<PluginDefinition>>,
 	when: (app: Application) => Promise<void>,
 	dependencies?: PluginId[],
 	done?: (app: Application, plugin: DefinedPlugin) => void,
@@ -100,7 +100,7 @@ export function defineAsyncPlugin(
 
 				let plugins: PluginDefinition[];
 				try {
-					const importResult: OneOrMore<PluginDefinition> | Promise<OneOrMore<PluginDefinition>> = importer();
+					const importResult: OneOrMore<PluginDefinition> | Promise<OneOrMore<PluginDefinition>> = importer(app);
 
 					if (import.meta.env.DEV && !(importResult instanceof Promise)) {
 						warn(new Error(
