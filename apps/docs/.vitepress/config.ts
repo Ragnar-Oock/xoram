@@ -77,4 +77,7 @@ export default defineConfig({
 	srcDir: 'src',
 	outDir: 'dist',
 	base: '/',
+	markdown: {
+		lineNumbers: true,
+	},
 });
