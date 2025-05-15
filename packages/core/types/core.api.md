@@ -93,10 +93,10 @@ export type ApplicationServiceHooks = {
 export function createApp(plugins: PluginDefinition[], options?: Partial<ApplicationOptions>): Application;
 
 // @public
-export function defineAsyncPlugin(importer: () => Promise<OneOrMore<PluginDefinition>>, when: (app: Application) => Promise<void>, dependencies?: PluginId[]): PluginDefinition;
+export function defineAsyncPlugin(importer: (app: Application) => Promise<OneOrMore<PluginDefinition>>, when: (app: Application) => Promise<void>, dependencies?: PluginId[]): PluginDefinition;
 
 // @internal
-export function defineAsyncPlugin(importer: () => Promise<OneOrMore<PluginDefinition>>, when: (app: Application) => Promise<void>, dependencies?: PluginId[], done?: (app: Application, plugin: DefinedPlugin) => void): PluginDefinition;
+export function defineAsyncPlugin(importer: (app: Application) => Promise<OneOrMore<PluginDefinition>>, when: (app: Application) => Promise<void>, dependencies?: PluginId[], done?: (app: Application, plugin: DefinedPlugin) => void): PluginDefinition;
 
 // @public
 export interface DefinedPlugin {
