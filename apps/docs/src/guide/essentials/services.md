@@ -61,32 +61,7 @@ The factory function will be invoked with two parameters:
 - the **emitter** that will be attached to the service, so you can emit the
   events you declared on you interface
 
-## Adding your service to your app
-
-Registering your service in the app can only be done in a plugin's setup using
-the `addService` function.
-
-You can't use `addService` at any other time because it would mean that a plugin
-that depends on yours might try to access your service before it is added to the
-app. If you need to delay the registration of a service use
-an [AsyncPlugin](../concepts-in-depth/code-splitting) instead.
-
-```js
-import {myService} from './my-service';
-
-export default definePlugin(() => { // [!code focus:3]
-	addService( /* id */ 'myService', /* serviceFactor*/ myService);
-})
-```
-
-Note that we also provided a string id when we called `addService`, this is the
-key that you will use to retrieve the service on the application when you need
-it. We are providing it here instead of when calling `defineService`
-because services can be made generic to be used across multiple plugins, if we
-hard coded the id in the definition we would need to duplicate the call to
-`defineService` each time we want to use a new instance of a generic service.
-
-## Registering a Service in Your Plugin
+## Registering a service in your plugin
 
 To add a service to your application, you must register it during the plugin's
 `setup` phase using the `addService` function. This ensures that any plugins
@@ -98,7 +73,7 @@ depending on your service can access it reliably.
 other time can lead to errors if another plugin tries to access your service
 before it's been registered and is thus not allowed. If you need to register the
 service asynchronously, consider using
-an [AsyncPlugin](/guide/concepts-in-depth/asynchronous-plugins).
+an [asynchronous plugins](../concepts-in-depth/grouping-plugins.md).
 
 :::
 
