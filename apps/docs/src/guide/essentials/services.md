@@ -18,17 +18,17 @@ parameter :
 ```ts [TypeScript]
 import { defineService } from '@zoram/core';
 
-export type MyNotifications = {
+export type MyNotifications = { // [!code focus:6]
 	myEvent: { prop: "I'm an event!" },
 };
 
-export const myService = defineService<MyNotifications>();
+export const myService = defineService<MyNotifications>(); 
 ```
 
 ```js [JavaScript]
 import {defineService} from '@zoram/core';
 
-export const myService = defineService();
+export const myService = defineService(); // [!code focus]
 ```
 
 :::
@@ -45,7 +45,7 @@ You can create a service by passing a factory function to `defineService` :
 ```js
 import {defineService} from '@zoram/core';
 
-export const myService = defineService((app, emitter) => ({
+export const myService = defineService((app, emitter) => ({ // [!code focus:3]
 	myProp: 'hello'
 }));
 ```
@@ -69,12 +69,12 @@ the `addService` function.
 You can't use `addService` at any other time because it would mean that a plugin
 that depends on yours might try to access your service before it is added to the
 app. If you need to delay the registration of a service use
-an [AsyncPlugin](../concepts-in-depth/asynchronous-plugins.md) instead.
+an [AsyncPlugin](../concepts-in-depth/code-splitting) instead.
 
 ```js
 import {myService} from './my-service';
 
-export default definePlugin(() => {
+export default definePlugin(() => { // [!code focus:3]
 	addService( /* id */ 'myService', /* serviceFactor*/ myService);
 })
 ```
@@ -105,7 +105,7 @@ an [AsyncPlugin](/guide/concepts-in-depth/asynchronous-plugins).
 ```js
 import {myService} from './my-service';
 
-export default definePlugin(() => {
+export default definePlugin(() => { // [!code focus:3]
 	addService('myService', myService);
 });
 ```

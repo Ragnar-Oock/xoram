@@ -14,7 +14,7 @@ does and what it needs.
 ```js
 import {definePlugin} from '@zoram/core';
 
-export default definePlugin(/* setup */ () => {
+export default definePlugin(/* setup */ () => { // [!code focus:3]
 	console.log("I'm a plugin !");
 })
 ```
@@ -39,7 +39,7 @@ id.
 ```js {4}
 import {definePlugin} from '@zoram/core';
 
-export default definePlugin(
+export default definePlugin( // [!code focus:5]
 	/* name */ 'my-plugin',
 	/* setup */ () => {
 		console.log("I'm a plugin !");

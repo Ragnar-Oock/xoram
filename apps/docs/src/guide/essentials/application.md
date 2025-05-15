@@ -35,7 +35,7 @@ import {plugins as productPlugins} from 'my-awsome-product';
 import {plugins as headerMenuPlugins} from 'website/header';
 import {plugins as analiticsPlugins} from 'sales/analitics';
 
-const product = createApp([
+const product = createApp([ // [!code focus:8]
 	...productPlugins,
 	...analiticsPlugins
 ]);
@@ -56,7 +56,7 @@ tools and the logs of the application.
 ```js
 import {createApp} from '@zoram/core';
 
-const app = createApp(
+const app = createApp( // [!code focus:6]
 	[ /* your plugins goes here */],
 	{
 		id: 'myApp' // [!code highlight]

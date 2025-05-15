@@ -12,11 +12,11 @@ import {definePlugin, addService} from '@zoram/core';
 import MyService from './myService';
 import OtherService from './otherService';
 
-export default definePlugin('myPlugin', () => {
-    // passing a ready made object
-    addService('mySuperService', new MyService());
-    // passing a factory
-    addService('myOtherService', app => new OtherService(app));
+export default definePlugin('myPlugin', () => { // [!code focus:6]
+	/* passing a ready made object */
+	addService('mySuperService', new MyService());
+	/* passing a factory */
+	addService('myOtherService', app => new OtherService(app));
 })
 ```
 
@@ -34,10 +34,10 @@ import MyService from './myService';
 import OtherService from './otherService';
 import {loggerPluginId} from './logger.plugin';
 
-export default definePlugin('myPlugin', () => {
-    dependsOn(loggerPluginId);
-    
-    addService('myOtherService', ({services}) => new OtherService(services.logger));
+export default definePlugin('myPlugin', () => { // [!code focus:5]
+	dependsOn(loggerPluginId);
+
+	addService('myOtherService', ({services}) => new OtherService(services.logger));
 })
 ```
 

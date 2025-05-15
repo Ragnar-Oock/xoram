@@ -23,8 +23,10 @@ that end you can add to your application config a `onError` function that will
 be called when the application instance catches an error.
 
 ```ts
-createApp([ /* your plugins go here */ ], {
-	onError: (error) => {
+import { createApp } from "@zoram/core";
+
+createApp([ /* your plugins go here */ ], { // [!code focus:5]
+	onError: error => {
 		/* send the error to your error/log agregator */
 	}
 })
