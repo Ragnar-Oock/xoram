@@ -49,7 +49,7 @@ export default defineConfig({
 						{ text: 'Application events', link: '/guide/concepts-in-depth/application-events' },
 						{ text: 'Handling errors', link: '/guide/concepts-in-depth/handling-errors' },
 						{ text: 'Typing service events', link: '/guide/concepts-in-depth/typing-events' },
-						{ text: 'Asynchronous plugin', link: '/guide/concepts-in-depth/asynchronous-plugins.md' },
+						{ text: 'Grouping plugins', link: '/guide/concepts-in-depth/grouping-plugins.md' },
 					],
 				},
 				{
