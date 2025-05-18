@@ -40,9 +40,11 @@ export type ApplicationHooks = ApplicationServiceHooks & ApplicationPluginHooks;
  * }
  *
  * declare module '@zoram/core' {
- *   // a comment here will show up in the intellisence when accessing app.services.myService
- *   myService: MyService;
- *   myTopic: Service<MyServiceNotifications>;
+ *   interface ServiceCollection
+ *     // a comment here will show up in the intellisence when accessing app.services.myService
+ *     myService: MyService;
+ *     myTopic: Service<MyServiceNotifications>;
+ *   }
  * }
  * ```
  */
