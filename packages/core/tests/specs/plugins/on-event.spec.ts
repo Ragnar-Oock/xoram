@@ -1,3 +1,5 @@
+// eslint-disable no-magic-numbers
+// eslint-disable prefer-await-to-callbacks
 import mitt, { type Emitter } from 'mitt';
 import { beforeEach, describe, expect, type Mock, vi } from 'vitest';
 import {
@@ -25,7 +27,9 @@ const eventA = Object.freeze({ a: 1, b: '2' });
 const eventB = Object.freeze({ a: 3, c: '4' });
 
 type Notifications = {
+// eslint-disable-next-line no-magic-numbers
 	eventA: { a: 1, b: '2' };
+// eslint-disable-next-line no-magic-numbers
 	eventB: { a: 3, c: '4' };
 };
 
@@ -45,6 +49,7 @@ function checkMultiEvent<notifications extends Notifications>(emitter: Emitter<n
 	emitter.emit('eventA', eventA);
 	emitter.emit('eventB', eventB);
 
+// eslint-disable-next-line no-magic-numbers
 	expect(spy).toHaveBeenCalledTimes(2);
 	expect(spy).toHaveBeenCalledWith(eventA);
 	expect(spy).toHaveBeenCalledWith(eventB);
@@ -54,6 +59,7 @@ function checkWildcardEvent<notifications extends Notifications>(emitter: Emitte
 	emitter.emit('eventA', eventA);
 	emitter.emit('eventB', eventB);
 
+// eslint-disable-next-line no-magic-numbers
 	expect(spy).toHaveBeenCalledTimes(2);
 	expect(spy).toHaveBeenCalledWith('eventA', eventA);
 	expect(spy).toHaveBeenCalledWith('eventB', eventB);
@@ -64,7 +70,9 @@ type OverloadCase = [
 	callback: (onEvent?: () => void) => [ cleanup: () => void, emitter: (app: Application) => Emitter<Notifications> ]
 ]
 
-const getServiceEmitter = (app: Application) => app.services.service.emitter as unknown as Emitter<Notifications>;
+function getServiceEmitter(app: Application): Emitter<Notifications> {
+	return app.services.service.emitter as unknown as Emitter<Notifications>;
+}
 
 describe('onEvent', () => {
 	let emitter: Emitter<Notifications>;
@@ -72,14 +80,22 @@ describe('onEvent', () => {
 	let serviceFactory: () => Service<Notifications>;
 
 
-	const overloadsCases = [
+	beforeEach(() => {
+		emitter = mitt();
+		handler = vi.fn();
+		serviceFactory = defineService<Notifications>();
+	});
+
+	// eslint-disable explicit-function-return-type
+	const overload1Cases = [
 		[
-			'overload 1:1 onEvent(emitter, \'*\', handler)', (callback) => [
-			onEvent(emitter, '*', (...args) => {
-				handler(...args);
-				callback?.();
-			}), () => emitter,
-		],
+			'overload 1:1 onEvent(emitter, \'*\', handler)',
+			(callback) => [
+				onEvent(emitter, '*', (...args) => {
+					handler(...args);
+					callback?.();
+				}), () => emitter,
+			],
 		],
 		[
 			'overload 1:2 onEvent(emitter, \'eventA\', handler)',
@@ -108,6 +124,8 @@ describe('onEvent', () => {
 				}), () => emitter,
 			],
 		],
+	] as const satisfies OverloadCase[];
+	const overload2Cases = [
 		[
 			'overload 2:1 onEvent({emitter}, \'*\', handler)',
 			(callback) => [
@@ -144,6 +162,8 @@ describe('onEvent', () => {
 				}), () => emitter,
 			],
 		],
+	] as const satisfies OverloadCase[];
+	const overload3Cases = [
 		[
 			'overload 3:1 onEvent(app => app.services.service.emitter, \'*\', handler)',
 			(callback) => [
@@ -180,6 +200,8 @@ describe('onEvent', () => {
 				}), getServiceEmitter,
 			],
 		],
+	] as const satisfies OverloadCase[];
+	const overload4Cases = [
 		[
 			'overload 4:1 onEvent(app => app.services.service, \'*\', handler)',
 			(callback) => [
@@ -216,6 +238,8 @@ describe('onEvent', () => {
 				}), getServiceEmitter,
 			],
 		],
+	] as const satisfies OverloadCase[];
+	const overload5Cases = [
 		[
 			'overload 5:1 onEvent(\'service\', \'*\', handler)',
 			(callback) => [
@@ -253,13 +277,16 @@ describe('onEvent', () => {
 			],
 		],
 	] as const satisfies OverloadCase[];
+	// eslint-enable explicit-function-return-type
 
+	const overloadsCases = [
+		...overload1Cases,
+		...overload2Cases,
+		...overload3Cases,
+		...overload4Cases,
+		...overload5Cases,
+	] as const satisfies OverloadCase[];
 
-	beforeEach(() => {
-		emitter = mitt();
-		handler = vi.fn();
-		serviceFactory = defineService<Notifications>();
-	});
 
 	describe('valid event registrations', () => {
 		// --- Direct emitter ---
@@ -429,23 +456,52 @@ describe('onEvent', () => {
 	});
 
 	describe('correct target resolution', () => {
-		it.todo('should use the target directly when given a direct emitter', () => {
-		});
-		it.todo('should use the emitter prop when given an emitter carrying object', () => {
-		});
-		it.todo(
-			'should use the emitter returned by invoking the function with the app instance when given a getter function',
-			() => {
-			},
-		);
-		it.todo('should use the emitter of the service resolved on the app instance when given an id', () => {
+		describe.for<[ string, OverloadCase[] ]>([
+			[
+				'should use the target directly when given a direct emitter',
+				overload1Cases,
+			],
+			[
+				'should use the emitter prop when given an emitter carrying object',
+				overload2Cases,
+			],
+			[
+				'should use the direct emitter returned by the getter when given a direct emitter getter',
+				overload3Cases,
+			],
+			[
+				'should use the emitter prop on the object returned by the getter when given a emitter object getter',
+				overload4Cases,
+			],
+			[
+				'should use the emitter of the service resolved on the app instance when given an id',
+				overload5Cases,
+			],
+		])('%s', ([ _, cases ]) => {
+			it.for<OverloadCase>(cases)('%s', ([ _, callback ]) => {
+				let getEmitter: (app: Application) => Emitter<Notifications>;
+
+				const spy = vi.fn();
+				const app = createApp([
+					definePlugin(() => {
+						addService('service', serviceFactory());
+						[ , getEmitter ] = callback(spy);
+					}),
+				]);
+
+				// @ts-expect-error getEmitter will always be initialized here and if it's not we want the test to fail because
+				// of the type error
+				getEmitter(app).emit('eventA', eventA);
+
+				expect(spy).toHaveBeenCalledOnce();
+			});
 		});
 	});
 
 	describe('handler invocation', () => {
 		it('should preserve the original this binding', () => {
 			const bob = {
-				handler() {
+				handler(): void {
 					handler(this);
 				},
 			};
@@ -636,16 +692,20 @@ describe('onEvent', () => {
 		describe.for<OverloadCase>(overloadsCases)('%s', ([ _, callback ]) => {
 
 			let getEmitter: (app: Application) => Emitter<Notifications>;
+			let pluginPhase: string | undefined;
+
+			beforeEach(() => {
+				pluginPhase = 'unset';
+			});
+
 
 			it('should wait for the `active` phase when invoked during `setup`', ({ warnSpy }) => {
-				let pluginPhase: string = 'unset';
-
 				const app = createApp([
 					definePlugin(() => {
 						addService('service', serviceFactory);
 						const plugin = getActivePlugin();
 
-						[ , getEmitter ] = callback(() => pluginPhase = plugin!.phase);
+						[ , getEmitter ] = callback(() => {pluginPhase = plugin?.phase;});
 					}),
 				]);
 
@@ -657,15 +717,13 @@ describe('onEvent', () => {
 			});
 			it('should wait for the `active` phase when invoked during `mount`', ({ warnSpy }) => {
 				// setup
-				let pluginPhase: string = 'unset';
-
 				const app = createApp([
 					definePlugin(() => {
 						addService('service', serviceFactory);
 						const plugin = getActivePlugin();
 
 						onBeforeCreate(() => {
-							[ , getEmitter ] = callback(() => pluginPhase = plugin!.phase);
+							[ , getEmitter ] = callback(() => {pluginPhase = plugin?.phase;});
 						});
 					}),
 				]);
@@ -680,15 +738,13 @@ describe('onEvent', () => {
 			});
 			it('should add the listener immediately when invoked during `active`', ({ warnSpy }) => {
 				// setup
-				let pluginPhase: string = 'unset';
-
 				const app = createApp([
 					definePlugin(() => {
 						addService('service', serviceFactory);
 						const plugin = getActivePlugin();
 
 						onCreated(() => {
-							[ , getEmitter ] = callback(() => pluginPhase = plugin!.phase);
+							[ , getEmitter ] = callback(() => {pluginPhase = plugin?.phase;});
 						});
 					}),
 				]);
