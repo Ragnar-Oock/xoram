@@ -1,15 +1,21 @@
+// we use a lot of async function resolving synchronously in this file to emulate async imports and async conditions
+// eslint-disable require-await
 import { beforeEach, describe, expect, it, type Mock, type MockInstance, vi } from 'vitest';
 import { createApp, defineAsyncPlugin, destroyApp, removePlugin } from '../../../src';
 import { pluginSymbol } from '../../../src/application/application.type';
 import { getActivePlugin } from '../../../src/plugins/active-plugin';
 import { circularDep1, circularDep2, dependentPlugin, purePlugin } from '../../dummies/dependency-dummies';
+import { asyncNoop, noop } from '../../dummies/noop';
 import { expectPrettyWarn } from '../../fixture/expect.fixture';
+
+// number of times some stuff needs to be called
+const never = 0;
 
 describe('defineAsyncPlugin', () => {
 	let done: PromiseWithResolvers<void>,
 		when: PromiseWithResolvers<void>,
 		spy: Mock,
-		warnSpy: MockInstance<(...data: any[]) => void>;
+		warnSpy: MockInstance<(...data: unknown[]) => void>;
 	beforeEach(() => {
 		done = Promise.withResolvers<void>();
 		when = Promise.withResolvers<void>();
@@ -61,7 +67,7 @@ describe('defineAsyncPlugin', () => {
 					() => {
 						throw error;
 					},
-					async () => void 0,
+					asyncNoop,
 					[],
 					() => done.resolve(),
 				),
@@ -79,7 +85,7 @@ describe('defineAsyncPlugin', () => {
 					async () => {
 						throw new Error('catch me');
 					},
-					async () => void 0,
+					asyncNoop,
 					[],
 					() => done.resolve(),
 				),
@@ -98,14 +104,14 @@ describe('defineAsyncPlugin', () => {
 
 			createApp([ defineAsyncPlugin(importer, () => when.promise) ]);
 
-			expect(importer).toHaveBeenCalledTimes(0);
+			expect(importer).toHaveBeenCalledTimes(never);
 
 			when.resolve();
 			await when.promise;
 			expect(importer).toHaveBeenCalledOnce();
 		});
 		it('should provide the app instance to "when"', () => {
-			const when = vi.fn(async _ => void 0);
+			const when = vi.fn(asyncNoop);
 
 			const app = createApp([ defineAsyncPlugin(async () => purePlugin, when) ]);
 
@@ -128,7 +134,7 @@ describe('defineAsyncPlugin', () => {
 			expect(() => createApp([
 				defineAsyncPlugin(
 					async () => purePlugin,
-					async () => void 0,
+					asyncNoop,
 					[ dependentPlugin.id ],
 				),
 			])).toThrow(new Error('Application creation failed'));
@@ -158,7 +164,7 @@ describe('defineAsyncPlugin', () => {
 					purePlugin,
 					defineAsyncPlugin(
 						async () => purePlugin,
-						async () => void 0,
+						asyncNoop,
 					),
 				]);
 			}).not.toThrow();
@@ -174,26 +180,26 @@ describe('defineAsyncPlugin', () => {
 
 			app.emitter.on('beforePluginRegistration', spy);
 
-			expect(spy).toHaveBeenCalledTimes(0);
+			expect(spy).toHaveBeenCalledTimes(never);
 
 		});
 	});
 	describe('it returns a valid plugins', () => {
 		it('should have an id', () => {
-			const plugin = defineAsyncPlugin(async () => purePlugin, async () => void 0);
+			const plugin = defineAsyncPlugin(async () => purePlugin, asyncNoop);
 
 			expect(plugin).toHaveProperty('id');
 			expect(plugin.id).toBeTypeOf('symbol');
 		});
 		it('should be a build function', () => {
-			const plugin = defineAsyncPlugin(async () => purePlugin, async () => void 0);
+			const plugin = defineAsyncPlugin(async () => purePlugin, asyncNoop);
 
 			expect(plugin).toBeTypeOf('function');
 		});
 	});
 	describe('it removes itself when done', () => {
 		it('should remove itself from the app when the plugins are added', async () => {
-			const plugin = defineAsyncPlugin(async () => purePlugin, async () => void 0, [], () => done.resolve());
+			const plugin = defineAsyncPlugin(async () => purePlugin, asyncNoop, [], () => done.resolve());
 			const app = createApp([ plugin ]);
 
 			await done.promise;
@@ -207,7 +213,7 @@ describe('defineAsyncPlugin', () => {
 	describe('it respects the interface', () => {
 		it('should accept an "importer" with a single plugin', async () => {
 			const app = createApp([
-				defineAsyncPlugin(async () => purePlugin, async () => void 0, [], () => done.resolve()),
+				defineAsyncPlugin(async () => purePlugin, asyncNoop, [], () => done.resolve()),
 			]);
 
 			await done.promise;
@@ -216,7 +222,7 @@ describe('defineAsyncPlugin', () => {
 		});
 		it('should accept an "importer" with an array of plugins', async () => {
 			const app = createApp([
-				defineAsyncPlugin(async () => [ purePlugin, dependentPlugin ], async () => void 0, [], () => done.resolve()),
+				defineAsyncPlugin(async () => [ purePlugin, dependentPlugin ], asyncNoop, [], () => done.resolve()),
 			]);
 
 			await done.promise;
@@ -227,7 +233,7 @@ describe('defineAsyncPlugin', () => {
 		it('should provide the app to "importer"', async () => {
 			const importer = vi.fn(async () => purePlugin);
 			const app = createApp([
-				defineAsyncPlugin(importer, async () => void 0, [], () => done.resolve()),
+				defineAsyncPlugin(importer, asyncNoop, [], () => done.resolve()),
 			]);
 
 			await done.promise;
@@ -235,7 +241,7 @@ describe('defineAsyncPlugin', () => {
 			expect(importer).toHaveBeenCalledExactlyOnceWith(app);
 		});
 		it('should provide the app to "when"', async () => {
-			const when = vi.fn(async () => void 0);
+			const when = vi.fn(asyncNoop);
 			const app = createApp([
 				defineAsyncPlugin(async () => purePlugin, when, [], () => done.resolve()),
 			]);
@@ -249,7 +255,7 @@ describe('defineAsyncPlugin', () => {
 				purePlugin,
 				defineAsyncPlugin(
 					async () => [ dependentPlugin ],
-					async () => void 0,
+					asyncNoop,
 					[ purePlugin.id ],
 					() => done.resolve(),
 				),
@@ -268,7 +274,7 @@ describe('defineAsyncPlugin', () => {
 				defineAsyncPlugin(
 					// @ts-expect-error we are checking that this triggers a warning
 					async () => [],
-					async () => void 0,
+					asyncNoop,
 					[],
 					() => done.resolve(),
 				),
@@ -290,7 +296,7 @@ describe('defineAsyncPlugin', () => {
 
 			await done.promise;
 
-			expect(importer).toHaveBeenCalledTimes(0);
+			expect(importer).toHaveBeenCalledTimes(never);
 		});
 		it('should not invoke the importer when "when" resolves after the plugin is removed', async () => {
 			const importer = vi.fn(async () => purePlugin);
@@ -303,7 +309,7 @@ describe('defineAsyncPlugin', () => {
 
 			await done.promise;
 
-			expect(importer).toHaveBeenCalledTimes(0);
+			expect(importer).toHaveBeenCalledTimes(never);
 		});
 		it('should gracefully fail to load plugins with circular dependencies', async () => {
 
@@ -362,7 +368,7 @@ describe('defineAsyncPlugin', () => {
 		});
 	});
 
-	describe('dev mode', () => {
+	describe.runIf(import.meta.env.DEV)('dev mode', () => {
 		it('should warn if importer is synchronous and proceed as usual', async () => {
 			let app = createApp([
 				defineAsyncPlugin(
@@ -388,7 +394,7 @@ describe('defineAsyncPlugin', () => {
 				defineAsyncPlugin(
 					async () => purePlugin, // fakes an async import
 					// @ts-expect-error we are checking that a warning is logged in this case
-					() => void 0,
+					noop,
 					[],
 					() => done.resolve(),
 				),
@@ -406,7 +412,7 @@ describe('defineAsyncPlugin', () => {
 				defineAsyncPlugin(
 					// @ts-expect-error we are checking that this triggers a warning
 					async () => [], // fakes broken async import
-					async () => void 0,
+					asyncNoop,
 					[],
 					() => done.resolve(),
 				),
@@ -423,8 +429,10 @@ describe('defineAsyncPlugin', () => {
 			createApp([
 				defineAsyncPlugin(
 					// @ts-expect-error we are checking that this triggers a warning
-					async () => undefined, // fakes forgotten return
-					async () => void 0,
+					// eslint-disable-next-line no-empty-function
+					async () => {}, // fakes forgotten return
+					// eslint-disable-next-line no-empty-function
+					async () => {},
 					[],
 					() => done.resolve(),
 				),
