@@ -47,10 +47,12 @@ function isMitt<notifications extends Notifications>(candidate: unknown): candid
 }
 
 // null object emitter as used by onEvent
-const nullEmitter = <notifications extends Notifications>() => ({
-	on: () => {
-	}, off: () => {
-	},
+// eslint-disable-next-line func-style
+const nullEmitter = <notifications extends Notifications>(): Emitter<notifications> => ({
+// eslint-disable-next-line no-empty-function
+	on: () => {},
+// eslint-disable-next-line no-empty-function
+	off: () => {},
 } as unknown as Emitter<notifications>);
 
 /**
@@ -72,12 +74,11 @@ function resolveSource<notifications extends Notifications>(
 			if (source) {
 				return source?.emitter as unknown as Emitter<notifications>;
 			}
-			else {
-				if (import.meta.env.DEV) {
-					warn(new Error(`onEvent was invoked with an incorrect service id "${ String(target) }".`));
-				}
-				return nullEmitter();
+			if (import.meta.env.DEV) {
+				warn(new Error(`onEvent was invoked with an incorrect service id "${ String(target) }".`));
 			}
+			return nullEmitter();
+
 		}
 		case 'function': {
 			// target getter syntax
@@ -249,8 +250,8 @@ export function onEvent<notifications extends Notifications>(
 ): EventCleanup {
 	const plugin = getActivePlugin(),
 		events = toArray(on);
-	let off = () => {
-	};
+	// eslint-disable-next-line func-style consistent-function-scoping no-empty-function
+	let off = (): void => {};
 	if (!plugin) {
 		if (import.meta.env.DEV) {
 			warn(new Error(onEventOutsidePlugin));
@@ -263,24 +264,26 @@ export function onEvent<notifications extends Notifications>(
 	 * @param app - the application to use as context
 	 * @returns a clean up function to remove the added listeners
 	 */
+		// eslint-disable-next-line func-style
 	const subscribe = (app: Application): void => {
-		const resolvedTarget = resolveSource(target, app);
+			const resolvedTarget = resolveSource(target, app);
 
-		// @ts-expect-error event and handler 's type are resolved by the function overloads above
-		events.forEach(event => resolvedTarget.on(event, handler));
-
-		off = () => {
 			// @ts-expect-error event and handler 's type are resolved by the function overloads above
-			events.forEach(event => resolvedTarget.off(event, handler));
+			events.forEach(event => resolvedTarget.on(event, handler));
+
+			off = (): void => {
+				// @ts-expect-error event and handler 's type are resolved by the function overloads above
+				events.forEach(event => resolvedTarget.off(event, handler));
+			};
 		};
-	};
 
 	switch (plugin.phase) {
 		case 'setup':
-		case 'mount':
+		case 'mount': {
 			plugin.hooks.on(created, subscribe);
 			break;
-		case 'active':
+		}
+		case 'active': {
 			const app = getActiveApp();
 			if (!app) {
 				if (import.meta.env.DEV) {
@@ -289,13 +292,14 @@ export function onEvent<notifications extends Notifications>(
 
 				return () => off();
 			}
-
 			subscribe(app);
 			break;
-		default:
+		}
+		default: {
 			if (import.meta.env.DEV) {
 				warn(new Error(`Calling onEvent() during the ${ plugin.phase } phase of a plugin is a noop, did you use the wrong hook ?`));
 			}
+		}
 	}
 
 	plugin.hooks.on(beforeDestroy, () => {
