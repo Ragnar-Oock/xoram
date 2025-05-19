@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, vi } from 'vitest';
-import { createApp, definePlugin, dependsOn, onCreated } from '../src';
-import personPlugin from './dummies/person.plugin';
-import { expectPrettyWarn } from './fixture/expect.fixture';
-import { it } from './fixture/test.fixture';
+import { createApp, definePlugin, dependsOn, onCreated } from '../../../src';
+import { circularDep1, circularDep2, dependentPlugin, purePlugin } from '../../dummies/dependency-dummies';
+import personPlugin from '../../dummies/person.plugin';
+import { expectPrettyWarn } from '../../fixture/expect.fixture';
+import { it } from '../../fixture/test.fixture';
 
 describe('application', () => {
 	const consoleWarn = vi.spyOn(console, 'warn');
@@ -125,5 +126,20 @@ describe('application', () => {
 				// oxlint-enable no-magic-numbers
 			},
 		);
+	});
+
+	describe('error cases', () => {
+		it('should fail to create an app with circular dependencies', () => {
+			expect(() => createApp([ circularDep1, circularDep2 ])).toThrow(new Error(
+				'Application creation failed',
+				{ cause: new Error(`The plugin "${ String(circularDep1.id) }" declares a dependency that directly or indirectly depends on it.`) },
+			));
+		});
+		it('should fail to create an app with a plugin missing its dependencies', () => {
+			expect(() => createApp([ dependentPlugin ])).toThrow(new Error(
+				'Application creation failed',
+				{ cause: new Error(`The plugin "${ String(dependentPlugin.id) }" depends on "${ String(purePlugin.id) }" but it is not in the list of provided plugins. Did you forget to register it ?`) },
+			));
+		});
 	});
 });

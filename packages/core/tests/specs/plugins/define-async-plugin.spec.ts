@@ -1,20 +1,9 @@
 import { beforeEach, describe, expect, it, type Mock, type MockInstance, vi } from 'vitest';
-import { createApp, defineAsyncPlugin, definePlugin, dependsOn, destroyApp, removePlugin } from '../../../src';
+import { createApp, defineAsyncPlugin, destroyApp, removePlugin } from '../../../src';
 import { pluginSymbol } from '../../../src/application/application.type';
 import { getActivePlugin } from '../../../src/plugins/active-plugin';
-import { noop } from '../../dummies/noop';
+import { circularDep1, circularDep2, dependentPlugin, purePlugin } from '../../dummies/dependency-dummies';
 import { expectPrettyWarn } from '../../fixture/expect.fixture';
-
-const purePlugin = definePlugin('A', noop);
-const dependentPlugin = definePlugin('B', () => {
-	dependsOn(purePlugin.id);
-});
-const circularDep1 = definePlugin('C1', () => {
-	dependsOn(circularDep2.id);
-});
-const circularDep2 = definePlugin('C2', () => {
-	dependsOn(circularDep1.id);
-});
 
 describe('defineAsyncPlugin', () => {
 	let done: PromiseWithResolvers<void>,
