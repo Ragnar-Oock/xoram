@@ -338,6 +338,6 @@ describe('addPlugins', () => {
 	});
 });
 
-describe('addPlugin', () => {
+describe.skip('addPlugin', () => {
 	// all of the above ?
 });
