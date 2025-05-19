@@ -87,6 +87,12 @@ function resolveSource<notifications extends Notifications>(
 				: source.emitter;
 		}
 		case 'object': {
+			if (target === null) {
+				if (import.meta.env.DEV) {
+					warn(new TypeError(`incorrect target provided to onEvent, typeof target === null, expected string, symbol, function or object`));
+				}
+				return nullEmitter();
+			}
 			// direct target syntax
 			return isMitt<notifications>(target)
 				? target
