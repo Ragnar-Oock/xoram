@@ -498,6 +498,94 @@ describe('onEvent', () => {
 		});
 	});
 
+	describe.runIf(import.meta.env.DEV)('incorrect target resolution', () => {
+		it.for<OverloadCase>([
+			[
+				'overload 5:1 onEvent(\'bob\', \'*\', handler)',
+				(callback) => [
+					onEvent('bob', '*', (...args) => {
+						handler(...args);
+						callback?.();
+					}), getServiceEmitter,
+				],
+			],
+			[
+				'overload 5:2 onEvent(\'bob\', \'eventA\', handler)',
+				(callback) => [
+					onEvent('bob', 'eventA', (...args) => {
+						handler(...args);
+						callback?.();
+					}), getServiceEmitter,
+				],
+			],
+			[
+				'overload 5:3 onEvent(\'bob\', [\'eventA\', \'eventB\'], handler)',
+				(callback) => [
+					onEvent('bob', [ 'eventA', 'eventB' ], (...args) => {
+						handler(...args);
+						callback?.();
+					}), getServiceEmitter,
+				],
+			],
+			[
+				'overload 5:3 (+single event) onEvent(\'bob\', [\'eventA\'], handler)',
+				(callback) => [
+					onEvent('bob', [ 'eventA' ], (...args) => {
+						handler(...args);
+						callback?.();
+					}), getServiceEmitter,
+				],
+			],
+		])('should warn when given an invalid service id: %s', ([ , callback ], { warnSpy }) => {
+			createApp([
+				definePlugin(() => {
+					addService('service', serviceFactory());
+					callback();
+				}),
+			]);
+
+			expectPrettyWarn(warnSpy, new Error(`onEvent was invoked with an incorrect service id "bob".`));
+		});
+
+		describe.for<[ string, string | string[] ]>([
+			[ 'overload x:1 *', '*' ],
+			[ 'overload x:2 \'eventA\'', 'eventA' ],
+			[ 'overload x:3 [\'eventA\', \'eventB\']', [ 'eventA', 'eventB' ] ],
+			[ 'overload x:3 (+single event) [\'eventA\']', [ 'eventA' ] ],
+		])('%s', ([ _, events ]) => {
+			it.for<[ string, unknown ]>([
+				[ 'undefined', undefined ],
+// eslint-disable-next-line no-null
+				[ 'null', null ],
+				[ 'number', 0 ],
+			])('should warn when given a %s as target', ([ typeofTarget, target ], { warnSpy }) => {
+				createApp([
+					definePlugin(() => {
+						addService('service', serviceFactory());
+						// @ts-expect-error all targets here are invalid
+						onEvent(target, events, handler);
+					}),
+				]);
+
+				expect(handler).not.toHaveBeenCalled();
+				expectPrettyWarn(
+					warnSpy,
+					new TypeError(`incorrect target provided to onEvent, typeof target === ${ typeofTarget }, expected string, symbol, function or object`),
+				);
+			});
+		});
+
+	});
+
+	describe.runIf(import.meta.env.DEV)('incorrect invocation location', () => {
+		describe.for<OverloadCase>(overloadsCases)('%s', ([ _, callback ]) => {
+			it('should warn when invoked outside an application context', ({ warnSpy }) => {
+				callback();
+				expectPrettyWarn(warnSpy, new Error('onEvent was invoked outside of a plugin setup function or hook.'));
+			});
+		});
+	});
+
 	describe('handler invocation', () => {
 		it('should preserve the original this binding', () => {
 			const bob = {
