@@ -11,6 +11,6 @@
     "@zoram/core": "workspace:*"
   },
   "devDependencies": {
-    "terser": "^5.39.0"
+    "terser": "^5.39.2"
   }
 }
