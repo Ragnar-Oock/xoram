@@ -50,8 +50,18 @@ export function addService<id extends ServiceId>(
 		return;
 	}
 
+	let service: Service | undefined;
+
 	plugin.hooks.on(beforeCreate, app => {
-		const service = typeof serviceOrFactory === 'function' ? serviceOrFactory(app) : serviceOrFactory;
+		if (import.meta.env.DEV && app.services[serviceId]) {
+			warn(new Error(
+				`A service with id "${ String(serviceId) }" is already registered in the application,`
+				+ ` consider using an other string id or a symbol. Skipping.`,
+			));
+			return;
+		}
+
+		service = typeof serviceOrFactory === 'function' ? serviceOrFactory(app) : serviceOrFactory;
 
 		// todo move this to app ?
 		app.emitter.emit('beforeServiceAdded', { app, service, serviceId });
