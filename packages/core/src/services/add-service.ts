@@ -71,9 +71,19 @@ export function addService<id extends ServiceId>(
 	});
 
 	plugin.hooks.on(beforeDestroy, app => {
+		if (!service) {
+			// if service is undefined an error occurred during the creation process so the service wasn't added
+			// We should abort.
+			return;
+		}
+
 		// todo emit remove service events
 		// todo move this to app ?
+		app.emitter.emit('beforeServiceRemoved', { app, service, serviceId });
+		service.emitter.emit('before_destroy', { service });
 
 		delete app.services[serviceId];
+		app.emitter.emit('serviceRemoved', { app, serviceId });
+
 	});
 }
