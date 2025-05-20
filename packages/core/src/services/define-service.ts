@@ -8,7 +8,7 @@ import type { Service, ServiceNotifications } from './services.type';
  *
  * @public
  */
-export function defineService<notification extends Record<string, unknown> = Record<string, never>>(): () => Service<notification>;
+export function defineService<notification extends Record<string, unknown> = Record<string, unknown>>(): () => Service<notification>;
 /**
  * Define a stateful service.
  * @param setup - a service setup function, the object returned by this function will be used as the base for the
@@ -17,7 +17,7 @@ export function defineService<notification extends Record<string, unknown> = Rec
  * @public
  */
 export function defineService<
-	notification extends Record<string, unknown> = Record<string, never>,
+	notification extends Record<string, unknown> = Record<string, unknown>,
 	service extends Record<string, unknown> = Record<string, unknown>
 >(
 	setup: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => service,
@@ -30,7 +30,7 @@ export function defineService<
  * @internal
  */
 export function defineService<
-	notification extends Record<string, unknown> = Record<string, never>,
+	notification extends Record<string, unknown> = Record<string, unknown>,
 	service extends Record<string, unknown> = Record<string, unknown>
 >(
 	setup?: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => service,
