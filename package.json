@@ -17,7 +17,8 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "config/*"
+    "config/*",
+    "plugins/*"
   ],
   "dependencies": {
     "@microsoft/api-documenter": "^7.26.27",
