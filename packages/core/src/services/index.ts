@@ -1,3 +1,4 @@
+export type { NotificationsFromService } from './define-service';
 export { defineService } from './define-service';
 
 export type { ServiceFactory } from './add-service';
