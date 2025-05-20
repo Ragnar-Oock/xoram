@@ -26,26 +26,30 @@ import { it } from '../../fixture/test.fixture';
 const eventA = Object.freeze({ a: 1, b: '2' });
 const eventB = Object.freeze({ a: 3, c: '4' });
 
-type Notifications = {
-// eslint-disable-next-line no-magic-numbers
-	eventA: { a: 1, b: '2' };
-// eslint-disable-next-line no-magic-numbers
-	eventB: { a: 3, c: '4' };
+type OnEventTestNotifications = {
+	eventA: typeof eventA;
+	eventB: typeof eventB;
 };
 
 declare module '../../../src' {
 	interface ServiceCollection {
-		service: Service<Notifications>;
+		onEventTestService: Service<OnEventTestNotifications>;
 	}
 }
 
-function checkSingleEvent<notifications extends Notifications>(emitter: Emitter<notifications>, spy: Mock): void {
+function checkSingleEvent<notifications extends OnEventTestNotifications>(
+	emitter: Emitter<notifications>,
+	spy: Mock,
+): void {
 	emitter.emit('eventA', eventA);
 
 	expect(spy).toHaveBeenCalledExactlyOnceWith(eventA);
 }
 
-function checkMultiEvent<notifications extends Notifications>(emitter: Emitter<notifications>, spy: Mock): void {
+function checkMultiEvent<notifications extends OnEventTestNotifications>(
+	emitter: Emitter<notifications>,
+	spy: Mock,
+): void {
 	emitter.emit('eventA', eventA);
 	emitter.emit('eventB', eventB);
 
@@ -55,7 +59,10 @@ function checkMultiEvent<notifications extends Notifications>(emitter: Emitter<n
 	expect(spy).toHaveBeenCalledWith(eventB);
 }
 
-function checkWildcardEvent<notifications extends Notifications>(emitter: Emitter<notifications>, spy: Mock): void {
+function checkWildcardEvent<notifications extends OnEventTestNotifications>(
+	emitter: Emitter<notifications>,
+	spy: Mock,
+): void {
 	emitter.emit('eventA', eventA);
 	emitter.emit('eventB', eventB);
 
@@ -67,23 +74,23 @@ function checkWildcardEvent<notifications extends Notifications>(emitter: Emitte
 
 type OverloadCase = [
 	name: string,
-	callback: (onEvent?: () => void) => [ cleanup: () => void, emitter: (app: Application) => Emitter<Notifications> ]
+	callback: (onEvent?: () => void) => [ cleanup: () => void, emitter: (app: Application) => Emitter<OnEventTestNotifications> ]
 ]
 
-function getServiceEmitter(app: Application): Emitter<Notifications> {
-	return app.services.service.emitter as unknown as Emitter<Notifications>;
+function getServiceEmitter(app: Application): Emitter<OnEventTestNotifications> {
+	return app.services.onEventTestService.emitter as unknown as Emitter<OnEventTestNotifications>;
 }
 
 describe('onEvent', () => {
-	let emitter: Emitter<Notifications>;
+	let emitter: Emitter<OnEventTestNotifications>;
 	let handler: Mock;
-	let serviceFactory: () => Service<Notifications>;
+	let serviceFactory: () => Service<OnEventTestNotifications>;
 
 
 	beforeEach(() => {
 		emitter = mitt();
 		handler = vi.fn();
-		serviceFactory = defineService<Notifications>();
+		serviceFactory = defineService<OnEventTestNotifications>();
 	});
 
 	// eslint-disable explicit-function-return-type
@@ -167,7 +174,7 @@ describe('onEvent', () => {
 		[
 			'overload 3:1 onEvent(app => app.services.service.emitter, \'*\', handler)',
 			(callback) => [
-				onEvent(app => app.services.service.emitter, '*', (...args) => {
+				onEvent(app => app.services.onEventTestService.emitter, '*', (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -176,7 +183,7 @@ describe('onEvent', () => {
 		[
 			'overload 3:2 onEvent(app => app.services.service.emitter, \'eventA\', handler)',
 			(callback) => [
-				onEvent(app => app.services.service.emitter, 'eventA', (...args) => {
+				onEvent(app => app.services.onEventTestService.emitter, 'eventA', (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -185,7 +192,7 @@ describe('onEvent', () => {
 		[
 			'overload 3:3 onEvent(app => app.services.service.emitter, [\'eventA\', \'eventB\'], handler)',
 			(callback) => [
-				onEvent(app => app.services.service.emitter, [ 'eventA', 'eventB' ], (...args) => {
+				onEvent(app => app.services.onEventTestService.emitter, [ 'eventA', 'eventB' ], (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -194,7 +201,7 @@ describe('onEvent', () => {
 		[
 			'overload 3:3 (+single event) onEvent(app => app.services.service.emitter, [\'eventA\'], handler)',
 			(callback) => [
-				onEvent(app => app.services.service.emitter, [ 'eventA' ], (...args) => {
+				onEvent(app => app.services.onEventTestService.emitter, [ 'eventA' ], (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -205,7 +212,7 @@ describe('onEvent', () => {
 		[
 			'overload 4:1 onEvent(app => app.services.service, \'*\', handler)',
 			(callback) => [
-				onEvent(app => app.services.service, '*', (...args) => {
+				onEvent(app => app.services.onEventTestService, '*', (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -214,7 +221,7 @@ describe('onEvent', () => {
 		[
 			'overload 4:2 onEvent(app => app.services.service, \'eventA\', handler)',
 			(callback) => [
-				onEvent(app => app.services.service, 'eventA', (...args) => {
+				onEvent(app => app.services.onEventTestService, 'eventA', (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -223,7 +230,7 @@ describe('onEvent', () => {
 		[
 			'overload 4:3 onEvent(app => app.services.service, [\'eventA\', \'eventB\'], handler)',
 			(callback) => [
-				onEvent(app => app.services.service, [ 'eventA', 'eventB' ], (...args) => {
+				onEvent(app => app.services.onEventTestService, [ 'eventA', 'eventB' ], (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -232,7 +239,7 @@ describe('onEvent', () => {
 		[
 			'overload 4:3 (+single event) onEvent(app => app.services.service, [\'eventA\'], handler)',
 			(callback) => [
-				onEvent(app => app.services.service, [ 'eventA' ], (...args) => {
+				onEvent(app => app.services.onEventTestService, [ 'eventA' ], (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -243,7 +250,7 @@ describe('onEvent', () => {
 		[
 			'overload 5:1 onEvent(\'service\', \'*\', handler)',
 			(callback) => [
-				onEvent('service', '*', (...args) => {
+				onEvent('onEventTestService', '*', (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -252,7 +259,7 @@ describe('onEvent', () => {
 		[
 			'overload 5:2 onEvent(\'service\', \'eventA\', handler)',
 			(callback) => [
-				onEvent('service', 'eventA', (...args) => {
+				onEvent('onEventTestService', 'eventA', (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -261,7 +268,7 @@ describe('onEvent', () => {
 		[
 			'overload 5:3 onEvent(\'service\', [\'eventA\', \'eventB\'], handler)',
 			(callback) => [
-				onEvent('service', [ 'eventA', 'eventB' ], (...args) => {
+				onEvent('onEventTestService', [ 'eventA', 'eventB' ], (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -270,7 +277,7 @@ describe('onEvent', () => {
 		[
 			'overload 5:3 (+single event) onEvent(\'service\', [\'eventA\'], handler)',
 			(callback) => [
-				onEvent('service', [ 'eventA' ], (...args) => {
+				onEvent('onEventTestService', [ 'eventA' ], (...args) => {
 					handler(...args);
 					callback?.();
 				}), getServiceEmitter,
@@ -355,103 +362,103 @@ describe('onEvent', () => {
 		it('should handle wildcard event listener with direct emitter getter', () => {
 			const app = createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory);
-					onEvent(app => app.services.service.emitter, '*', handler);
+					addService('onEventTestService', serviceFactory);
+					onEvent(app => app.services.onEventTestService.emitter, '*', handler);
 				}),
 			]);
-			checkWildcardEvent(app.services.service.emitter, handler);
+			checkWildcardEvent(app.services.onEventTestService.emitter, handler);
 		});
 
 		it('should handle single event listener with direct emitter getter', () => {
 			const app = createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory);
-					onEvent(app => app.services.service.emitter, 'eventA', handler);
+					addService('onEventTestService', serviceFactory);
+					onEvent(app => app.services.onEventTestService.emitter, 'eventA', handler);
 				}),
 			]);
 
-			checkSingleEvent(app.services.service.emitter, handler);
+			checkSingleEvent(app.services.onEventTestService.emitter, handler);
 		});
 
 		it('should handle multiple event listeners with direct emitter getter', () => {
 			const app = createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory);
+					addService('onEventTestService', serviceFactory);
 
-					onEvent(app => app.services.service.emitter, [ 'eventA', 'eventB' ], handler);
+					onEvent(app => app.services.onEventTestService.emitter, [ 'eventA', 'eventB' ], handler);
 				}),
 			]);
 
-			checkMultiEvent(app.services.service.emitter, handler);
+			checkMultiEvent(app.services.onEventTestService.emitter, handler);
 		});
 
 		// --- Getter: app => app.services.service (returns object with emitter) ---
 		it('should handle wildcard event listener with service object getter', () => {
 			const app = createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory);
-					onEvent(app => app.services.service, '*', handler);
+					addService('onEventTestService', serviceFactory);
+					onEvent(app => app.services.onEventTestService, '*', handler);
 				}),
 			]);
 
-			checkWildcardEvent(app.services.service.emitter, handler);
+			checkWildcardEvent(app.services.onEventTestService.emitter, handler);
 		});
 
 		it('should handle single event listener with service object getter', () => {
 			const app = createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory);
-					onEvent(app => app.services.service, 'eventA', handler);
+					addService('onEventTestService', serviceFactory);
+					onEvent(app => app.services.onEventTestService, 'eventA', handler);
 				}),
 			]);
 
-			checkSingleEvent(app.services.service.emitter, handler);
+			checkSingleEvent(app.services.onEventTestService.emitter, handler);
 		});
 
 		it('should handle multiple event listeners with service object getter', () => {
 			const app = createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory);
-					onEvent(app => app.services.service, [ 'eventA', 'eventB' ], handler);
+					addService('onEventTestService', serviceFactory);
+					onEvent(app => app.services.onEventTestService, [ 'eventA', 'eventB' ], handler);
 				}),
 			]);
 
-			checkMultiEvent(app.services.service.emitter, handler);
+			checkMultiEvent(app.services.onEventTestService.emitter, handler);
 		});
 
 		// --- Service ID string ---
 		it('should handle wildcard event listener with service ID string', () => {
 			const app = createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory);
-					onEvent('service', '*', handler);
+					addService('onEventTestService', serviceFactory);
+					onEvent('onEventTestService', '*', handler);
 				}),
 			]);
 
-			checkWildcardEvent(app.services.service.emitter, handler);
+			checkWildcardEvent(app.services.onEventTestService.emitter, handler);
 		});
 
 		it('should handle single event listener with service ID string', () => {
-			onEvent('service', 'eventA', handler);
+			onEvent('onEventTestService', 'eventA', handler);
 			const app = createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory);
-					onEvent('service', 'eventA', handler);
+					addService('onEventTestService', serviceFactory);
+					onEvent('onEventTestService', 'eventA', handler);
 				}),
 			]);
 
-			checkSingleEvent(app.services.service.emitter, handler);
+			checkSingleEvent(app.services.onEventTestService.emitter, handler);
 		});
 
 		it('should handle multiple event listeners with service ID string', () => {
 			const app = createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory);
-					onEvent('service', [ 'eventA', 'eventB' ], handler);
+					addService('onEventTestService', serviceFactory);
+					onEvent('onEventTestService', [ 'eventA', 'eventB' ], handler);
 				}),
 			]);
 
-			checkMultiEvent(app.services.service.emitter, handler);
+			checkMultiEvent(app.services.onEventTestService.emitter, handler);
 		});
 	});
 
@@ -479,12 +486,12 @@ describe('onEvent', () => {
 			],
 		])('%s', ([ _, cases ]) => {
 			it.for<OverloadCase>(cases)('%s', ([ _, callback ]) => {
-				let getEmitter: (app: Application) => Emitter<Notifications>;
+				let getEmitter: (app: Application) => Emitter<OnEventTestNotifications>;
 
 				const spy = vi.fn();
 				const app = createApp([
 					definePlugin(() => {
-						addService('service', serviceFactory());
+						addService('onEventTestService', serviceFactory());
 						[ , getEmitter ] = callback(spy);
 					}),
 				]);
@@ -539,7 +546,7 @@ describe('onEvent', () => {
 		])('should warn when given an invalid service id: %s', ([ , callback ], { warnSpy }) => {
 			createApp([
 				definePlugin(() => {
-					addService('service', serviceFactory());
+					addService('onEventTestService', serviceFactory());
 					callback();
 				}),
 			]);
@@ -561,7 +568,7 @@ describe('onEvent', () => {
 			])('should warn when given a %s as target', ([ typeofTarget, target ], { warnSpy }) => {
 				createApp([
 					definePlugin(() => {
-						addService('service', serviceFactory());
+						addService('onEventTestService', serviceFactory());
 						// @ts-expect-error all targets here are invalid
 						onEvent(target, events, handler);
 					}),
@@ -684,7 +691,7 @@ describe('onEvent', () => {
 			expect(handler).toHaveBeenCalledExactlyOnceWith('eventA', eventA);
 		});
 		it('should be scoped to the target emitter', () => {
-			const service = defineService<Notifications>()();
+			const service = defineService<OnEventTestNotifications>()();
 			createApp([
 				definePlugin(() => {
 					onEvent(emitter, '*', handler);
@@ -713,11 +720,11 @@ describe('onEvent', () => {
 	describe('cleanup', () => {
 		describe.for<OverloadCase>(overloadsCases)('%s', ([ _, callback ]) => {
 			let cleanup: () => void = noop,
-				getEmitter: (app: Application) => Emitter<Notifications>;
+				getEmitter: (app: Application) => Emitter<OnEventTestNotifications>;
 			it('should return a nullary void function', () => {
 				createApp([
 					definePlugin(() => {
-						addService('service', serviceFactory);
+						addService('onEventTestService', serviceFactory);
 
 						[ cleanup ] = callback();
 					}),
@@ -729,7 +736,7 @@ describe('onEvent', () => {
 			it('should stop handler from being called after cleanup', () => {
 				const app = createApp([
 					definePlugin(() => {
-						addService('service', serviceFactory);
+						addService('onEventTestService', serviceFactory);
 
 						[ cleanup, getEmitter ] = callback();
 					}),
@@ -746,7 +753,7 @@ describe('onEvent', () => {
 
 				const app = createApp([
 					definePlugin(() => {
-						addService('service', serviceFactory);
+						addService('onEventTestService', serviceFactory);
 
 						[ cleanup, getEmitter ] = callback();
 						onEvent(getEmitter, '*', otherSpy);
@@ -763,7 +770,7 @@ describe('onEvent', () => {
 			it('should be idempotent', () => {
 				createApp([
 					definePlugin(() => {
-						addService('service', serviceFactory);
+						addService('onEventTestService', serviceFactory);
 
 						[ cleanup ] = callback();
 					}),
@@ -779,7 +786,7 @@ describe('onEvent', () => {
 	describe('life cycle', () => {
 		describe.for<OverloadCase>(overloadsCases)('%s', ([ _, callback ]) => {
 
-			let getEmitter: (app: Application) => Emitter<Notifications>;
+			let getEmitter: (app: Application) => Emitter<OnEventTestNotifications>;
 			let pluginPhase: string | undefined;
 
 			beforeEach(() => {
@@ -790,7 +797,7 @@ describe('onEvent', () => {
 			it('should wait for the `active` phase when invoked during `setup`', ({ warnSpy }) => {
 				const app = createApp([
 					definePlugin(() => {
-						addService('service', serviceFactory);
+						addService('onEventTestService', serviceFactory);
 						const plugin = getActivePlugin();
 
 						[ , getEmitter ] = callback(() => {pluginPhase = plugin?.phase;});
@@ -807,7 +814,7 @@ describe('onEvent', () => {
 				// setup
 				const app = createApp([
 					definePlugin(() => {
-						addService('service', serviceFactory);
+						addService('onEventTestService', serviceFactory);
 						const plugin = getActivePlugin();
 
 						onBeforeCreate(() => {
@@ -828,7 +835,7 @@ describe('onEvent', () => {
 				// setup
 				const app = createApp([
 					definePlugin(() => {
-						addService('service', serviceFactory);
+						addService('onEventTestService', serviceFactory);
 						const plugin = getActivePlugin();
 
 						onCreated(() => {
@@ -848,7 +855,7 @@ describe('onEvent', () => {
 			it('should warn and skip when invoked during `teardown`', ({ warnSpy }) => {
 				// setup
 				const servicePlugin = definePlugin('service', () => {
-					addService('service', serviceFactory);
+					addService('onEventTestService', serviceFactory);
 				});
 				const plugin = definePlugin(() => {
 					dependsOn(servicePlugin.id);
@@ -877,7 +884,7 @@ describe('onEvent', () => {
 			it('should warn and skip when invoked during `destroyed`', ({ warnSpy }) => {
 				// setup
 				const servicePlugin = definePlugin('service', () => {
-					addService('service', serviceFactory);
+					addService('onEventTestService', serviceFactory);
 				});
 				const plugin = definePlugin(() => {
 					dependsOn(servicePlugin.id);
@@ -908,58 +915,3 @@ describe('onEvent', () => {
 		});
 	});
 });
-
-/**
-onEvent(emitter, '*', handler);
-onEvent(emitter, 'eventA', handler);
-onEvent(emitter, ['eventA', 'eventB'], handler);
-
-onEvent({emitter}, '*', handler);
-onEvent({emitter}, 'eventA', handler);
-onEvent({emitter}, ['eventA', 'eventB'], handler);
-
-onEvent(app => app.services.service.emitter, '*', handler);
-onEvent(app => app.services.service.emitter, 'eventA', handler);
-onEvent(app => app.services.service.emitter, ['eventA', 'eventB'], handler);
-
-onEvent(app => app.services.service, '*', handler);
-onEvent(app => app.services.service, 'eventA', handler);
-onEvent(app => app.services.service, ['eventA', 'eventB'], handler);
-
-onEvent('service', '*', handler);
-onEvent('service', 'eventA', handler);
-onEvent('service', ['eventA', 'eventB'], handler);
- */
-
-/**
- * wildcard event handler :
- * get type parameter
- * get event payload matching the type
- */
-
-/**
- * multi event handler :
- * get event payload with only overlapping members
- */
-
-/**
- * single event handler :
- * get event payload
- */
-
-/** all handlers
- * don't modify the `this` context of the handler when called
- */
-
-/**
- * called in a plugin context ?
- * called in a plugin setup phase ?
- * called in a plugin hook ?
- */
-
-/**
- * cleanup function :
- * is idempotent
- * is automatically invoked on plugin removal
- * does not affect other listeners set on the same event(s) of the same emitter
- */
