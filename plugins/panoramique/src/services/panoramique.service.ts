@@ -2,7 +2,6 @@ import { defineService, type Prettify, type Service } from '@zoram/core';
 import { createPinia, defineStore } from 'pinia';
 import { type Component, type ComponentPublicInstance, computed, type ComputedRef, markRaw, reactive } from 'vue';
 import type { ComponentEmit, ComponentProps } from 'vue-component-type-helpers';
-import PanoramiqueRoot from '../components/panoramique-root.vue';
 
 /**
  * Utility for extracting the parameters from a function overload (for typed emits)
@@ -232,10 +231,11 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 			delete _definitions[id];
 		}
 
-		// this element is the one every other mounted in the app will descent from
+		// this element is the one every other mounted in the app will descent from, it is implemented by
+		// panoramique-root.vue but its type isn't used and importing it would lead to a circular import
 		register({
 			id: 'root',
-			type: PanoramiqueRoot,
+			type: {} as unknown as Component,
 		});
 
 		return {
