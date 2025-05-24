@@ -1,6 +1,5 @@
-import { addService, definePlugin } from '@zoram/core';
-import { panoramique, type PanoramiqueService } from './services/panoramique.service';
-import { type VueService, vueService } from './services/vue.service';
+import type { PanoramiqueService } from './services/panoramique.service';
+import type { VueService } from './services/vue.service';
 
 
 declare module '@zoram/core' {
@@ -17,7 +16,9 @@ declare module '@zoram/core' {
 	}
 }
 
-export default definePlugin('panoramic', () => {
-	addService('vue', vueService);
-	addService('panoramique', panoramique);
-});
+export type {
+	VueService,
+	PanoramiqueService,
+};
+
+export { panoramiquePlugin } from './plugin';
