@@ -157,19 +157,30 @@ export interface PanoramiqueService extends Service {
 	>(id: id) => ComputedRef<ComponentDefinition<component, id> | undefined>;
 
 	/**
-	 * Safely add a child to a registered harness. Will safely abort if the parent hasn't been registered yet.
-	 *
-	 * @param parent - id of the harness to add the child to
-	 * @param child - id of the child
-	 */
-	addChild: (parent: string, child: string) => void;
-
-	/**
 	 * Safely removes a harness from the store.
 	 *
 	 * @param id - id of the harness to remove
 	 */
 	remove: (id: string) => void;
+
+	/**
+	 * Safely add a child to a registered harness. Will safely abort if the parent hasn't been registered yet.
+	 *
+	 * @param parent - id of the harness to add the child to
+	 * @param child - id of the child
+	 * @param [slotName = 'default'] - name of the slot in the parent to add the child in, default's to the `default` slot
+	 */
+	addChild: (parent: string, child: string, slotName?: string) => void;
+
+	/**
+	 * Remove a previously added child from its parent. This will not remove the child's definition from the store,
+	 * simply sever the link between the two components.
+	 *
+	 * @param parent - id of the parent the child is currently attached to
+	 * @param child - if of the child to remove
+	 * @param [slotName = 'default'] - name of the slot the child is registered into, default's to the `default` slot
+	 */
+	removeChild: (parent: string, child: string, slotName?: string) => void;
 }
 
 export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueService, keyof Service>>(
@@ -227,6 +238,13 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 			slot.push(child);
 		}
 
+		function removeChild(parent: string, child: string, slotName = 'default'): void {
+			const parentDefinition = _definitions[parent];
+
+			parentDefinition.children[slotName] = parentDefinition.children[slotName]
+				?.filter(registered => registered !== child);
+		}
+
 		function remove(id: string): void {
 			delete _definitions[id];
 		}
@@ -244,6 +262,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 			register,
 			get,
 			addChild,
+			removeChild,
 			remove,
 		};
 	},
