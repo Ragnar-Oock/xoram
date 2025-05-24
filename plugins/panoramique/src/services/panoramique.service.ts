@@ -1,22 +1,35 @@
-import { defineService, type Service } from '@zoram/core';
+import { defineService, type Prettify, type Service } from '@zoram/core';
 import { createPinia, defineStore } from 'pinia';
 import { type Component, type ComponentPublicInstance, computed, type ComputedRef, markRaw, reactive } from 'vue';
-import type { ComponentProps } from 'vue-component-type-helpers';
+import type { ComponentEmit, ComponentProps } from 'vue-component-type-helpers';
 
 /**
- * Extracts the props a component can take as input
+ * Utility for extracting the parameters from a function overload (for typed emits)
+ * https://github.com/microsoft/TypeScript/issues/32164#issuecomment-1146737709
  */
-export type ComponentProps<component extends Component> =
-	component extends Component<infer props>
-		? Partial<Omit<props, keyof VNodeProps> & AllowedComponentProps>
-		: Record<string, never>;
+// we need the "any" here because of how ComponentEmit is typed
+// eslint-disable-next-line no-explicit-any
+export type OverloadParameters<T extends (...args: any[]) => unknown> = Parameters<OverloadUnion<T>>;
+type OverloadProps<TOverload> = Pick<TOverload, keyof TOverload>;
+type OverloadUnionRecursive<TOverload, TPartialOverload = unknown> = TOverload extends (...args: infer TArgs) =>
+		infer TReturn ? TPartialOverload extends TOverload ? never : OverloadUnionRecursive<TPartialOverload & TOverload,
+		TPartialOverload & ((...args: TArgs) => TReturn) & OverloadProps<TOverload>> | ((...args: TArgs) => TReturn) :
+	never;
+type OverloadUnion<TOverload extends (...args: unknown[]) => unknown> = Exclude<OverloadUnionRecursive<(() => never)
+	& TOverload>, TOverload extends () => never ? never : () => never>;
 
-// todo make this type work more reliably
-export type ComponentEvents<component extends Component> =
-	component extends Component<never, never, never, never, never, infer emits>
-		? emits
-		/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-		: Record<string, (...args: any[]) => void>
+/**
+ * Extract the first element from a tuple
+ */
+type First<tuple> = tuple extends [ infer first, ...unknown[] ] ? first : never;
+/**
+ * Extract everything but the first element of a tuple
+ */
+type AfterFirst<tuple> = tuple extends [ unknown, ...infer rest ] ? rest : never;
+
+export type ComponentEvents<component extends Component> = Prettify<{
+	[event in First<OverloadParameters<ComponentEmit<component>>> & string]?: (...args: AfterFirst<Extract<OverloadParameters<ComponentEmit<component>>, [ event, ...unknown[] ]>>) => void
+}>
 
 export type ComponentHarness<component extends Component, id extends string = string> = {
 	/**
