@@ -1,17 +1,7 @@
-import { defineService, type Prettify, type Service } from '@zoram/core';
+import { defineService, type Service } from '@zoram/core';
 import { createPinia, defineStore } from 'pinia';
-import {
-	type AllowedComponentProps,
-	type Component,
-	type ComponentPublicInstance,
-	computed,
-	type ComputedRef,
-	markRaw,
-	type Reactive,
-	reactive,
-	type VNodeProps,
-} from 'vue';
-import PanoramiquePlatform from '../components/PanoramiquePlatform.vue';
+import { type Component, type ComponentPublicInstance, computed, type ComputedRef, markRaw, reactive } from 'vue';
+import type { ComponentProps } from 'vue-component-type-helpers';
 
 /**
  * Extracts the props a component can take as input
@@ -46,14 +36,52 @@ export type ComponentHarness<component extends Component, id extends string = st
 	 */
 	events?: ComponentEvents<component>;
 	/**
-	 * The id of the other harnesses to mount as the component's children in its slots
+	 * The id of the other harnesses to mount as the component's children in its slots.
+	 *
+	 * @example
+	 * ```ts
+	 * register({
+	 *   id: 'named slot',
+	 *   type: ExampleComponent,
+	 *   children: {
+	 *     slotName: ['childId'],
+	 *   }
+	 * });
+	 * register({
+	 *   id: 'default slot',
+	 *   type: ExampleComponent,
+	 *   children: ['childId'],
+	 * });
+	 * register({
+	 *   id: 'mixed slot',
+	 *   type: ExampleComponent,
+	 *   children: {
+	 *     default: ['childId'],
+	 *     slotName: ['otherChildId'],
+	 *   }
+	 * });
+	 * ```
 	 */
 	children?: ChildrenIds | HarnessChildren<component>;
 }
 
 export type ChildrenIds = string[];
 
-export type HarnessChildren<component extends Component> = component extends (new (...args: any[]) => ComponentPublicInstance)
+/**
+ * Maps the slots advertised by a component to a list of children IDs to be bound to those same slots.
+ *
+ * A looser openly indexed slot to children IDs record is available is the slot names can't be inferred from the
+ * component's type.
+ *
+ * @example
+ * ```ts
+ * const children = {
+ *   default: ['child1', 'child2'],
+ *   header: ['cardHeader']
+ * }
+ * ```
+ */
+export type HarnessChildren<component extends Component> = component extends (new (...args: unknown[]) => ComponentPublicInstance)
 	? {
 		/**
 		 * A List of child id to use as children in the component's named slots
@@ -67,7 +95,7 @@ export type HarnessChildren<component extends Component> = component extends (ne
 		[slot: string]: ChildrenIds
 	}
 
-export type ComponentDefinition<component extends Component = Component, id extends string = string> = Prettify<{
+export type ComponentDefinition<component extends Component = Component, id extends string = string> = {
 	/**
 	 * Identifies the harness in the store so it can be used as another one's child.
 	 */
@@ -88,16 +116,12 @@ export type ComponentDefinition<component extends Component = Component, id exte
 	 * The id of the other harnesses to mount as the component's children in its slots
 	 */
 	children: HarnessChildren<component>;
-}>;
+};
 
+/**
+ * @public
+ */
 export interface PanoramiqueService extends Service {
-	/**
-	 * Store the registered harnesses.
-	 *
-	 * @internal only exposed for Pinia to do its magic and the devtools to work
-	 */
-	_definitions: Reactive<Record<string, ComponentDefinition>>;
-
 	/**
 	 * Register a new harness in the store for use somewhere else in the application.
 	 *
@@ -117,7 +141,7 @@ export interface PanoramiqueService extends Service {
 	get: <
 		component extends Component = Component,
 		id extends string = string
-	>(id: id) => ComputedRef<ComponentDefinition<component, id> | null>;
+	>(id: id) => ComputedRef<ComponentDefinition<component, id> | undefined>;
 
 	/**
 	 * Safely add a child to a registered harness. Will safely abort if the parent hasn't been registered yet.
@@ -131,113 +155,84 @@ export interface PanoramiqueService extends Service {
 	 * Safely removes a harness from the store.
 	 *
 	 * @param id - id of the harness to remove
-	 * @param [pruneOrphans = false] - should the harness' children not used by other harnesses be recursively removed
-	 *   as well ?
 	 */
-	remove: (id: string, pruneOrphans?: boolean) => void;
+	remove: (id: string) => void;
 }
 
-export const usePanoramiqueStore = defineStore('panoramique', () => {
-	const _definitions = reactive<Record<string, ComponentDefinition>>({});
+export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueService, keyof Service>>(
+	'panoramique',
+	() => {
+		const _definitions = reactive<Record<string, ComponentDefinition>>({});
 
-	/*
-	 function register<
-	 component extends Component,
-	 id extends string = string,
-	 children extends ChildrenIds | HarnessChildren<component> = []
-	 >(
-	 harness: ComponentHarness<component, id, children>
-	 ): ComponentDefinition<component, id, ChildrenFromHarness<component, children>>
-	 */
+		function register<
+			component extends Component,
+			id extends string = string,
+		>(
+			harness: ComponentHarness<component, id>,
+		): ComponentDefinition<component, id> {
+			const { id, type, props = {}, events = {}, children = { default: [] } } = harness;
+			if (_definitions[id]) {
+				if (import.meta.env.NODE_ENV !== 'production') {
+					console.warn(`🔭 A harness with the id ${ id } is already registered in the store. Skipping...`);
+				}
 
-	function register<
-		component extends Component,
-		id extends string = string,
-	>(
-		harness: ComponentHarness<component, id>,
-	): ComponentDefinition<component, id> {
-		const { id, type, props = {}, events = {}, children = { default: [] } } = harness;
-		if (_definitions[id]) {
-			if (import.meta.env.NODE_ENV !== 'production') {
-				console.warn(`🔭 A harness with the id ${ id } is already registered in the store. Skipping...`);
+				// return the already registered harness instead of the new one
+				return _definitions[id] as ComponentDefinition<component, id>;
 			}
 
-			return _definitions[id] as ComponentDefinition<component, id>; // return the already registered harness instead
-		                                                                 // of the new one
+			_definitions[id] = {
+				id,
+				// prevents the component from being made reactive to avoid performance issues (and a deserved warning from Vue)
+				type: markRaw(type),
+				props,
+				events,
+				children: Array.isArray(children) ? { default: children } : children,
+			};
+
+			return _definitions[id] as ComponentDefinition<component, id>;
 		}
 
-		_definitions[id] = {
-			id,
-			type: markRaw(type), // prevents the component from being made reactive to avoid performance issues (and a
-		                       // deserved warning from Vue)
-			props,
-			events,
-			children: Array.isArray(children) ? { default: children } : children,
+		function get<
+			component extends Component = Component,
+			id extends string = string
+		>(id: id): ComputedRef<ComponentDefinition<component, id> | undefined> {
+			return computed(() => (_definitions[id] as ComponentDefinition<component, id> | undefined));
+		}
+
+		function addChild(parent: string, child: string, slotName = 'default'): void {
+			const parentDefinition = _definitions[parent];
+
+			if (parentDefinition === undefined) {
+				if (import.meta.env.NODE_ENV !== 'production') {
+					console.warn(`🔭 Tried to assign a child (id: ${ child }) to a non-existing harness (id: ${ parent }). Skipping...`);
+				}
+
+				return;
+			}
+			const slot = parentDefinition.children[slotName] ??= [];
+
+			slot.push(child);
+		}
+
+		function remove(id: string): void {
+			delete _definitions[id];
+		}
+
+		register({
+			id: 'root',
+			type: {} as unknown as Component,
+		});
+
+		return {
+			_definitions,
+
+			register,
+			get,
+			addChild,
+			remove,
 		};
-
-		return _definitions[id] as ComponentDefinition<component, id>;
-	}
-
-	function get<component extends Component = Component, id extends string = string>(id: id): ComputedRef<ComponentDefinition<component, id> | null> {
-		return computed(() => (_definitions[id] as ComponentDefinition<component, id> | undefined) ?? null);
-	}
-
-	function addChild(parent: string, child: string, slotName = 'default'): void {
-		const parentDefinition = _definitions[parent];
-
-		if (parentDefinition === undefined) {
-			if (import.meta.env.NODE_ENV !== 'production') {
-				console.warn(`🔭 Tried to assign a child (id: ${ child }) to a non-existing harness (id: ${ parent }). Skipping...`);
-			}
-
-			return;
-		}
-		const slot = parentDefinition.children[slotName] ??= [];
-
-		slot.push(child);
-	}
-
-	function remove(id: string, pruneOrphans = false): void {
-		const harness = _definitions[id];
-
-		if (harness === undefined) {
-			return; // harness doesn't exist, nothing to do
-		}
-
-		delete _definitions[id];
-
-		if (pruneOrphans) {
-			Object
-				.values(harness.children)
-				.forEach(children => {
-					children.forEach(child => {
-						Object
-							.values(_definitions)
-							.forEach(({ children }) =>
-								Object
-									.values(children)
-									.some(slotChildren => slotChildren.includes(child))
-									? ''
-									: remove(child, true));
-					});
-				});
-		}
-	}
-
-	register({
-		id: 'root',
-		type: PanoramiquePlatform,
-	});
-
-	return {
-		_definitions,
-
-		register,
-		get,
-		addChild,
-		remove,
-	};
-});
+	},
+);
 
 export const panoramique = defineService<PanoramiqueService>((app) => {
 
