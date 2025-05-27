@@ -15,7 +15,8 @@
   "dependencies": {
     "@zoram/core": "^0.0.0",
     "pinia": "^3.0.2",
-    "vue": "^3.5.14"
+    "vue": "^3.5.14",
+    "vue-component-type-helpers": "^2.2.10"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",
