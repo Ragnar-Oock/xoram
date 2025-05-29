@@ -18,6 +18,7 @@
 	<PanoramiquePlatform
 		v-for="child in children"
 		:identifier="child"
+		:key="child"
 	/>
 </template>
 
