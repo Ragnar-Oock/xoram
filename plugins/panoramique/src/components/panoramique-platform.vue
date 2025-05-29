@@ -7,8 +7,10 @@
 	 * component can be mounted as if used like normal.
 	 */
 
-	import { type Component, computed } from 'vue';
-	import { type HarnessChildren, usePanoramiqueStore } from '../services/panoramique.service';
+	import type { Component, ConcreteComponent } from 'vue';
+	import { computed } from 'vue';
+	import type { ComponentDefinition, HarnessChildren } from '../services/panoramique.service';
+	import { usePanoramiqueStore } from '../services/panoramique.service';
 
 	const { identifier } = defineProps<{
 		identifier: string
@@ -18,24 +20,42 @@
 
 	const harness = panoramiqueStore.get(identifier);
 
+	type EventHandler = (...args: unknown[]) => void;
+	type EventListeners = [ string, EventHandler[] ];
+
+	// eslint-disable-next-line func-style
+	const updateEvent = <prop extends string>(prop: prop): `update:${ prop }` => `update:${ prop }`;
+
+	const events = computed(() => Object.entries<EventHandler[]>(harness.value?.events ?? {}));
+	const models = computed<[ string, EventHandler[] ][]>(() => {
+		const _harness = harness.value;
+		if (_harness === undefined) {
+			return [];
+		}
+		return Object
+			.keys(_harness.props)
+			.filter(prop => (_harness.type as ConcreteComponent).emits.includes(updateEvent(prop)))
+			.map<EventListeners>(prop => [
+				updateEvent(prop),
+				[
+					(update: unknown): void => {_harness.props[prop] = update;},
+					...(_harness.events[updateEvent(prop)] as EventHandler[] | undefined ?? []),
+				],
+			] as const);
+	});
+
 	const listeners = computed(() => {
 			const _harness = harness.value;
 			if (_harness === undefined) {
 				return {};
 			}
-			return Object.fromEntries(
-				[
-					...Object.entries(_harness.events),
-					...Object.keys(_harness.props)
-						.map(prop => [
-							`update:${ prop }`,
-							(update: unknown): void => {
-								_harness.props[prop] = update;
-								_harness.events[`update:${ prop }`]?.(update);
-							},
-						]),
-				],
-			);
+			return Object.fromEntries([
+				...events.value,
+				...models.value,
+			].map(([ event, handlers ]) => [
+				event,
+				(...args: unknown[]): void => handlers.forEach(handler => handler(...args)),
+			]));
 		},
 	);
 
