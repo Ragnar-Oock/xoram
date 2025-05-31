@@ -1,6 +1,6 @@
 import type { Component, MaybeRefOrGetter } from 'vue';
 import type { ComponentProps, ComponentSlots } from 'vue-component-type-helpers';
-import type { ComponentDefinition, ComponentEvents } from '../services/panoramique.service';
+import type { ComponentDefinition, ComponentEvents } from '../services/component-definition.type';
 
 /**
  * Provide tools to describe a {@link ComponentDefinition} in a composable way instead of using the option syntax.

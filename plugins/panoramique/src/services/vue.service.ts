@@ -2,6 +2,9 @@ import { defineService, type Service } from '@zoram/core';
 import { type App, createApp } from 'vue';
 import PanoramiqueRoot from '../components/panoramique-root.vue';
 
+/**
+ * Create and expose a Vue app instance using a {@link PanoramiqueRoot} as the root component.
+ */
 export interface VueService extends Service {
 	app: App,
 }
