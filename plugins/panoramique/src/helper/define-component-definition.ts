@@ -61,8 +61,44 @@ interface ComponentDefinitionHelpers<component extends Component> {
 	) => void;
 }
 
-declare function defineComponentDefinition<id extends string, component extends Component>(
+
+export function defineComponentDefinition<id extends string, component extends Component>(
 	id: id,
 	component: component,
 	setup?: (helpers: ComponentDefinitionHelpers<component>) => void,
-): ComponentDefinition<component, id>;
+): ComponentDefinition<component, id> {
+
+	const definition = {
+		id,
+		type: component,
+		props: {},
+		events: {},
+		children: {},
+	};
+
+	setup?.({
+		bind: (prop, value, ...modifiers) => {
+			// @ts-expect-error prop can't index props safely, but we don't care about safe here
+			definition.props[prop] = value;
+			if (modifiers.length > 0) {
+				// @ts-expect-error template literal can't be used to index props
+				definition.props[`${ prop }Modifiers`] = Object
+					.fromEntries(modifiers.map(mod => [ mod, true ]));
+			}
+		},
+		on: (event, handler) =>
+			// @ts-expect-error event can't index events safely, but we don't care about safe here
+			(definition.events[event] ??= [])
+				.push(handler),
+		slot: (
+			childId,
+			slotName = 'default' as keyof ComponentSlots<component> & string,
+			index = -1,
+		) => {
+			// @ts-expect-error slotName can't index children safely, but we don't care about safe here
+			(definition.children[slotName] ??= []).splice(index, 0, childId);
+		},
+	});
+
+	return definition as ComponentDefinition<component, id>;
+}
