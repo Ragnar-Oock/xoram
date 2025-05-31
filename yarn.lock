@@ -909,6 +909,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@repo/config-api-extractor@workspace:*, @repo/config-api-extractor@workspace:config/api-extractor":
+  version: 0.0.0-use.local
+  resolution: "@repo/config-api-extractor@workspace:config/api-extractor"
+  languageName: unknown
+  linkType: soft
+
 "@repo/config-typescript@npm:*, @repo/config-typescript@workspace:*, @repo/config-typescript@workspace:config/typescript":
   version: 0.0.0-use.local
   resolution: "@repo/config-typescript@workspace:config/typescript"
@@ -919,6 +925,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@repo/config-vite@workspace:config/vite"
   peerDependencies:
+    vite: ^6.3.5
     vitest: "*"
   languageName: unknown
   linkType: soft
@@ -1858,6 +1865,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@zoram/core@workspace:packages/core"
   dependencies:
+    "@repo/config-api-extractor": "workspace:*"
     "@repo/config-typescript": "workspace:*"
     "@repo/config-vite": "workspace:*"
     "@vitest/coverage-v8": "npm:3.1.3"
