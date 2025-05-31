@@ -1,137 +1,12 @@
-import { defineService, type Prettify, type Service } from '@zoram/core';
+import { defineService, type Service } from '@zoram/core';
 import { createPinia, defineStore } from 'pinia';
-import { type Component, type ComponentPublicInstance, computed, type ComputedRef, markRaw, reactive } from 'vue';
-import type { ComponentEmit, ComponentProps } from 'vue-component-type-helpers';
+import { type Component, computed, type ComputedRef, markRaw, reactive } from 'vue';
+import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
 
 /**
- * Utility for extracting the parameters from a function overload (for typed emits)
- * https://github.com/microsoft/TypeScript/issues/32164#issuecomment-1146737709
- */
-// we need the "any" here because of how ComponentEmit is typed
-// eslint-disable-next-line no-explicit-any
-export type OverloadParameters<T extends (...args: any[]) => unknown> = Parameters<OverloadUnion<T>>;
-type OverloadProps<TOverload> = Pick<TOverload, keyof TOverload>;
-type OverloadUnionRecursive<TOverload, TPartialOverload = unknown> = TOverload extends (...args: infer TArgs) =>
-		infer TReturn ? TPartialOverload extends TOverload ? never : OverloadUnionRecursive<TPartialOverload & TOverload,
-		TPartialOverload & ((...args: TArgs) => TReturn) & OverloadProps<TOverload>> | ((...args: TArgs) => TReturn) :
-	never;
-type OverloadUnion<TOverload extends (...args: unknown[]) => unknown> = Exclude<OverloadUnionRecursive<(() => never)
-	& TOverload>, TOverload extends () => never ? never : () => never>;
-
-/**
- * Extract the first element from a tuple
- */
-type First<tuple> = tuple extends [ infer first, ...unknown[] ] ? first : never;
-/**
- * Extract everything but the first element of a tuple
- */
-type AfterFirst<tuple> = tuple extends [ unknown, ...infer rest ] ? rest : never;
-
-export type ComponentEvents<component extends Component> = Prettify<{
-	[event in First<OverloadParameters<ComponentEmit<component>>> & string]?: (...args: AfterFirst<Extract<OverloadParameters<ComponentEmit<component>>, [ event, ...unknown[] ]>>) => void
-}>
-
-export type ComponentHarness<component extends Component, id extends string = string> = {
-	/**
-	 * Identifies the harness in the store so it can be used as another one's child.
-	 */
-	id: id;
-	/**
-	 * The Vue component to use when mounting the harness
-	 */
-	type: component;
-	/**
-	 * The props to pass to the Vue component when mounting it in the application.
-	 */
-	props?: ComponentProps<component>;
-	/**
-	 * The listeners to bind to the component when mounting it in the application.
-	 */
-	events?: ComponentEvents<component>;
-	/**
-	 * The id of the other harnesses to mount as the component's children in its slots.
-	 *
-	 * @example
-	 * ```ts
-	 * register({
-	 *   id: 'named slot',
-	 *   type: ExampleComponent,
-	 *   children: {
-	 *     slotName: ['childId'],
-	 *   }
-	 * });
-	 * register({
-	 *   id: 'default slot',
-	 *   type: ExampleComponent,
-	 *   children: ['childId'],
-	 * });
-	 * register({
-	 *   id: 'mixed slot',
-	 *   type: ExampleComponent,
-	 *   children: {
-	 *     default: ['childId'],
-	 *     slotName: ['otherChildId'],
-	 *   }
-	 * });
-	 * ```
-	 */
-	children?: ChildrenIds | HarnessChildren<component>;
-}
-
-export type ChildrenIds = string[];
-
-/**
- * Maps the slots advertised by a component to a list of children IDs to be bound to those same slots.
+ * Store a collection {@link ComponentDefinition | `ComponentDefinition`} to build dynamically structured UI in a Vue
+ * application.
  *
- * A looser openly indexed slot to children IDs record is available is the slot names can't be inferred from the
- * component's type.
- *
- * @example
- * ```ts
- * const children = {
- *   default: ['child1', 'child2'],
- *   header: ['cardHeader']
- * }
- * ```
- */
-export type HarnessChildren<component extends Component> = component extends (new (...args: unknown[]) => ComponentPublicInstance)
-	? {
-		/**
-		 * A List of child id to use as children in the component's named slots
-		 */
-		[key in keyof InstanceType<component>['$slots']]: ChildrenIds
-	}
-	: {
-		/**
-		 * A List of child id to use as children in the component's named slots
-		 */
-		[slot: string]: ChildrenIds
-	}
-
-export type ComponentDefinition<component extends Component = Component, id extends string = string> = {
-	/**
-	 * Identifies the harness in the store so it can be used as another one's child.
-	 */
-	id: id;
-	/**
-	 * The Vue component to use when mounting the harness
-	 */
-	type: component;
-	/**
-	 * The props to pass to the Vue component when mounting it in the application.
-	 */
-	props: ComponentProps<component>;
-	/**
-	 * The listeners to bind to the component when mounting it in the application.
-	 */
-	events: ComponentEvents<component>;
-	/**
-	 * The id of the other harnesses to mount as the component's children in its slots
-	 */
-	children: HarnessChildren<component>;
-};
-
-/**
  * @public
  */
 export interface PanoramiqueService extends Service {
@@ -142,10 +17,10 @@ export interface PanoramiqueService extends Service {
 	 *
 	 * @returns the reactive harness you can interact with
 	 */
-	register: <
+	register<
 		component extends Component,
 		id extends string = string,
-	>(harness: ComponentHarness<component, id>) => ComponentDefinition<component, id>;
+	>(harness: ComponentHarness<component, id>): ComponentDefinition<component, id>;
 
 	/**
 	 * Find a registered harness
@@ -169,8 +44,10 @@ export interface PanoramiqueService extends Service {
 	 * @param parent - id of the harness to add the child to
 	 * @param child - id of the child
 	 * @param [slotName = 'default'] - name of the slot in the parent to add the child in, default's to the `default` slot
+	 * @param [index = -1] - index, in the given slot, where the child should be inserted. Negative numbers are handled
+	 *   like `array.at()`.
 	 */
-	addChild: (parent: string, child: string, slotName?: string) => void;
+	addChild: (parent: string, child: string, slotName?: string, index?: number) => void;
 
 	/**
 	 * Remove a previously added child from its parent. This will not remove the child's definition from the store,
@@ -223,7 +100,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 			return computed(() => (_definitions[id] as ComponentDefinition<component, id> | undefined));
 		}
 
-		function addChild(parent: string, child: string, slotName = 'default'): void {
+		function addChild(parent: string, child: string, slotName = 'default', index = -1): void {
 			const parentDefinition = _definitions[parent];
 
 			if (parentDefinition === undefined) {
@@ -233,9 +110,9 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 
 				return;
 			}
-			const slot = parentDefinition.children[slotName] ??= [];
 
-			slot.push(child);
+			const slot = (parentDefinition.children[slotName] ??= []);
+			parentDefinition.children[slotName] = slot.splice(index, 0, child);
 		}
 
 		function removeChild(parent: string, child: string, slotName = 'default'): void {
@@ -268,9 +145,9 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 	},
 );
 
-export const panoramique = defineService<PanoramiqueService>((app) => {
+export const panoramique = defineService<PanoramiqueService>(({ services }) => {
 
-	app.services.vue.app.use(createPinia());
+	services.vue.app.use(createPinia());
 
 	return usePanoramiqueStore();
 });

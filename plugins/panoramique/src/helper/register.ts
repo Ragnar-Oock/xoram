@@ -1,7 +1,7 @@
 import { dependsOn, onBeforeDestroy, onCreated } from '@zoram/core';
 import type { Component } from 'vue';
 import { panoramiquePlugin } from '../plugin';
-import type { ComponentHarness } from '../services/panoramique.service';
+import type { ComponentHarness } from '../services/component-definition.type';
 
 /**
  * Register a Vue Component in panoramique when the host plugin is created and de-register the component on tear down.
@@ -11,7 +11,7 @@ import type { ComponentHarness } from '../services/panoramique.service';
  */
 export function register<component extends Component>(definition: ComponentHarness<component>): void {
 	dependsOn(panoramiquePlugin.id);
-	
+
 	onCreated(app => {
 		app.services.panoramique.register(definition);
 	});
