@@ -1,0 +1,10 @@
+{
+  "name": "@repo/config-api-extractor",
+  "version": "0.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ragnar-Oock/zoram.git"
+  },
+  "private": true
+}

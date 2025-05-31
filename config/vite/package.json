@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "publishConfig": {
-    "access": "public"
-  },
   "peerDependencies": {
+    "vite": "^6.3.5",
     "vitest": "*"
+  },
+  "devDependencies": {
+    "@repo/config-typescript": "workspace: *"
   }
 }
