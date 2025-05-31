@@ -4,6 +4,9 @@ import { emitter as createEmitter } from '../emitter';
 import type { Prettify } from '../type-helper';
 import type { Service, ServiceNotifications } from './services.type';
 
+/**
+ * @public
+ */
 export type NotificationsFromService<service> = service extends Service<infer notification> ? notification : never;
 
 /**

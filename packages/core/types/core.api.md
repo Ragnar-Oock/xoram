@@ -118,7 +118,10 @@ export function definePlugin(name: string, setup: PluginSetup): PluginDefinition
 export function defineService<notification extends Record<string, unknown> = Record<string, never>>(): () => Service<notification>;
 
 // @public
-export function defineService<notification extends Record<string, unknown> = Record<string, never>, service extends Record<string, unknown> = Record<string, unknown>>(setup: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => service): (app: Application) => Service<notification> & service;
+export function defineService<notification extends Record<string, unknown> = Record<string, never>, service extends Record<string, unknown> = Record<string, unknown>>(setup: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => service): (app: Application) => Prettify<Service<notification> & service>;
+
+// @public
+export function defineService<service extends Service>(setup: (app: Application, emitter: Emitter<NotificationsFromService<service> & ServiceNotifications>) => Omit<service, keyof Service>): (app: Application) => service;
 
 // @public
 export function dependsOn(dependency: PluginId): void;
@@ -150,6 +153,9 @@ export type MergedEvents<notifications extends Notifications, events extends (ke
 
 // @public (undocumented)
 export type Notifications = Record<EventType, unknown>;
+
+// @public (undocumented)
+export type NotificationsFromService<service> = service extends Service<infer notification> ? notification : never;
 
 // @public
 export const onBeforeCreate: (callback: ((app: Application) => void)) => void;
@@ -195,6 +201,11 @@ export type _PluginPhase = 'setup' | 'mount' | 'active' | 'teardown' | 'destroye
 
 // @public
 export type PluginSetup = () => void;
+
+// @public
+export type Prettify<T> = {
+    [K in keyof T]: T[K];
+} & {};
 
 // @public
 export function removePlugin(idOrPlugin: PluginId | DefinedPlugin): void;
