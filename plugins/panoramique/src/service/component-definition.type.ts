@@ -127,3 +127,5 @@ export type ComponentDefinition<component extends Component = Component, id exte
 	 */
 	children: HarnessChildren<component>;
 };
+
+// todo : swap component definition and harness names

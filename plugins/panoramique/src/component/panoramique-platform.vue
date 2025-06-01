@@ -9,8 +9,8 @@
 
 	import type { Component, ConcreteComponent } from 'vue';
 	import { computed } from 'vue';
-	import type { ComponentDefinition, HarnessChildren } from '../services/component-definition.type';
-	import { usePanoramiqueStore } from '../services/panoramique.service';
+	import type { ComponentDefinition, HarnessChildren } from '../service/component-definition.type';
+	import { usePanoramiqueStore } from '../service/panoramique.service';
 
 	const { identifier } = defineProps<{
 		identifier: string
