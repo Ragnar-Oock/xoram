@@ -1,6 +1,6 @@
 import { addService, definePlugin } from '@zoram/core';
-import { panoramique } from './services/panoramique.service';
-import { vueService } from './services/vue.service';
+import { panoramique } from './service/panoramique.service';
+import { vueService } from './service/vue.service';
 
 export const panoramiquePlugin = definePlugin('panoramic', () => {
 	addService('vue', vueService);

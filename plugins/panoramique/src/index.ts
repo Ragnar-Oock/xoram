@@ -1,5 +1,5 @@
-import type { PanoramiqueService } from './services/panoramique.service';
-import type { VueService } from './services/vue.service';
+import type { PanoramiqueService } from './service/panoramique.service';
+import type { VueService } from './service/vue.service';
 
 
 declare module '@zoram/core' {

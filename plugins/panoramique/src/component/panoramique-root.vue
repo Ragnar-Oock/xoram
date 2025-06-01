@@ -6,7 +6,7 @@
 	 * the {@link ComponentDefinition} registered as children of `'root'`.
 	 */
 	import { computed } from 'vue';
-	import { usePanoramiqueStore } from '../services/panoramique.service';
+	import { usePanoramiqueStore } from '../service/panoramique.service';
 	import PanoramiquePlatform from './panoramique-platform.vue';
 
 
