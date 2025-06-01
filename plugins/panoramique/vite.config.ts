@@ -16,4 +16,7 @@ export default defineConfig({
 			'@zoram/core': '@zoram/core/dev',
 		},
 	},
+	test: {
+		environment: 'happy-dom',
+	},
 });
