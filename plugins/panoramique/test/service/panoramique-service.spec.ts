@@ -143,6 +143,84 @@ describe('panoramique service', () => {
 
 				expect(def(id)).not.toBe(undefined);
 			});
+
+			describe('can pre-fill slots', () => {
+				it('should allow mixed default and named slots', () => {
+					app.services.panoramique.register({
+						id: 'parent',
+						type: ContextMenu,
+						children: {
+							default: [ 'child1' ],
+							slotName: [ 'child2' ],
+						},
+					});
+
+					expect(def('parent')?.children.default).toStrictEqual([ 'child1' ]);
+					expect(def('parent')?.children.slotName).toStrictEqual([ 'child2' ]);
+				});
+				it('should allow named only slot', () => {
+					app.services.panoramique.register({
+						id: 'parent',
+						type: ContextMenu,
+						children: {
+							slotName: [ 'child' ],
+						},
+					});
+
+					expect(def('parent')?.children.slotName).toStrictEqual([ 'child' ]);
+				});
+				it('should allow explicit default slot only', () => {
+					app.services.panoramique.register({
+						id: 'parent',
+						type: ContextMenu,
+						children: {
+							default: [ 'child' ],
+						},
+					});
+
+					expect(def('parent')?.children.default).toStrictEqual([ 'child' ]);
+				});
+				it('should allow implicit default slot only', () => {
+					app.services.panoramique.register({
+						id: 'parent',
+						type: ContextMenu,
+						children: [ 'child' ],
+					});
+
+					expect(def('parent')?.children.default).toStrictEqual([ 'child' ]);
+				});
+				it('should allow multiple children per named slot ', () => {
+					app.services.panoramique.register({
+						id: 'parent',
+						type: ContextMenu,
+						children: {
+							slotName: [ 'child1', 'child2' ],
+						},
+					});
+
+					expect(def('parent')?.children.slotName).toStrictEqual([ 'child1', 'child2' ]);
+				});
+				it('should allow multiple children for explicit default slot ', () => {
+					app.services.panoramique.register({
+						id: 'parent',
+						type: ContextMenu,
+						children: {
+							default: [ 'child1', 'child2' ],
+						},
+					});
+
+					expect(def('parent')?.children.default).toStrictEqual([ 'child1', 'child2' ]);
+				});
+				it('should allow multiple children for explicit default slot ', () => {
+					app.services.panoramique.register({
+						id: 'parent',
+						type: ContextMenu,
+						children: [ 'child1', 'child2' ],
+					});
+
+					expect(def('parent')?.children.default).toStrictEqual([ 'child1', 'child2' ]);
+				});
+			});
 		});
 		describe('remove()', () => {
 			it('should remove the harness at the given id from the store', () => {
@@ -170,11 +248,39 @@ describe('panoramique service', () => {
 
 				expect(def(unknownId)).toBe(undefined);
 			});
+			it('should not unregister children when unregistering parent', () => {
+				app.services.panoramique.register({
+					id: 'parent',
+					type: ContextMenu,
+					children: [ 'child' ],
+				});
+				app.services.panoramique.register({
+					id: 'child',
+					type: ContextOption,
+				});
+
+				// validate setup
+				expect(def('child')).toBeTypeOf('object');
+				// eslint-disable-next-line no-null
+				expect(def('child')).not.toBe(null);
+
+				app.services.panoramique.remove('parent');
+
+				// check that child is still registered
+				expect(def('child')).toBeTypeOf('object');
+				// eslint-disable-next-line no-null
+				expect(def('child')).not.toBe(null);
+			});
 		});
 		describe('get()', () => {
 			it('should return a readonly computed', () => {
 				const id = 'menu';
 				const harness = app.services.panoramique.get(id);
+
+				// prevent Vue warn from showing in the console
+				vi.spyOn(console, 'warn')
+					// eslint-disable-next-line no-empty-function
+					.mockImplementation(() => {});
 
 				expect(harness).toBeTypeOf('object');
 				expect(harness).toHaveProperty('value');
@@ -431,37 +537,109 @@ describe('panoramique service', () => {
 				app.services.panoramique.removeChild(parent, 'child');
 				expect(def(parent)).toBe(undefined);
 			});
+			it('should not remove the harness from the store', () => {
+				app.services.panoramique.register({
+					id: 'parent',
+					type: ContextMenu,
+					children: [ 'child' ],
+				});
+				app.services.panoramique.register({
+					id: 'child',
+					type: ContextOption,
+				});
+
+				// validate setup
+				expect(def('child')).toBeTypeOf('object');
+				// eslint-disable-next-line no-null
+				expect(def('child')).not.toBe(null);
+
+				app.services.panoramique.removeChild('parent', 'child');
+
+				// check that child is still registered
+				expect(def('child')).toBeTypeOf('object');
+				// eslint-disable-next-line no-null
+				expect(def('child')).not.toBe(null);
+			});
 		});
 	});
 
 	describe('integrations', () => {
 		describe('get() returns a dynamically updated computed', () => {
-			it.todo('should update from undefined to the harness when register() is called with that id', () => {});
-			it.todo('should update from the harness to undefined when remove() is called with that id', () => {});
-		});
-		describe('Child Management Lifecycle', () => {
-			it.todo('should not unregister a child when unlinking it from its parent', () => {
-				// Register parent and child → Add child → Remove child → Ensure child is removed from parent but still present
-				// in store.
+			it('should update from undefined to the harness when register() is called with that id', () => {
+				const id = 'id';
+				const harness = app.services.panoramique.get(id);
+				expect(harness.value).toBe(undefined);
+
+				app.services.panoramique.register({
+					id,
+					type: ContextMenu,
+				});
+
+				expect(harness.value).toBeTypeOf('object');
+				// eslint-disable-next-line no-null
+				expect(harness.value).not.toBe(null);
+				expect(harness.value).toStrictEqual({
+					id,
+					type: ContextMenu,
+					props: {},
+					events: {},
+					children: {
+						default: [],
+					},
+				});
 			});
-			it.todo('should not unregister children when unregistering parent', () => {
-				// Add child to slot → Remove harness → get for parent returns undefined, child remains retrievable.
+			it('should update from the harness to undefined when remove() is called with that id', () => {
+				const id = 'id';
+				app.services.panoramique.register({
+					id,
+					type: ContextMenu,
+				});
+				const harness = app.services.panoramique.get(id);
+
+				// validate setup
+				expect(harness.value).toBeTypeOf('object');
+				// eslint-disable-next-line no-null
+				expect(harness.value).not.toBe(null);
+
+				app.services.panoramique.remove(id);
+
+				expect(harness.value).toBe(undefined);
 			});
 		});
 
-		describe('multiple slot component are respected', () => {
-			it.todo('should allow mixed default and named slot registration', () => {});
-			it.todo('should allow named only slot registration', () => {});
-			it.todo('should allow multiple children per slot', () => {});
-		});
 
-		describe('children order', () => {
-			it.todo('should have the same DOM order for children as in slot of parent\'s harness', () => {});
+		// move that to PanoramiquePlatform.vue.spec.ts
+		describe.todo('mounted children order', () => {
+			it('should have the same DOM order for children as in slot of parent\'s harness', () => {
+
+				const childrenIds = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+				app.services.panoramique.register({
+					id: 'menu',
+					type: ContextMenu,
+					children: Array.from(childrenIds),
+				});
+
+				childrenIds.map(id => app.services.panoramique.register({
+					id,
+					type: ContextOption,
+					props: {
+						text: id,
+					},
+				}));
+
+				app.services.panoramique.addChild('root', 'menu');
+				app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
+
+				for (let index = 0; index < childrenIds.length; index++) {
+					// eslint-disable-next-line no-null
+					expect(document.querySelector(`button:nth-of-type(${ index + 1 })`)).not.toStrictEqual(null);
+					expect(document.querySelector(`button:nth-of-type(${ index + 1 })`)?.textContent).toBe(childrenIds[index]);
+				}
+			});
 			it.todo('should not be impacted by registration order', () => {});
 			it.todo('should not be impacted by addChild() call order when given an index', () => {});
 		});
 
-		// move that in another file ?
 		describe('e2e', () => {
 			describe('mounting of component tree', () => {
 				// Register root + nested children → Assert app renders full tree in correct slot structure.
