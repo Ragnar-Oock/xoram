@@ -1,3 +1,6 @@
+/**
+ * @type {import('vitest').InlineConfig}
+ */
 export const VitestConfig = {
 	coverage: {
 		provider: 'v8',
@@ -5,4 +8,8 @@ export const VitestConfig = {
 			'src/**',
 		],
 	},
+
+	environment: 'happy-dom',
+	mockReset: true,
+
 };

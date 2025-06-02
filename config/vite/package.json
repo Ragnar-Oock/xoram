@@ -9,5 +9,10 @@
   },
   "devDependencies": {
     "@repo/config-typescript": "workspace: *"
+  },
+  "exports": {
+    ".": {
+      "import": "./"
+    }
   }
 }

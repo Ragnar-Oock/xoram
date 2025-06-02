@@ -23,3 +23,6 @@ public/dist
 # preserve api report file
 !/packages/**/types/*.api.md
 !/plugins/**/types/*.api.md
+
+# exclude coverage reports
+**/coverage

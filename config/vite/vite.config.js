@@ -1,6 +1,6 @@
+// @ts-check
 import {defineConfig} from 'vite';
 import {VitestConfig as test} from './vitest.config.js';
-
 
 /**
  * @typedef PackageJSON

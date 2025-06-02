@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "oxlint",
     "test:watch": "vitest watch --typecheck",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
     "build:code:prod": "vite build --mode production",
     "build:code:dev": "NODE_ENV=development vite build --mode development",
     "build:code": "node ./script/build.script.mjs",
@@ -30,11 +31,11 @@
     "@repo/config-api-extractor": "workspace:*",
     "@repo/config-typescript": "workspace:*",
     "@repo/config-vite": "workspace:*",
-    "@vitest/coverage-v8": "3.1.4",
+    "@vitest/coverage-v8": "3.2.0",
     "oxlint": "^0.17.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
-    "vitest": "3.1.4"
+    "vitest": "3.2.0"
   },
   "dependencies": {
     "mitt": "^3.0.1"

@@ -5,7 +5,9 @@
   "main": "./dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "vite dev"
+    "dev": "vite dev",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage --passWithNoTests"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-plugin-vue-devtools": "^7.7.6",
+    "vitest": "^3.2.0",
     "vue-tsc": "^2.2.10"
   }
 }
