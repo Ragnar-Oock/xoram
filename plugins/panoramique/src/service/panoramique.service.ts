@@ -119,6 +119,8 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 		function removeChild(parent: string, child: string, slotName = 'default'): void {
 			const parentDefinition = _definitions[parent];
 
+			if (!parentDefinition) {return;}
+
 			parentDefinition.children[slotName] = parentDefinition.children[slotName]
 				?.filter(registered => registered !== child);
 		}
