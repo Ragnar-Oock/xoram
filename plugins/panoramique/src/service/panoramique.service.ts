@@ -112,7 +112,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 			}
 
 			const slot = (parentDefinition.children[slotName] ??= []);
-			slot.splice(index, 0, child);
+			slot.splice(index < 0 ? slot.length + index + 1 : index, 0, child);
 			parentDefinition.children[slotName] = slot;
 		}
 
