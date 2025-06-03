@@ -1,16 +1,16 @@
 import { addService, type Application, createApp, definePlugin, destroyApp } from '@zoram/core';
 import { getActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest';
-import { panoramiquePlugin } from '../../src';
-import type { ComponentDefinition } from '../../src/service/component-definition.type';
-import { panoramique } from '../../src/service/panoramique.service';
-import { vueService } from '../../src/service/vue.service';
-import ContextMenu from '../component/ContextMenu.vue';
-import ContextOption from '../component/ContextOption.vue';
-import { it } from '../fixture/test.fixture';
+import { panoramiquePlugin } from '../../../src';
+import type { ComponentDefinition } from '../../../src/service/component-definition.type';
+import { panoramique } from '../../../src/service/panoramique.service';
+import { vueService } from '../../../src/service/vue.service';
+import ContextMenu from '../../component/ContextMenu.vue';
+import ContextOption from '../../component/ContextOption.vue';
+import { it } from '../../fixture/test.fixture';
 
 
-declare module '../../src/service/panoramique.service' {
+declare module '../../../src/service/panoramique.service' {
 	interface PanoramiqueService {
 		_definitions: Record<string, ComponentDefinition>;
 	}
@@ -605,69 +605,6 @@ describe('panoramique service', () => {
 
 				expect(harness.value).toBe(undefined);
 			});
-		});
-
-
-		// move that to PanoramiquePlatform.vue.spec.ts
-		describe.todo('mounted children order', () => {
-			it('should have the same DOM order for children as in slot of parent\'s harness', () => {
-
-				const childrenIds = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
-				app.services.panoramique.register({
-					id: 'menu',
-					type: ContextMenu,
-					children: Array.from(childrenIds),
-				});
-
-				childrenIds.map(id => app.services.panoramique.register({
-					id,
-					type: ContextOption,
-					props: {
-						text: id,
-					},
-				}));
-
-				app.services.panoramique.addChild('root', 'menu');
-				app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
-
-				for (let index = 0; index < childrenIds.length; index++) {
-					// eslint-disable-next-line no-null
-					expect(document.querySelector(`button:nth-of-type(${ index + 1 })`)).not.toStrictEqual(null);
-					expect(document.querySelector(`button:nth-of-type(${ index + 1 })`)?.textContent).toBe(childrenIds[index]);
-				}
-			});
-			it.todo('should not be impacted by registration order', () => {});
-			it.todo('should not be impacted by addChild() call order when given an index', () => {});
-		});
-
-		describe('e2e', () => {
-			describe('mounting of component tree', () => {
-				// Register root + nested children → Assert app renders full tree in correct slot structure.
-				// Events declared in ComponentHarness are properly bound and trigger callbacks.
-			});
-			describe('prop updates', () => {
-				// Change props in the definition after registration → Vue component reacts accordingly.
-				// Props support primitives, objects, and complex nested values.
-			});
-			describe('event listener binding', () => {
-				// all listener listed for an even are called
-				// Removing harness cleans up listeners (no memory leaks / reactivity dead links).
-			});
-
-			describe('hot remount', () => {
-				// Dynamically remove and re-add children while app is running → View updates correctly without crash or stale
-				// refs
-			});
-		});
-
-		describe('edge cases', () => {
-			// Register with invalid types throws validation errors or fails silently (depending on intended contract).
-			it.todo('should fail to mount when the component is invalid', () => {});
-			it.todo('should fail to mount when the component is missing (broken import)', () => {});
-
-			// circular dep can be useful but should be used with caution so we won't prevent it (and it would be complex
-			// and flaky to do so anyway)
-			it.todo('should fail to mount with static circular dependency', () => {});
 		});
 	});
 });
