@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="packages" pattern="file[zoram]:packages//*" />
+  <scope name="packages" pattern="file[zoram]:packages//*||file[zoram]:plugins//*" />
 </component>
