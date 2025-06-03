@@ -1,6 +1,5 @@
 // @ts-check
 import {defineConfig} from 'vite';
-import {VitestConfig as test} from './vitest.config.js';
 
 /**
  * @typedef PackageJSON
@@ -8,10 +7,6 @@ import {VitestConfig as test} from './vitest.config.js';
  * @property {string} name - package's name
  * @property {Record<string, string>} [dependencies] - package's dependencies if any
  */
-
-export default defineConfig({
-	test,
-});
 
 /**
  * Define a vite config for a lib.
@@ -23,8 +18,6 @@ export default defineConfig({
  * config file
  *
  * @param  {PackageJSON} pkg the content of the package's `package.json` file as an object
- *
- * @returns {import('vite').UserConfigFnObject}
  */
 export function defineLibConfig(pkg) {
 	return defineConfig(({mode}) => ({
