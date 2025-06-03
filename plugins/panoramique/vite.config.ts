@@ -6,25 +6,18 @@ import pkg from './package.json' with { type: 'json' };
 
 export default defineProject(env =>
 	mergeConfig(
-		mergeConfig(
-			defineLibConfig(pkg)(env),
-			{
-				plugins: [
-					vue(),
-					vueDevTools({
-						launchEditor: 'webstorm',
-					}),
-				],
-				resolve: {
-					alias: {
-						'@zoram/core': '@zoram/core/dev',
-					},
+		defineLibConfig(pkg)(env),
+		{
+			plugins: [
+				vue(),
+				vueDevTools({
+					launchEditor: 'webstorm',
+				}),
+			],
+			resolve: {
+				alias: {
+					'@zoram/core': '@zoram/core/dev',
 				},
 			},
-		),
-		defineProject({
-			test: {
-				environment: 'happy-dom',
-			},
-		}),
+		},
 	));
