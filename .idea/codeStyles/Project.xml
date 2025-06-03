@@ -33,6 +33,19 @@
       <option name="SPACES_WITHIN_INTERPOLATION_EXPRESSIONS" value="true" />
       <option name="IMPORT_SORT_MODULE_NAME" value="true" />
     </TypeScriptCodeStyleSettings>
+    <VueCodeStyleSettings>
+      <option name="INDENT_CHILDREN_OF_TOP_LEVEL" value="template, script, style" />
+      <option name="UNIFORM_INDENT" value="false" />
+    </VueCodeStyleSettings>
+    <codeStyleSettings language="HTML">
+      <indentOptions>
+        <option name="INDENT_SIZE" value="2" />
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+        <option name="USE_TAB_CHARACTER" value="true" />
+        <option name="SMART_TABS" value="true" />
+      </indentOptions>
+    </codeStyleSettings>
     <codeStyleSettings language="JavaScript">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
@@ -92,6 +105,7 @@
       <indentOptions>
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
         <option name="USE_TAB_CHARACTER" value="true" />
+        <option name="SMART_TABS" value="true" />
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="XML">
