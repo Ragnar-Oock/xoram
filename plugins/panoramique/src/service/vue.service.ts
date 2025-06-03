@@ -1,4 +1,4 @@
-import { defineService, type Service } from '@zoram/core';
+import { defineService, onBeforeDestroy, type Service } from '@zoram/core';
 import { type App, createApp } from 'vue';
 import PanoramiqueRoot from '../component/panoramique-root.vue';
 
@@ -9,6 +9,14 @@ export interface VueService extends Service {
 	app: App,
 }
 
-export const vueService = defineService<VueService>(() => ({
-	app: createApp(PanoramiqueRoot),
-}));
+export const vueService = defineService<VueService>(() => {
+	const service: { app: App<Element> } = {
+		app: createApp(PanoramiqueRoot),
+	};
+
+	onBeforeDestroy(() => {
+		service.app.unmount();
+	});
+
+	return service;
+});

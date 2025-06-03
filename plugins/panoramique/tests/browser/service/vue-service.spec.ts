@@ -1,10 +1,11 @@
-import { addPlugins, addService, definePlugin } from '@zoram/core';
+import { page } from '@vitest/browser/context';
+import { addPlugins, addService, createApp, definePlugin, destroyApp } from '@zoram/core';
 import { describe, expect } from 'vitest';
-import { panoramique } from '../../src/service/panoramique.service';
-
-
-import { vueService } from '../../src/service/vue.service';
-import { it } from '../fixture/test.fixture';
+import { panoramiquePlugin } from '../../../src';
+import { panoramique } from '../../../src/service/panoramique.service';
+import { vueService } from '../../../src/service/vue.service';
+import ContextMenu from '../../component/ContextMenu.vue';
+import { it } from '../../fixture/test.fixture';
 
 describe('Vue service', () => {
 	it('should hold a Vue app', ({ app }) => {
@@ -44,5 +45,26 @@ describe('Vue service', () => {
 		const service = vueService(app);
 
 		expect(service.app._component.__name).toBe('panoramique-root');
+	});
+	it('should unmount the vue app on plugin removal', async () => {
+		const app = createApp([ panoramiquePlugin ]);
+
+		app.services.vue.app.mount(document.body);
+
+		app.services.panoramique.register({
+			id: 'test',
+			type: ContextMenu,
+			props: {
+				open: true,
+			},
+		});
+
+		app.services.panoramique.addChild('root', 'test');
+
+		await expect.element(page.getByRole('menu')).toBeVisible();
+
+		destroyApp(app);
+
+		expect(document.body).toBeEmptyDOMElement();
 	});
 });
