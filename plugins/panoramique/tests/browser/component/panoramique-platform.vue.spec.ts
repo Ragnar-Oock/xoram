@@ -18,36 +18,39 @@ describe('PanoramiquePlatform', () => {
 	});
 	// move that to PanoramiquePlatform.vue.spec.ts
 	describe('mounted children order', () => {
-		it('should have the same DOM order for children as in slot of parent\'s harness', async () => {
-			// setup
-			const childrenIds = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
-			app.services.panoramique.register({
-				id: 'menu',
-				type: ContextMenu,
-				children: Array.from(childrenIds),
-				props: {
-					open: true,
-				},
-			});
+		it(
+			'should have the same DOM order for children as in slot of parent\'s harness',
+			async () => {
+				// setup
+				const childrenIds = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+				app.services.panoramique.register({
+					id: 'menu',
+					type: ContextMenu,
+					children: Array.from(childrenIds),
+					props: {
+						open: true,
+					},
+				});
 
-			childrenIds.map(id => app.services.panoramique.register({
-				id,
-				type: ContextOption,
-				props: {
-					text: id,
-				},
-			}));
+				childrenIds.map(id => app.services.panoramique.register({
+					id,
+					type: ContextOption,
+					props: {
+						text: id,
+					},
+				}));
 
-			app.services.panoramique.addChild('root', 'menu');
-			app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
+				app.services.panoramique.addChild('root', 'menu');
+				app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
 
-			// check
-			for (let index = 0; index < childrenIds.length; index++) {
-				const button = page.getByRole('menuitem').nth(index);
+				// check
+				for (let index = 0; index < childrenIds.length; index++) {
+					const button = page.getByRole('menuitem').nth(index);
 
-				await expect.element(button).toHaveTextContent(childrenIds[index]);
-			}
-		});
+					await expect.element(button).toHaveTextContent(childrenIds[index]);
+				}
+			},
+		);
 		it('should not be impacted by registration order', async () => {
 			// setup
 			const childrenIds = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
@@ -72,7 +75,6 @@ describe('PanoramiquePlatform', () => {
 				}));
 
 			app.services.panoramique.addChild('root', 'menu');
-			console.log(document.body);
 			app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
 
 			// check

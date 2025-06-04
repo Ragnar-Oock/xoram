@@ -1,5 +1,6 @@
 import { defineService, onBeforeDestroy, type Service } from '@zoram/core';
-import { type App, createApp } from 'vue';
+import type { App } from 'vue';
+import { createApp, h } from 'vue';
 import PanoramiqueRoot from '../component/panoramique-root.vue';
 
 /**
@@ -9,13 +10,23 @@ export interface VueService extends Service {
 	app: App,
 }
 
+// todo : check how the unmount check impact bundle size
 export const vueService = defineService<VueService>(() => {
-	const service: { app: App<Element> } = {
-		app: createApp(PanoramiqueRoot),
+	// prevent unmounting a vue app that is not currently mounted
+	let mounted = false;
+
+	const service: Omit<VueService, keyof Service> = {
+		app: createApp({
+			render: () => h(PanoramiqueRoot),
+			beforeMount: () => {mounted = true;},
+			beforeUnmount: () => {mounted = false;},
+		}),
 	};
 
 	onBeforeDestroy(() => {
-		service.app.unmount();
+		if (mounted) {
+			service.app.unmount();
+		}
 	});
 
 	return service;
