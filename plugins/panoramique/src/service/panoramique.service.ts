@@ -1,5 +1,5 @@
-import { defineService, type Service } from '@zoram/core';
-import { createPinia, defineStore } from 'pinia';
+import { defineService, onBeforeDestroy, type Service } from '@zoram/core';
+import { createPinia, defineStore, disposePinia, type Pinia } from 'pinia';
 import { type Component, computed, type ComputedRef, markRaw, reactive } from 'vue';
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
 
@@ -150,7 +150,12 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 
 export const panoramique = defineService<PanoramiqueService>(({ services }) => {
 
-	services.vue.app.use(createPinia());
+	const pinia: Pinia = createPinia();
+	services.vue.app.use(pinia);
+
+	onBeforeDestroy(() => {
+		disposePinia(pinia);
+	});
 
 	return usePanoramiqueStore();
 });
