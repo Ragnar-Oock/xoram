@@ -221,6 +221,15 @@ describe('panoramique service', () => {
 					expect(def('parent')?.children.default).toStrictEqual([ 'child1', 'child2' ]);
 				});
 			});
+
+			it('should fail when the component is missing (for example broken import)', () => {
+				// todo make error message more informative
+				expect(() => app.services.panoramique.register({
+					id: 'menu',
+					// @ts-expect-error "forgetting" to add the component
+					type: undefined,
+				})).toThrow();
+			});
 		});
 		describe('remove()', () => {
 			it('should remove the harness at the given id from the store', () => {
