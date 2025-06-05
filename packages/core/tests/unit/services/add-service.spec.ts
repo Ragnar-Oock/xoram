@@ -16,13 +16,13 @@ import { it } from '../../fixture/test.fixture';
 declare module '../../../src' {
 	interface ServiceCollection {
 		// mock service used in addService test suite
-		addServiceTestService: Service;
+		addServiceTestService: Service<Record<string, unknown>>;
 	}
 }
 
 
 const addServiceTestServiceId = 'addServiceTestService';
-const addServiceTestService = defineService();
+const addServiceTestService = defineService<Record<string, unknown>>();
 
 describe('addService', () => {
 	describe('service registration', () => {
@@ -53,8 +53,8 @@ describe('addService', () => {
 				expect(app.services).toHaveProperty(addServiceTestServiceId);
 			});
 			it('should warn and skip if a service with the same id already exist on the application', ({ warnSpy }) => {
-				const service1 = defineService()();
-				const service2 = defineService()();
+				const service1 = defineService<Record<string, unknown>>()();
+				const service2 = defineService<Record<string, unknown>>()();
 
 				const app = createApp([
 					definePlugin(() => {
@@ -159,7 +159,7 @@ describe('addService', () => {
 
 			expect(spy).toHaveBeenCalledExactlyOnceWith({ service });
 		});
-		it('should remove the service during the plugin\'s teardown phase', () => {
+		it('should remove the service during the plugin\'s destroyed phase', () => {
 			const plugin = definePlugin(() => {
 				addService(addServiceTestServiceId, addServiceTestService);
 			});
@@ -172,9 +172,9 @@ describe('addService', () => {
 
 			removePlugin(plugin.id, app);
 
-			expect(phase).toBe('teardown');
+			expect(phase).toBe('destroyed');
 		});
-		it('should fire `beforeServiceRemoved` on the application during the plugin\'s teardown phase', () => {
+		it('should fire `beforeServiceRemoved` on the application during the plugin\'s destroyed phase', () => {
 			const plugin = definePlugin(() => {
 				addService(addServiceTestServiceId, addServiceTestService);
 			});
@@ -187,9 +187,9 @@ describe('addService', () => {
 
 			removePlugin(plugin.id, app);
 
-			expect(phase).toBe('teardown');
+			expect(phase).toBe('destroyed');
 		});
-		it('should fire `serviceRemoved` on the application during the plugin\'s teardown phase', () => {
+		it('should fire `serviceRemoved` on the application during the plugin\'s destroyed phase', () => {
 			const plugin = definePlugin(() => {
 				addService(addServiceTestServiceId, addServiceTestService);
 			});
@@ -202,7 +202,7 @@ describe('addService', () => {
 
 			removePlugin(plugin.id, app);
 
-			expect(phase).toBe('teardown');
+			expect(phase).toBe('destroyed');
 		});
 		it('should fire `serviceRemoved` after `before_destroy`', () => {
 			const plugin = definePlugin(() => {
