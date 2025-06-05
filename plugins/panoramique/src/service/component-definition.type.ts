@@ -7,8 +7,8 @@ import type { AfterFirst, First, Multiplex, NonNever, OverloadParameters, Writab
  * Extract a component's declared events as a strongly typed `Record<EventName, EventHandler>`.
  */
 export type ComponentEvents<component extends Component> = Prettify<{
-	[event in First<OverloadParameters<ComponentEmit<component>>> & string]?:
-	((...args: AfterFirst<Extract<OverloadParameters<ComponentEmit<component>>, [ event, ...unknown[] ]>>) => void)
+	[event in First<OverloadParameters<ComponentEmit<component> & ((...args: unknown[]) => unknown)>> & string]?:
+	((...args: AfterFirst<Extract<OverloadParameters<ComponentEmit<component> & ((...args: unknown[]) => unknown)>, [ event, ...unknown[] ]>>) => void)
 }>;
 /**
  * List native events that can be fired on any HTML Element as a strongly typed `Record<EventName, EventHandler>`.
