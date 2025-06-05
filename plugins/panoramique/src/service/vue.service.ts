@@ -15,13 +15,13 @@ export const vueService = defineService<VueService>(() => {
 	// prevent unmounting a vue app that is not currently mounted
 	let mounted = false;
 
-	const service: Omit<VueService, keyof Service> = {
-		app: createApp({
-			render: () => h(PanoramiqueRoot),
-			beforeMount: () => {mounted = true;},
-			beforeUnmount: () => {mounted = false;},
-		}),
-	};
+	const app = createApp({
+		render: () => h(PanoramiqueRoot),
+		mounted: () => {mounted = true;},
+		beforeUnmount: () => {mounted = false;},
+	});
+
+	const service: Omit<VueService, keyof Service> = { app };
 
 	onBeforeDestroy(() => {
 		if (mounted) {
