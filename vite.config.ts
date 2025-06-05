@@ -47,7 +47,10 @@ export default defineConfig(({ mode }) => ({
 		coverage: {
 			provider: 'v8',
 			include: [
-				'src/**',
+				'{packages,plugins}/*/src/**',
+			],
+			exclude: [
+				'packages/core-size-check', // this is a package used for checking final bundle size only
 			],
 		},
 
