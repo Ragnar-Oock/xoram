@@ -1,6 +1,7 @@
+// noinspection ES6UnusedImports
+import type { ServiceCollection } from '@zoram/core'; // eslint-disable-line no-unused-vars
 import type { PanoramiqueService } from './service/panoramique.service';
 import type { VueService } from './service/vue.service';
-
 
 declare module '@zoram/core' {
 	interface ServiceCollection {
