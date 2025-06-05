@@ -55,7 +55,7 @@ export default defineConfig(({ mode }) => ({
 		},
 
 		passWithNoTests: mode !== 'CI',
-
+		includeTaskLocation: mode !== 'CI',
 		open: false,
 	},
 }));
