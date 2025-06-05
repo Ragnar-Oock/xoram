@@ -1,17 +1,19 @@
 import { page } from '@vitest/browser/context';
 import type { Application } from '@zoram/core';
-import { createApp, destroyApp } from '@zoram/core';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { addPlugins, createApp, definePlugin, destroyApp, onCreated } from '@zoram/core';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ref } from 'vue';
 import { panoramiquePlugin } from '../../../src';
 import ContextMenu from '../../component/ContextMenu.vue';
 import ContextOption from '../../component/ContextOption.vue';
+import TestComponent from '../../component/TestComponent.vue';
 
 describe('PanoramiquePlatform', () => {
 
 	let app: Application;
 
-	beforeEach(() => {
-		app = createApp([ panoramiquePlugin ]);
+	beforeEach(({ task }) => {
+		app = createApp([ panoramiquePlugin ], { id: task.name });
 	});
 	afterEach(() => {
 		destroyApp(app);
@@ -20,11 +22,12 @@ describe('PanoramiquePlatform', () => {
 	describe('mounted children order', () => {
 		it(
 			'should have the same DOM order for children as in slot of parent\'s harness',
-			async () => {
+			async ({ task }) => {
 				// setup
 				const childrenIds = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+				const menuId = 'menu_' + task.name;
 				app.services.panoramique.register({
-					id: 'menu',
+					id: menuId,
 					type: ContextMenu,
 					children: Array.from(childrenIds),
 					props: {
@@ -40,7 +43,7 @@ describe('PanoramiquePlatform', () => {
 					},
 				}));
 
-				app.services.panoramique.addChild('root', 'menu');
+				app.services.panoramique.addChild('root', menuId);
 				app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
 
 				// check
@@ -51,11 +54,13 @@ describe('PanoramiquePlatform', () => {
 				}
 			},
 		);
-		it('should not be impacted by registration order', async () => {
+		it('should not be impacted by registration order', async ({ task }) => {
 			// setup
 			const childrenIds = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+			const menuId = 'menu_' + task.name;
+
 			app.services.panoramique.register({
-				id: 'menu',
+				id: menuId,
 				type: ContextMenu,
 				children: Array.from(childrenIds),
 				props: {
@@ -74,7 +79,7 @@ describe('PanoramiquePlatform', () => {
 					},
 				}));
 
-			app.services.panoramique.addChild('root', 'menu');
+			app.services.panoramique.addChild('root', menuId);
 			app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
 
 			// check
@@ -83,33 +88,392 @@ describe('PanoramiquePlatform', () => {
 				await expect.element(button).toHaveTextContent(childrenIds[index]);
 			}
 		});
-		it.todo('should not be impacted by addChild() call order when given an index', () => {});
+		it('should not be impacted by addChild() call order when given an index', async ({ task }) => {
+			// setup
+			const childrenIds = [ 'option1', 'option2', 'option3', 'option4', 'option5' ];
+			const menuId = 'menu_' + task.name;
+
+			app.services.panoramique.register({
+				id: menuId,
+				type: ContextMenu,
+				props: {
+					open: true,
+				},
+			});
+
+			// register children in reverse order of their usage
+			childrenIds
+				.toReversed()
+				.map(id => app.services.panoramique.register({
+					id,
+					type: ContextOption,
+					props: {
+						text: id,
+					},
+				}))
+				.forEach(
+					// append the children at the start each time
+					({ id }) => app.services.panoramique.addChild(menuId, id, 'default', 0),
+				);
+
+			app.services.panoramique.addChild('root', menuId);
+
+			// exec
+			app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
+
+			// check
+			for (let index = 0; index < childrenIds.length; index++) {
+				const button = page.getByRole('menuitem').nth(index);
+				await expect.element(button).toHaveTextContent(childrenIds[index]);
+			}
+		});
 	});
 
 	describe('prop updates', () => {
 		// Change props in the definition after registration → Vue component reacts accordingly.
-		// Props support primitives, objects, and complex nested values.
+
+		it('should update the component prop when updating the harness prop (direct value -> direct value)', async () => {
+			const id = 'contextMenu';
+			app.services.panoramique.register({
+				id,
+				type: ContextMenu,
+				props: {
+					open: true,
+				},
+			});
+			app.services.panoramique.addChild('root', id);
+
+			app.services.vue.app.mount(document.body);
+
+			await expect.element(page.getByRole('menu'), { timeout: 100 }).toBeVisible();
+
+			// test should fail if the value is nullish
+			// eslint-disable-next-line no-non-null-assertion
+			app.services.panoramique.get(id).value!.props.open = false;
+
+			await expect.element(page.getByRole('menu'), { timeout: 100 }).not.toBeInTheDocument();
+		});
+
+		it('should update the component prop when changing the value of a ref bound to a prop (ref -> ref)', async () => {
+			const id = 'contextMenu';
+			const isOpen = ref(true);
+			app.services.panoramique.register({
+				id,
+				type: ContextMenu,
+				props: {
+					open: isOpen,
+				},
+			});
+			app.services.panoramique.addChild('root', id);
+
+			app.services.vue.app.mount(document.body);
+
+			// check both in case it simply isn't in the DOM
+			await expect.element(page.getByRole('menu'), { timeout: 100 }).toBeVisible();
+
+
+			isOpen.value = false;
+
+			await expect.element(page.getByRole('menu'), { timeout: 100 }).not.toBeInTheDocument();
+		});
+
+		it(
+			'should update the component prop when changing the value of a ref bound to a prop to a direct value (ref -> direct value)',
+			async () => {
+				const id = 'contextMenu';
+				const isOpen = ref(true);
+				app.services.panoramique.register({
+					id,
+					type: ContextMenu,
+					props: {
+						open: isOpen,
+					},
+				});
+				app.services.panoramique.addChild('root', id);
+
+				app.services.vue.app.mount(document.body);
+
+				await expect.element(page.getByRole('menu'), { timeout: 100 }).toBeVisible();
+
+				// test should fail if the value is nullish
+				// eslint-disable-next-line no-non-null-assertion
+				app.services.panoramique.get(id).value!.props.open = false;
+
+				await expect.element(page.getByRole('menu'), { timeout: 100 }).not.toBeInTheDocument();
+			},
+		);
 	});
 	describe('event listener binding', () => {
 		// all listener listed for an even are called
 		// Removing harness cleans up listeners (no memory leaks / reactivity dead links).
+
+		it('should call all the handlers when a component event is fired', async ({ task }) => {
+			// setup
+			const menuId = 'menu_' + task.name;
+
+			app.services.panoramique.register({
+				id: menuId,
+				type: ContextMenu,
+				props: {
+					open: true,
+				},
+				children: [ 'option' ],
+			});
+			const spy = vi.fn();
+			app.services.panoramique.register({
+				id: 'option',
+				type: ContextOption,
+				props: {
+					text: 'option',
+				},
+				events: {
+					click: [ spy, spy ],
+				},
+			});
+			app.services.panoramique.addChild('root', menuId);
+
+			app.services.vue.app.mount(document.body);
+
+			// validate setup
+			await expect.element(page.getByRole('menuitem')).toBeVisible();
+
+			// exec
+			await page.getByRole('menuitem').click();
+
+			// check
+			expect(spy).toHaveBeenCalledTimes(2);
+		});
+		it('should call the handler when a native event is fired on the component root', async ({ task }) => {
+			const spy = vi.fn();
+			// setup
+			const menuId = 'menu_' + task.name;
+
+			app.services.panoramique.register({
+				id: menuId,
+				type: ContextMenu,
+				props: {
+					open: true,
+				},
+				children: [ 'option' ],
+				events: {
+					focusin: [ spy, spy ],
+				},
+			});
+			app.services.panoramique.register({
+				id: 'option',
+				type: ContextOption,
+				props: {
+					text: 'option',
+				},
+			});
+			app.services.panoramique.addChild('root', menuId);
+
+			app.services.vue.app.mount(document.body);
+
+			// validate setup
+			await expect.element(page.getByRole('menuitem')).toBeVisible();
+
+			// exec
+			(page.getByRole('menuitem').query() as HTMLElement | null)?.focus();
+
+			// check
+			expect(spy).toHaveBeenCalledTimes(2);
+
+		});
 	});
 	describe('mounting of component tree', () => {
 		// Register root + nested children → Assert app renders full tree in correct slot structure.
 		// Events declared in ComponentHarness are properly bound and trigger callbacks.
+		it('should mount components descending from root', async () => {
+			// setup
+			const depth = 15;
+
+			for (let index = 0; index < depth; index++) {
+				app.services.panoramique.register({
+					id: `level${ index.toString(10) }`,
+					type: TestComponent,
+					props: {
+						label: `level${ index.toString(10) }`,
+					},
+					children: {
+						'stuff': [ `level${ (index + 1).toString(10) }` ],
+					},
+				});
+			}
+			app.services.panoramique.addChild('root', 'level0');
+
+			app.services.vue.app.mount(document.body);
+
+			for (let index = 0; index < depth; index++) {
+				await expect.element(page.getByLabelText(`level${ (index).toString(10) }`, { exact: true }), { timeout: 100 })
+					.toBeVisible();
+			}
+		});
+		it('should not mount components not descending from root', async () => {
+			// setup
+			app.services.panoramique.register({
+				id: 'present',
+				type: ContextMenu,
+				props: {
+					open: true,
+					testid: 'present',
+				},
+			});
+			app.services.panoramique.register({
+				id: 'absent',
+				type: ContextMenu,
+				props: {
+					open: true,
+					testid: 'absent',
+				},
+			});
+
+			// only add 'present' to the root
+			app.services.panoramique.addChild('root', 'present');
+
+			app.services.vue.app.mount(document.body);
+
+			await expect.element(page.getByTestId('absent')).not.toBeInTheDocument();
+			await expect.element(page.getByTestId('present')).toBeInTheDocument();
+		});
 	});
 
 	describe('hot remount', () => {
 		// Dynamically remove and re-add children while app is running → View updates correctly without crash or stale
 		// refs
+
+		it('should dynamically mount new children', async ({ task }) => {
+			const menuId = 'menu_' + task.name;
+
+			app.services.panoramique.register({
+				id: menuId,
+				type: ContextMenu,
+				props: {
+					open: true,
+				},
+			});
+			app.services.panoramique.register({
+				id: 'option',
+				type: ContextOption,
+				props: {
+					text: 'option',
+				},
+			});
+
+			// only add the menu
+			app.services.panoramique.addChild('root', menuId);
+
+			app.services.vue.app.mount(document.body);
+
+			// validate setup
+			await expect.element(page.getByRole('menu')).toBeInTheDocument();
+			await expect.element(page.getByRole('menuitem')).not.toBeInTheDocument();
+
+			// execute
+			app.services.panoramique.addChild(menuId, 'option');
+
+			// check
+			await expect.element(page.getByRole('menu')).toBeInTheDocument();
+			await expect.element(page.getByRole('menuitem')).toBeInTheDocument();
+		});
+		it('should dynamically unmount removed children', async ({ task }) => {
+			const menuId = 'menu_' + task.name;
+			app.services.panoramique.register({
+				id: menuId,
+				type: ContextMenu,
+				props: {
+					open: true,
+				},
+				children: [ 'option' ],
+			});
+			app.services.panoramique.register({
+				id: 'option',
+				type: ContextOption,
+				props: {
+					text: 'option',
+				},
+			});
+
+			app.services.panoramique.addChild('root', menuId);
+
+			app.services.vue.app.mount(document.body);
+
+			// validate setup
+			await expect.element(page.getByRole('menu')).toBeInTheDocument();
+			await expect.element(page.getByRole('menuitem')).toBeInTheDocument();
+
+			// execute
+			app.services.panoramique.removeChild(menuId, 'option');
+
+			// check
+			await expect.element(page.getByRole('menu')).toBeInTheDocument();
+			await expect.element(page.getByRole('menuitem')).not.toBeInTheDocument();
+		});
 	});
 	describe('edge cases', () => {
 		// Register with invalid types throws validation errors or fails silently (depending on intended contract).
-		it.todo('should fail to mount when the component is invalid', () => {});
-		it.todo('should fail to mount when the component is missing (broken import)', () => {});
+		it('should fail to mount when the component is invalid', async ({ task }) => {
+			// todo make error message more informative
+
+			const menuId = 'menu_' + task.name;
+			app.services.panoramique.register({
+				id: menuId,
+				type: {},
+			});
+			app.services.panoramique.register({
+				id: 'control',
+				type: ContextOption,
+				props: {
+					text: 'bob',
+					testid: 'control',
+				},
+			});
+
+			app.services.panoramique.addChild('root', menuId);
+			app.services.panoramique.addChild('root', 'control');
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => void 0);
+
+			app.services.vue.app.mount(document.body);
+
+			// wait for control element to be visible
+			await expect.element(page.getByTestId('control')).toBeVisible();
+
+			expect(warnSpy).toHaveBeenCalledOnce();
+		});
 
 		// circular dep can be useful but should be used with caution so we won't prevent it (and it would be complex
 		// and flaky to do so anyway)
-		it.todo('should fail to mount with static circular dependency', () => {});
+		it('should fail to mount with static circular dependency', async () => {
+			// todo make error message more informative
+			addPlugins([
+				definePlugin(() => {
+					onCreated(app => {
+						app.services.panoramique.register({
+							id: 'cycle1',
+							type: ContextMenu,
+							props: {
+								open: true,
+							},
+							children: [ 'cycle2' ],
+						});
+						app.services.panoramique.register({
+							id: 'cycle2',
+							type: ContextMenu,
+							props: {
+								open: true,
+							},
+							children: [ 'cycle1' ],
+						});
+
+						app.services.panoramique.addChild('root', 'cycle1');
+					});
+				}),
+			], app);
+
+			expect(() => app.services.vue.app.mount(document.body))
+				.toThrow(new RangeError('Maximum call stack size exceeded'));
+
+			await expect.element(page.getByRole('menu')).not.toBeInTheDocument();
+		});
 	});
 });

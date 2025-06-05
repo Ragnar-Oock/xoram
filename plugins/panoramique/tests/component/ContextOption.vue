@@ -1,11 +1,13 @@
 <script setup lang="ts">
 	const {
 		disabled = false,
+		testid = 'unnamed option',
 	} = defineProps<{
 		/**
 		 * should the button be shown disabled ?
 		 */
 		disabled?: boolean,
+		testid?: string
 	}>();
 
 	/**
@@ -31,6 +33,8 @@
 		role="menuitem"
 		@click="handleClick"
 		:aria-disabled="disabled"
+
+		:data-testid="testid"
 	>{{ text }}
 	</button>
 </template>

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 	import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
+	const { testid = 'unnamed menu' } = defineProps<{
+		testid?: string;
+	}>();
+
 	const isOpen = defineModel('open', { default: false });
 	const menu = useTemplateRef<HTMLDivElement>('menu');
 	const left = ref('0px');
@@ -36,7 +40,12 @@
 </script>
 
 <template>
-	<div role="menu" ref="menu" v-if="isOpen">
+	<div
+		role="menu"
+		ref="menu"
+		v-if="isOpen"
+		:data-testid="testid"
+	>
 		<slot name="default"></slot>
 	</div>
 </template>
