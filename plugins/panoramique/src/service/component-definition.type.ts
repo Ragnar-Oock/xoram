@@ -11,6 +11,12 @@ export type ComponentEvents<component extends Component> = Prettify<{
 	((...args: AfterFirst<Extract<OverloadParameters<ComponentEmit<component>>, [ event, ...unknown[] ]>>) => void)
 }>;
 /**
+ * List native events that can be fired on any HTML Element as a strongly typed `Record<EventName, EventHandler>`.
+ */
+export type NativeEvents = {
+	[event in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[event]) => void;
+}
+/**
  * List all props the component exposes.
  */
 export type ExposedComponentProps<component extends Component> = Writable<Omit<ComponentProps<component>, keyof VNodeProps>>
@@ -43,7 +49,7 @@ export type ComponentHarness<component extends Component, id extends string = st
 	/**
 	 * The listeners to bind to the component when mounting it in the application.
 	 */
-	events?: Multiplex<ComponentEvents<component>>;
+	events?: Multiplex<ComponentEvents<component> | NativeEvents>;
 	/**
 	 * The id of the other harnesses to mount as the component's children in its slots.
 	 *
