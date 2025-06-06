@@ -9,7 +9,13 @@ import { it } from '../../fixture/test.fixture';
 
 describe('Vue service', () => {
 	it('should hold a Vue app', ({ app }) => {
-		const service = vueService(app);
+
+		addPlugins([
+			definePlugin(() => {
+				addService('vue', vueService);
+			}),
+		], app);
+		const service = app.services.vue;
 
 		expect(service.app).not.toBe(undefined);
 		expect(service.app).toSatisfy(value => (
@@ -38,13 +44,6 @@ describe('Vue service', () => {
 
 		// re-mounting an already mounted Vue App will fail catastrophically
 		expect(() => app.services.vue.app.mount(document.body)).not.toThrow();
-	});
-	it.skip('should use PanoramiqueRoot as the root component of the app', ({ app }) => {
-		// this test uses internal APIs from Vue, it might break at any time, and I'm not sure if it even is useful
-
-		const service = vueService(app);
-
-		expect(service.app._component.__name).toBe('panoramique-root');
 	});
 	it('should unmount the vue app on plugin removal', async () => {
 		const app = createApp([ panoramiquePlugin ]);
