@@ -1,5 +1,3 @@
-import vue from '@vitejs/plugin-vue';
-import vueDevTools from 'vite-plugin-vue-devtools';
 import { defineConfig } from 'vitest/config';
 
 // see https://vitest.dev/guide/browser/#typescript
@@ -8,40 +6,8 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig(({ mode }) => ({
 	test: {
 		projects: [
-			{
-				extends: true,
-				test: {
-					include: [
-						'{packages,plugins}/*/tests/unit/**/*.spec.ts',
-					],
-					name: 'unit',
-					environment: 'node',
-				},
-			},
-			{
-				extends: true,
-				plugins: [
-					vue(),
-					mode === 'dev' ? vueDevTools({
-						launchEditor: 'webstorm',
-					}) : undefined,
-				],
-				test: {
-					include: [
-						'{packages,plugins}/*/tests/browser/**/*.spec.ts',
-					],
-					name: 'browser:vue',
-					browser: {
-						provider: 'playwright',
-						enabled: true,
-						instances: [
-							{
-								browser: 'firefox',
-							},
-						],
-					},
-				},
-			},
+			'packages/*',
+			'plugins/*',
 		],
 		mockReset: true,
 		coverage: {
@@ -54,7 +20,7 @@ export default defineConfig(({ mode }) => ({
 			],
 		},
 
-		passWithNoTests: mode !== 'CI',
+		passWithNoTests: true,
 		includeTaskLocation: mode !== 'CI',
 		open: false,
 	},

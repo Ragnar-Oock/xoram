@@ -1,12 +1,5 @@
-// @ts-check
-import {defineConfig} from 'vite';
-
-/**
- * @typedef PackageJSON
- *
- * @property {string} name - package's name
- * @property {Record<string, string>} [dependencies] - package's dependencies if any
- */
+import { defineConfig, type UserConfigFnObject } from 'vite';
+import { type PackageJSON, unscope } from './package.helper.js';
 
 /**
  * Define a vite config for a lib.
@@ -19,13 +12,13 @@ import {defineConfig} from 'vite';
  *
  * @param  {PackageJSON} pkg the content of the package's `package.json` file as an object
  */
-export function defineLibConfig(pkg) {
-	return defineConfig(({mode}) => ({
+export function defineLibConfig(pkg: PackageJSON): UserConfigFnObject {
+	return defineConfig(({ mode }) => ({
 		build: {
 			lib: {
 				entry: './src/index.ts',
-				formats: ['es'],
-				fileName: `${pkg.name.replace(/@.+\//, '')}.${mode}`,
+				formats: [ 'es' ],
+				fileName: `${ unscope(pkg.name) }.${ mode }`,
 			},
 			rollupOptions: {
 				external: Object.keys(pkg.dependencies ?? {}),
