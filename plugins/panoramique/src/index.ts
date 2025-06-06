@@ -23,3 +23,5 @@ export type {
 };
 
 export { panoramiquePlugin } from './plugin';
+
+export { addChild } from './helper/add-child';
