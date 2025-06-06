@@ -470,8 +470,11 @@ describe('PanoramiquePlatform', () => {
 				}),
 			], app);
 
-			expect(() => app.services.vue.app.mount(document.body))
-				.toThrow(new RangeError('Maximum call stack size exceeded'));
+			// the thrown error is not consistent across browsers:
+			// chromium => RangeError: Maximum call stack size exceeded.
+			// webkit => RangeError: Maximum call stack size exceeded
+			// firefox => InternalError: too much recursion
+			expect(() => app.services.vue.app.mount(document.body)).toThrow();
 
 			await expect.element(page.getByRole('menu')).not.toBeInTheDocument();
 		});
