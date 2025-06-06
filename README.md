@@ -94,8 +94,3 @@ yarn exec vitest dev [package/folder]
 
 If you want to run unit tests only from that package you can use `--project 
 unit`.
-
-For browser based tests you can use `--project "browser:*"` or replace the
-`*` by a sub env (like `vue`). You can find the list of all available
-`--project` filters by checking the `test.name` of each project defined in
-[`vite.config.ts`](./vite.config.ts).
