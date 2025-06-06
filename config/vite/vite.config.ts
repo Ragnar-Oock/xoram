@@ -27,5 +27,11 @@ export function defineLibConfig(pkg: PackageJSON): UserConfigFnObject {
 			target: 'es2020',
 			emptyOutDir: false,
 		},
+		server: {
+			hmr: {
+				// error overlays can lead to false positives when running Vitest's browser mode in watch mode
+				overlay: mode !== 'test' && mode !== 'benchmark',
+			},
+		},
 	}));
 }
