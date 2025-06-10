@@ -25,3 +25,6 @@ export type {
 export { panoramiquePlugin } from './plugin';
 
 export { addChild } from './helper/add-child';
+export { register } from './helper/register';
+export type { ComponentDefinitionHelpers } from './helper/define-component-definition';
+export { defineComponentDefinition } from './helper/define-component-definition';
