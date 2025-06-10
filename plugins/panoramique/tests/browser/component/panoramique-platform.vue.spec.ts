@@ -253,17 +253,10 @@ describe('PanoramiquePlatform', () => {
 				type: ContextMenu,
 				props: {
 					open: true,
+					testid: task.id,
 				},
-				children: [ 'option' ],
 				events: {
-					focusin: [ spy, spy ],
-				},
-			});
-			app.services.panoramique.register({
-				id: 'option',
-				type: ContextOption,
-				props: {
-					text: 'option',
+					click: [ spy, spy ],
 				},
 			});
 			app.services.panoramique.addChild('root', menuId);
@@ -271,10 +264,11 @@ describe('PanoramiquePlatform', () => {
 			app.services.vue.app.mount(document.body);
 
 			// validate setup
-			await expect.element(page.getByRole('menuitem')).toBeVisible();
+			await expect.element(page.getByTestId(task.id)).toBeVisible();
 
 			// exec
-			(page.getByRole('menuitem').query() as HTMLElement | null)?.focus();
+			// eslint-disable-next-line no-non-null-assertion
+			(page.getByTestId(task.id).query() as HTMLElement | null)!.click();
 
 			// check
 			expect(spy).toHaveBeenCalledTimes(2);
