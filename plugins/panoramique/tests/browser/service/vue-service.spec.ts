@@ -4,7 +4,7 @@ import { describe, expect } from 'vitest';
 import { panoramiquePlugin } from '../../../src';
 import { panoramique } from '../../../src/service/panoramique.service';
 import { vueService } from '../../../src/service/vue.service';
-import ContextMenu from '../../component/ContextMenu.vue';
+import ContextMenu from '../../component/context-menu.vue';
 import { it } from '../../fixture/test.fixture';
 
 describe('Vue service', () => {

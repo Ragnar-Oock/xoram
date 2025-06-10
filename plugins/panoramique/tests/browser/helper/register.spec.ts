@@ -10,7 +10,7 @@ import {
 } from '@zoram/core';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { panoramiquePlugin, register } from '../../../src';
-import ContextMenu from '../../component/ContextMenu.vue';
+import ContextMenu from '../../component/context-menu.vue';
 
 describe('register', () => {
 

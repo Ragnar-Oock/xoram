@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { ref } from 'vue';
 import { type ComponentDefinitionHelpers, defineComponentDefinition } from '../../../src';
-import ContextMenu from '../../component/ContextMenu.vue';
+import ContextMenu from '../../component/context-menu.vue';
 import { expectPrettyWarn } from '../../fixture/expect.fixture';
 
 
