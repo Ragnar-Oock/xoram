@@ -6,16 +6,22 @@ import type { AfterFirst, First, Multiplex, NonNever, OverloadParameters, Writab
 /**
  * Extract a component's declared events as a strongly typed `Record<EventName, EventHandler>`.
  */
-export type ComponentEvents<component extends Component> = Prettify<{
+export type ComponentEvents<component extends Component> = {
 	[event in First<OverloadParameters<ComponentEmit<component> & ((...args: unknown[]) => unknown)>> & string]?:
 	((...args: AfterFirst<Extract<OverloadParameters<ComponentEmit<component> & ((...args: unknown[]) => unknown)>, [ event, ...unknown[] ]>>) => void)
-}>;
+};
 /**
  * List native events that can be fired on any HTML Element as a strongly typed `Record<EventName, EventHandler>`.
  */
 export type NativeEvents = {
 	[event in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[event]) => void;
 }
+
+/**
+ * List all events that can be listened for on a component.
+ */
+export type HarnessListenableEvents<component extends Component> = Prettify<ComponentEvents<component> & NativeEvents>;
+
 /**
  * List all props the component exposes.
  */
@@ -49,7 +55,7 @@ export type ComponentHarness<component extends Component, id extends string = st
 	/**
 	 * The listeners to bind to the component when mounting it in the application.
 	 */
-	events?: Multiplex<ComponentEvents<component> | NativeEvents>;
+	events?: Multiplex<HarnessListenableEvents<component>>;
 	/**
 	 * The id of the other harnesses to mount as the component's children in its slots.
 	 *
@@ -99,13 +105,13 @@ export type HarnessChildren<component extends Component> = component extends (ne
 		/**
 		 * A List of child id to use as children in the component's named slots
 		 */
-		[key in keyof InstanceType<component>['$slots']]: ChildrenIds
+		[key in keyof InstanceType<component>['$slots']]?: ChildrenIds
 	}
 	: {
 		/**
 		 * A List of child id to use as children in the component's named slots
 		 */
-		[slot: string]: ChildrenIds
+		[slot: string]: ChildrenIds;
 	}
 
 /**
@@ -123,7 +129,7 @@ export type ComponentDefinition<component extends Component = Component, id exte
 	/**
 	 * The props to pass to the Vue component when mounting it in the application.
 	 */
-	props: ComponentProps<component>;
+	props: ComponentPropAndModels<component>;
 	/**
 	 * The listeners to bind to the component when mounting it in the application.
 	 */
