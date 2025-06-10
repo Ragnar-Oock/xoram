@@ -2,6 +2,7 @@ import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { ref } from 'vue';
 import { type ComponentDefinitionHelpers, defineComponentDefinition } from '../../../src';
 import ContextMenu from '../../component/context-menu.vue';
+import TestComponentComposition from '../../component/test-component-composition.vue';
 import { expectPrettyWarn } from '../../fixture/expect.fixture';
 
 
@@ -94,6 +95,25 @@ describe('defineComponentDefinition', () => {
 
 					expect(definition.events.open).toSatisfy(value => Array.isArray(value) && value.includes(handler1));
 					expect(definition.events.open).toSatisfy(value => Array.isArray(value) && value.includes(handler2));
+				});
+				it('should use the component defined event types in case a native event is overrode', () => {
+					const definition = defineComponentDefinition('input', TestComponentComposition, ({ on }) => {
+						on(
+							'change',
+							(value: number) => void value,
+						);
+
+						on(
+							'change',
+							// @ts-expect-error native change event is overwritten by the component defined one
+							(value: Event) => void value,
+						);
+
+						on('change', value => expectTypeOf(value).toBeNumber());
+					});
+
+					// all 3 listeners should still be registered
+					expect(definition.events.change).toHaveLength(3);
 				});
 			});
 			describe('setup context : bind', () => {
