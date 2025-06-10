@@ -20,7 +20,7 @@ export type NativeEvents = {
 /**
  * List all events that can be listened for on a component.
  */
-export type HarnessListenableEvents<component extends Component> = Prettify<ComponentEvents<component> & NativeEvents>;
+export type HarnessListenableEvents<component extends Component> = Prettify<ComponentEvents<component> & Omit<NativeEvents, keyof ComponentEvents<component>>>;
 
 /**
  * List all props the component exposes.
