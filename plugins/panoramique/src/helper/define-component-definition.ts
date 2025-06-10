@@ -105,8 +105,10 @@ export function defineComponentDefinition<id extends string, component extends C
 			slotName = 'default' as keyof RemoveIndex<ComponentSlots<component>> & string,
 			index,
 		) => {
-			if (import.meta.env.DEV && index !== undefined && !Number.isInteger(index)) {
-				_warn(new Error(`slot() index parameter must be an integer, received ${ index.toString(10) }.`));
+			if (index !== undefined && !Number.isInteger(index)) {
+				if (import.meta.env.DEV) {
+					_warn(new Error(`slot() index parameter must be an integer, received ${ index.toString(10) }, rounding to nearest integer.`));
+				}
 				index = Math.round(index);
 			}
 
