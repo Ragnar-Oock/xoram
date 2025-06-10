@@ -5,7 +5,7 @@ import type { ComponentDefinition, ComponentEvents } from '../service/component-
 /**
  * Provide tools to describe a {@link ComponentDefinition} in a composable way instead of using the option syntax.
  */
-interface ComponentDefinitionHelpers<component extends Component> {
+export interface ComponentDefinitionHelpers<component extends Component> {
 	/**
 	 * Provide a value to one of the component's prop. The value can be a direct value, a reactive one or a getter (see
 	 * {@link vue#MaybeRefOrGetter}).
@@ -19,11 +19,11 @@ interface ComponentDefinitionHelpers<component extends Component> {
 	 *   modifier](https://vuejs.org/guide/components/v-model.html#handling-v-model-modifiers) )
 	 */
 	bind: <
-		prop extends keyof ComponentProps<component> = keyof ComponentProps<component>
+		prop extends keyof ComponentProps<component>
 	>(
 		this: void,
 		prop: prop,
-		value: MaybeRefOrGetter<ComponentProps<component>[prop]>,
+		value: MaybeRefOrGetter<NonNullable<ComponentProps<component>[prop]>>,
 		...modifiers: string[]
 	) => void;
 
@@ -38,11 +38,11 @@ interface ComponentDefinitionHelpers<component extends Component> {
 	 * @param handler - handler to bind to the event
 	 */
 	on: <
-		event extends keyof ComponentEvents<component>
+		event extends keyof HarnessListenableEvents<component>
 	>(
 		this: void,
 		event: event,
-		handler: NonNullable<ComponentEvents<component>[event]>,
+		handler: NonNullable<HarnessListenableEvents<component>[event]>,
 	) => void;
 
 	/**
@@ -56,7 +56,7 @@ interface ComponentDefinitionHelpers<component extends Component> {
 	slot: (
 		this: void,
 		childId: string,
-		slotName?: keyof ComponentSlots<component> & string,
+		slotName?: keyof RemoveIndex<ComponentSlots<component>> & string,
 		index?: number,
 	) => void;
 }
