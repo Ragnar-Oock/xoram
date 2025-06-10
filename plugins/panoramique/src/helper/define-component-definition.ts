@@ -68,12 +68,15 @@ export interface ComponentDefinitionHelpers<component extends Component> {
 	) => void;
 }
 
+export type DefinedComponentDefinition<component extends Component, id extends string> =
+	Omit<Required<ComponentDefinition<component, id>>, 'children'>
+	& { children: HarnessChildren<component> }
 
 export function defineComponentDefinition<id extends string, component extends Component>(
 	id: id,
 	component: component,
 	setup?: (helpers: ComponentDefinitionHelpers<component>) => void,
-): ComponentDefinition<component, id> {
+): DefinedComponentDefinition<component, id> {
 
 	const definition = {
 		id,
@@ -114,5 +117,5 @@ export function defineComponentDefinition<id extends string, component extends C
 		},
 	});
 
-	return definition as ComponentDefinition<component, id>;
+	return definition as DefinedComponentDefinition<component, id>;
 }
