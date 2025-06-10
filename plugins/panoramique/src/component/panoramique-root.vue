@@ -3,7 +3,7 @@
 	 * PanoramiqueRoot
 	 *
 	 * This component is used as the root component of a Vue app built with `@zoram-plugin/panoramique` it will mount all
-	 * the {@link ComponentDefinition} registered as children of `'root'`.
+	 * the {@link ComponentHarness} registered as children of `'root'`.
 	 */
 	import { computed } from 'vue';
 	import { usePanoramiqueStore } from '../service/panoramique.service';

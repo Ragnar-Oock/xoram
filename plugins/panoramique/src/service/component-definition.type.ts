@@ -37,9 +37,11 @@ export type ComponentPropAndModels<component extends Component, props = ExposedC
 		: never
 }>>>
 /**
- * A precursor for a {@link ComponentDefinition} used to register a component into `panoramique`.
+ * A precursor for a {@link ComponentHarness} used to register a component into `panoramique`.
+ *
+ * @public
  */
-export type ComponentHarness<component extends Component, id extends string = string> = {
+export type ComponentDefinition<component extends Component, id extends string = string> = {
 	/**
 	 * Identifies the harness in the store so it can be used as another one's child.
 	 */
@@ -117,7 +119,7 @@ export type HarnessChildren<component extends Component> = component extends (ne
 /**
  * Describe how a component should be mounted into the Vue app.
  */
-export type ComponentDefinition<component extends Component = Component, id extends string = string> = {
+export type ComponentHarness<component extends Component = Component, id extends string = string> = {
 	/**
 	 * Identifies the harness in the store so it can be used as another one's child.
 	 */
@@ -139,5 +141,3 @@ export type ComponentDefinition<component extends Component = Component, id exte
 	 */
 	children: HarnessChildren<component>;
 };
-
-// todo : swap component definition and harness names

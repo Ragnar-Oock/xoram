@@ -30,11 +30,11 @@ describe('addChild', () => {
 			addPlugins([
 				definePlugin(() => {
 					onCreated((app) => {
-						hasChildBefore = app.services.panoramique._definitions['root'].children.default?.includes(componentId);
+						hasChildBefore = app.services.panoramique._harnesses['root'].children.default?.includes(componentId);
 					});
 					addChild('root', componentId);
 					onCreated((app) => {
-						hasChildAfter = app.services.panoramique._definitions['root'].children.default?.includes(componentId);
+						hasChildAfter = app.services.panoramique._harnesses['root'].children.default?.includes(componentId);
 					});
 				}),
 			], app);
@@ -46,11 +46,11 @@ describe('addChild', () => {
 			let hasChildBefore, hasChildAfter;
 			const pluginDefinition = definePlugin(() => {
 				onBeforeDestroy((app) => {
-					hasChildBefore = app.services.panoramique._definitions['root'].children.default?.includes(componentId);
+					hasChildBefore = app.services.panoramique._harnesses['root'].children.default?.includes(componentId);
 				});
 				addChild('root', componentId);
 				onBeforeDestroy((app) => {
-					hasChildAfter = app.services.panoramique._definitions['root'].children.default?.includes(componentId);
+					hasChildAfter = app.services.panoramique._harnesses['root'].children.default?.includes(componentId);
 				});
 			});
 			addPlugins([

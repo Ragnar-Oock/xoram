@@ -31,14 +31,14 @@ describe('register', () => {
 			addPlugins([
 				definePlugin(() => {
 					onCreated((app) => {
-						existsBefore = app.services.panoramique._definitions[componentId] !== undefined;
+						existsBefore = app.services.panoramique._harnesses[componentId] !== undefined;
 					});
 					register({
 						id: componentId,
 						type: ContextMenu,
 					});
 					onCreated((app) => {
-						existsAfter = app.services.panoramique._definitions[componentId] !== undefined;
+						existsAfter = app.services.panoramique._harnesses[componentId] !== undefined;
 					});
 				}),
 			], app);
@@ -50,14 +50,14 @@ describe('register', () => {
 			let existsBefore, existsAfter;
 			const pluginDefinition = definePlugin(() => {
 				onBeforeDestroy((app) => {
-					existsBefore = app.services.panoramique._definitions[componentId] !== undefined;
+					existsBefore = app.services.panoramique._harnesses[componentId] !== undefined;
 				});
 				register({
 					id: componentId,
 					type: ContextMenu,
 				});
 				onBeforeDestroy((app) => {
-					existsAfter = app.services.panoramique._definitions[componentId] !== undefined;
+					existsAfter = app.services.panoramique._harnesses[componentId] !== undefined;
 				});
 			});
 			addPlugins([

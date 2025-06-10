@@ -2,7 +2,7 @@ import { addService, type Application, createApp, definePlugin, destroyApp } fro
 import { getActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest';
 import { panoramiquePlugin } from '../../../src';
-import type { ComponentDefinition } from '../../../src/service/component-definition.type';
+import type { ComponentHarness } from '../../../src/service/component-definition.type';
 import { panoramique } from '../../../src/service/panoramique.service';
 import { vueService } from '../../../src/service/vue.service';
 import ContextMenu from '../../component/context-menu.vue';
@@ -12,15 +12,15 @@ import { it } from '../../fixture/test.fixture';
 
 declare module '../../../src/service/panoramique.service' {
 	interface PanoramiqueService {
-		_definitions: Record<string, ComponentDefinition>;
+		_harnesses: Record<string, ComponentHarness>;
 	}
 }
 
 describe('panoramique service', () => {
 	let app: Application;
 
-	function def(id: string): ComponentDefinition | undefined {
-		return app.services.panoramique._definitions[id];
+	function def(id: string): ComponentHarness | undefined {
+		return app.services.panoramique._harnesses[id];
 	}
 
 	beforeEach(() => {

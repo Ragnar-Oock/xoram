@@ -277,7 +277,7 @@ describe('PanoramiquePlatform', () => {
 	});
 	describe('mounting of component tree', () => {
 		// Register root + nested children → Assert app renders full tree in correct slot structure.
-		// Events declared in ComponentHarness are properly bound and trigger callbacks.
+		// Events declared in ComponentDefinition are properly bound and trigger callbacks.
 		it('should mount components descending from root', async () => {
 			// setup
 			const depth = 15;

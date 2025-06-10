@@ -4,7 +4,7 @@ import { type Component, computed, type ComputedRef, markRaw, reactive } from 'v
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
 
 /**
- * Store a collection {@link ComponentDefinition | `ComponentDefinition`} to build dynamically structured UI in a Vue
+ * Store a collection {@link ComponentHarness | `ComponentHarness`} to build dynamically structured UI in a Vue
  * application.
  *
  * @public
@@ -13,14 +13,14 @@ export interface PanoramiqueService extends Service {
 	/**
 	 * Register a new harness in the store for use somewhere else in the application.
 	 *
-	 * @param harness - a description of the harness to be added
+	 * @param definition - a description of the harness to be added
 	 *
 	 * @returns the reactive harness you can interact with
 	 */
 	register<
 		component extends Component,
 		id extends string = string,
-	>(harness: ComponentHarness<component, id>): ComponentDefinition<component, id>;
+	>(definition: ComponentDefinition<component, id>): ComponentHarness<component, id>;
 
 	/**
 	 * Find a registered harness
@@ -29,7 +29,7 @@ export interface PanoramiqueService extends Service {
 	get: <
 		component extends Component = Component,
 		id extends string = string
-	>(id: id) => ComputedRef<ComponentDefinition<component, id> | undefined>;
+	>(id: id) => ComputedRef<ComponentHarness<component, id> | undefined>;
 
 	/**
 	 * Safely removes a harness from the store.
@@ -43,14 +43,14 @@ export interface PanoramiqueService extends Service {
 	 *
 	 * @param parent - id of the harness to add the child to
 	 * @param child - id of the child
-	 * @param [slotName = 'default'] - name of the slot in the parent to add the child in, default's to the `default` slot
-	 * @param [index = -1] - index, in the given slot, where the child should be inserted. Negative numbers are handled
-	 *   like `array.at()`.
+	 * @param slotName - name of the slot in the parent to add the child in, default's to the `default` slot
+	 * @param index - index, in the given slot, where the child should be inserted. Negative numbers are handled
+	 *   like `array.at()`. Defaults to the end of the children array if left empty.
 	 */
 	addChild: (parent: string, child: string, slotName?: string, index?: number) => void;
 
 	/**
-	 * Remove a previously added child from its parent. This will not remove the child's definition from the store,
+	 * Remove a previously added child from its parent. This will not remove the child's harness from the store,
 	 * simply sever the link between the two components.
 	 *
 	 * @param parent - id of the parent the child is currently attached to
@@ -63,25 +63,25 @@ export interface PanoramiqueService extends Service {
 export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueService, keyof Service>>(
 	'panoramique',
 	() => {
-		const _definitions = reactive<Record<string, ComponentDefinition>>({});
+		const _harnesses = reactive<Record<string, ComponentHarness>>({});
 
 		function register<
 			component extends Component,
 			id extends string = string,
 		>(
-			harness: ComponentHarness<component, id>,
-		): ComponentDefinition<component, id> {
-			const { id, type, props = {}, events = {}, children = { default: [] } } = harness;
-			if (_definitions[id]) {
+			definition: ComponentDefinition<component, id>,
+		): ComponentHarness<component, id> {
+			const { id, type, props = {}, events = {}, children = { default: [] } } = definition;
+			if (_harnesses[id]) {
 				if (import.meta.env.NODE_ENV !== 'production') {
 					console.warn(`🔭 A harness with the id ${ id } is already registered in the store. Skipping...`);
 				}
 
 				// return the already registered harness instead of the new one
-				return _definitions[id] as ComponentDefinition<component, id>;
+				return _harnesses[id] as ComponentHarness<component, id>;
 			}
 
-			_definitions[id] = {
+			_harnesses[id] = {
 				id,
 				// prevents the component from being made reactive to avoid performance issues (and a deserved warning from Vue)
 				type: markRaw(type),
@@ -90,20 +90,20 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 				children: Array.isArray(children) ? { default: children } : children,
 			};
 
-			return _definitions[id] as ComponentDefinition<component, id>;
+			return _harnesses[id] as ComponentHarness<component, id>;
 		}
 
 		function get<
 			component extends Component = Component,
 			id extends string = string
-		>(id: id): ComputedRef<ComponentDefinition<component, id> | undefined> {
-			return computed(() => (_definitions[id] as ComponentDefinition<component, id> | undefined));
+		>(id: id): ComputedRef<ComponentHarness<component, id> | undefined> {
+			return computed(() => (_harnesses[id] as ComponentHarness<component, id> | undefined));
 		}
 
 		function addChild(parent: string, child: string, slotName = 'default', index = -1): void {
-			const parentDefinition = _definitions[parent];
+			const parentHarness = _harnesses[parent];
 
-			if (parentDefinition === undefined) {
+			if (parentHarness === undefined) {
 				if (import.meta.env.NODE_ENV !== 'production') {
 					console.warn(`🔭 Tried to assign a child (id: ${ child }) to a non-existing harness (id: ${ parent }). Skipping...`);
 				}
@@ -111,22 +111,22 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 				return;
 			}
 
-			const slot = (parentDefinition.children[slotName] ??= []);
+			const slot = (parentHarness.children[slotName] ??= []);
 			slot.splice(index < 0 ? slot.length + index + 1 : index, 0, child);
-			parentDefinition.children[slotName] = slot;
+			parentHarness.children[slotName] = slot;
 		}
 
 		function removeChild(parent: string, child: string, slotName = 'default'): void {
-			const parentDefinition = _definitions[parent];
+			const parentHarness = _harnesses[parent];
 
-			if (!parentDefinition) {return;}
+			if (!parentHarness) {return;}
 
-			parentDefinition.children[slotName] = parentDefinition.children[slotName]
+			parentHarness.children[slotName] = parentHarness.children[slotName]
 				?.filter(registered => registered !== child);
 		}
 
 		function remove(id: string): void {
-			delete _definitions[id];
+			delete _harnesses[id];
 		}
 
 		// this element is the one every other mounted in the app will descent from, it is implemented by
@@ -137,7 +137,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 		});
 
 		return {
-			_definitions,
+			_harnesses,
 
 			register,
 			get,
