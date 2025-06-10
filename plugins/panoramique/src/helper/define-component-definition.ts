@@ -1,3 +1,4 @@
+import { _warn } from '@zoram/core';
 import type { Component, MaybeRefOrGetter } from 'vue';
 import type { ComponentProps, ComponentSlots } from 'vue-component-type-helpers';
 import type {
@@ -102,6 +103,11 @@ export function defineComponentDefinition<id extends string, component extends C
 			slotName = 'default' as keyof RemoveIndex<ComponentSlots<component>> & string,
 			index,
 		) => {
+			if (import.meta.env.DEV && index !== undefined && !Number.isInteger(index)) {
+				_warn(new Error(`slot() index parameter must be an integer, received ${ index.toString(10) }.`));
+				index = undefined;
+			}
+
 			// we don't care about precise typing here
 			const children = definition.children as Record<string, string[]>;
 			const slot: string[] = children[slotName] ??= [];
