@@ -24,7 +24,7 @@ export interface PanoramiqueService extends Service {
 
 	/**
 	 * Find a registered harness
-	 * @param id
+	 * @param id - identifier of the harness to get from the store
 	 */
 	get: <
 		component extends Component = Component,
