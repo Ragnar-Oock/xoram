@@ -1,4 +1,4 @@
-import { defineService, onBeforeDestroy, type Service } from '@zoram/core';
+import { _warn, defineService, onBeforeDestroy, type Service } from '@zoram/core';
 import { createPinia, defineStore, disposePinia, type Pinia } from 'pinia';
 import { type Component, computed, type ComputedRef, markRaw, reactive } from 'vue';
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
@@ -104,11 +104,18 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 			const parentHarness = _harnesses[parent];
 
 			if (parentHarness === undefined) {
-				if (import.meta.env.NODE_ENV !== 'production') {
+				if (import.meta.env.DEV) {
 					console.warn(`🔭 Tried to assign a child (id: ${ child }) to a non-existing harness (id: ${ parent }). Skipping...`);
 				}
 
 				return;
+			}
+
+			if (index !== undefined && !Number.isInteger(index)) {
+				if (import.meta.env.DEV) {
+					_warn(new Error(`slot() index parameter must be an integer, received ${ index.toString(10) }.`));
+				}
+				index = undefined;
 			}
 
 			const slot = (parentHarness.children[slotName] ??= []);
