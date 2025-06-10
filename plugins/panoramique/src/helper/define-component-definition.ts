@@ -92,11 +92,14 @@ export function defineComponentDefinition<id extends string, component extends C
 				.push(handler),
 		slot: (
 			childId,
-			slotName = 'default' as keyof ComponentSlots<component> & string,
-			index = -1,
+			// eslint-disable-next-line default-param-last
+			slotName = 'default' as keyof RemoveIndex<ComponentSlots<component>> & string,
+			index,
 		) => {
-			// @ts-expect-error slotName can't index children safely, but we don't care about safe here
-			(definition.children[slotName] ??= []).splice(index, 0, childId);
+			// we don't care about precise typing here
+			const children = definition.children as Record<string, string[]>;
+			const slot: string[] = children[slotName] ??= [];
+			children[slotName] = slot.toSpliced(index ?? slot.length, 0, childId);
 		},
 	});
 
