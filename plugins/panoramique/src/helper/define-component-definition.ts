@@ -104,7 +104,7 @@ export function defineComponentDefinition<id extends string, component extends C
 		) => {
 			if (import.meta.env.DEV && index !== undefined && !Number.isInteger(index)) {
 				_warn(new Error(`slot() index parameter must be an integer, received ${ index.toString(10) }.`));
-				index = undefined;
+				index = Math.round(index);
 			}
 
 			// we don't care about precise typing here
