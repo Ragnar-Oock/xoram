@@ -5,6 +5,8 @@ import type { AfterFirst, First, Multiplex, NonNever, OverloadParameters, Writab
 
 /**
  * Extract a component's declared events as a strongly typed `Record<EventName, EventHandler>`.
+ *
+ * @public
  */
 export type ComponentEvents<component extends Component> = {
 	[event in First<OverloadParameters<ComponentEmit<component> & ((...args: unknown[]) => unknown)>> & string]?:
@@ -12,6 +14,8 @@ export type ComponentEvents<component extends Component> = {
 };
 /**
  * List native events that can be fired on any HTML Element as a strongly typed `Record<EventName, EventHandler>`.
+ *
+ * @public
  */
 export type NativeEvents = {
 	[event in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[event]) => void;
@@ -19,15 +23,23 @@ export type NativeEvents = {
 
 /**
  * List all events that can be listened for on a component.
+ *
+ * @public
  */
-export type HarnessListenableEvents<component extends Component> = Prettify<ComponentEvents<component> & Omit<NativeEvents, keyof ComponentEvents<component>>>;
+export type HarnessListenableEvents<component extends Component> =
+	Prettify<ComponentEvents<component>>
+	& Omit<NativeEvents, keyof ComponentEvents<component>>;
 
 /**
  * List all props the component exposes.
+ *
+ * @public
  */
 export type ExposedComponentProps<component extends Component> = Writable<Omit<ComponentProps<component>, keyof VNodeProps>>
 /**
  * List all props the component exposes and any potential modifier list for the models it defines.
+ *
+ * @public
  */
 export type ComponentPropAndModels<component extends Component, props = ExposedComponentProps<component>> = Prettify<
 	props
@@ -87,6 +99,11 @@ export type ComponentDefinition<component extends Component, id extends string =
 	 */
 	children?: ChildrenIds | HarnessChildren<component>;
 }
+/**
+ * An ordered array of harness ids meant to be mounted as the children of another harness.
+ *
+ * @public
+ */
 export type ChildrenIds = string[];
 /**
  * Maps the slots advertised by a component to a list of children IDs to be bound to those same slots.
@@ -101,6 +118,8 @@ export type ChildrenIds = string[];
  *   header: ['cardHeader']
  * }
  * ```
+ *
+ * @public
  */
 export type HarnessChildren<component extends Component> = component extends (new (...args: unknown[]) => ComponentPublicInstance)
 	? {
@@ -118,6 +137,8 @@ export type HarnessChildren<component extends Component> = component extends (ne
 
 /**
  * Describe how a component should be mounted into the Vue app.
+ *
+ * @public
  */
 export type ComponentHarness<component extends Component = Component, id extends string = string> = {
 	/**
