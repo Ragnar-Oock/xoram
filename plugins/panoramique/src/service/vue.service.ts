@@ -4,13 +4,16 @@ import { createApp, h } from 'vue';
 import PanoramiqueRoot from '../component/panoramique-root.vue';
 
 /**
- * Create and expose a Vue app instance using a {@link PanoramiqueRoot} as the root component.
+ * Create and expose a Vue app instance for panoramique to mount components into.
+ *
+ * @public
  */
 export interface VueService extends Service {
 	app: App,
 }
 
 // todo : check how the unmount check impact bundle size
+// todo : think of a way to pass custom app config
 export const vueService = defineService<VueService>(() => {
 	// prevent unmounting a vue app that is not currently mounted
 	let mounted = false;

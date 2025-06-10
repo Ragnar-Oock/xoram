@@ -55,7 +55,7 @@ export interface PanoramiqueService extends Service {
 	 *
 	 * @param parent - id of the parent the child is currently attached to
 	 * @param child - if of the child to remove
-	 * @param [slotName = 'default'] - name of the slot the child is registered into, default's to the `default` slot
+	 * @param slotName - name of the slot the child is registered into, default's to the `default` slot
 	 */
 	removeChild: (parent: string, child: string, slotName?: string) => void;
 }
