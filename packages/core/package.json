@@ -16,14 +16,15 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./types/core.public.d.ts",
-        "default": "./dist/core.production.js"
-      }
-    },
-    "./dev": {
-      "import": {
-        "types": "./types/core.public.d.ts",
-        "default": "./dist/core.development.js"
+        "types": {
+          "zoram:internal": "./types/core.internal.d.ts",
+          "default": "./types/core.public.d.ts"
+        },
+        "default": {
+          "zoram:internal": "./dist/core.development.js",
+          "development": "./dist/core.development.js",
+          "default": "./dist/core.production.js"
+        }
       }
     }
   },

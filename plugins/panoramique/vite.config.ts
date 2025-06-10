@@ -12,15 +12,10 @@ export default defineProject(env =>
 			{
 				plugins: [
 					vue(),
-					env.mode === 'dev' ? vueDevTools({
+					env.mode === 'development' ? vueDevTools({
 						launchEditor: 'webstorm',
 					}) : undefined,
 				],
-				resolve: {
-					alias: {
-						'@zoram/core': '@zoram/core/dev',
-					},
-				},
 			},
 		),
 		getBrowserTestConfig(pkg)(env),

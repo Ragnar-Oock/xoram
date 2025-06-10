@@ -26,6 +26,9 @@ export function defineLibConfig(pkg: PackageJSON): UserConfigFnObject {
 			minify: mode === 'development' ? false : 'esbuild',
 			target: 'es2020',
 			emptyOutDir: false,
+			resolve: {
+				condition: [ 'module', 'browser', 'development|production', 'zoram:internal' ],
+			},
 		},
 		server: {
 			hmr: {
