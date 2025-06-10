@@ -9,7 +9,8 @@
 
 	import type { Component, ConcreteComponent } from 'vue';
 	import { computed } from 'vue';
-	import type { ComponentDefinition, HarnessChildren } from '../service/component-definition.type';
+	import type { ComponentDefinition, ComponentEvents, HarnessChildren } from '../service/component-definition.type';
+	import type { Multiplex } from '../service/helper.type';
 	import { usePanoramiqueStore } from '../service/panoramique.service';
 
 	const { identifier } = defineProps<{
@@ -39,7 +40,7 @@
 				updateEvent(prop),
 				[
 					(update: unknown): void => {_harness.props[prop] = update;},
-					...(_harness.events[updateEvent(prop)] as EventHandler[] | undefined ?? []),
+					...(_harness.events[updateEvent(prop) as keyof Multiplex<ComponentEvents<Component>>] ?? []),
 				],
 			] as const);
 	});
