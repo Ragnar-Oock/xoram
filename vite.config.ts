@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => ({
 			exclude: [
 				'packages/core-size-check', // this is a package used for checking final bundle size only
 			],
+			experimentalAstAwareRemapping: true,
 		},
 
 		passWithNoTests: true,
