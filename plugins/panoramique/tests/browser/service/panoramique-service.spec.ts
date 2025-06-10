@@ -336,7 +336,7 @@ describe('panoramique service', () => {
 
 				app.services.panoramique.addChild('parent', 'child');
 
-				expect(def('parent')?.children.default[0]).toBe('child');
+				expect(def('parent')?.children.default?.[0]).toBe('child');
 			});
 			it('should add the child id to the parent\'s given slot name when provided', () => {
 				app.services.panoramique.register({
@@ -350,7 +350,7 @@ describe('panoramique service', () => {
 
 				app.services.panoramique.addChild('parent', 'child', 'slotName');
 
-				expect(def('parent')?.children.slotName[0]).toBe('child');
+				expect(def('parent')?.children.slotName?.[0]).toBe('child');
 			});
 			it('should allow adding an unregistered id to a parent (no slot)', () => {
 				app.services.panoramique.register({
@@ -360,7 +360,7 @@ describe('panoramique service', () => {
 
 				app.services.panoramique.addChild('parent', 'child');
 
-				expect(def('parent')?.children.default[0]).toBe('child');
+				expect(def('parent')?.children.default?.[0]).toBe('child');
 			});
 			it(
 				'should insert at the correct index when given a positive integer smaller than the current number of children',
@@ -385,7 +385,7 @@ describe('panoramique service', () => {
 
 					app.services.panoramique.addChild('parent', 'child3', 'default', 1);
 
-					expect(def('parent')?.children.default.at(1)).toBe('child3');
+					expect(def('parent')?.children.default?.at(1)).toBe('child3');
 				},
 			);
 			it(
@@ -411,7 +411,7 @@ describe('panoramique service', () => {
 
 					app.services.panoramique.addChild('parent', 'child3', 'default', 15);
 
-					expect(def('parent')?.children.default.at(-1)).toBe('child3');
+					expect(def('parent')?.children.default?.at(-1)).toBe('child3');
 				},
 			);
 			it(
@@ -437,7 +437,7 @@ describe('panoramique service', () => {
 
 					app.services.panoramique.addChild('parent', 'child3', 'default', -1);
 
-					expect(def('parent')?.children.default.at(-1)).toBe('child3');
+					expect(def('parent')?.children.default?.at(-1)).toBe('child3');
 				},
 			);
 			it(
@@ -464,7 +464,7 @@ describe('panoramique service', () => {
 
 					app.services.panoramique.addChild('parent', 'child3', 'default', Number.NEGATIVE_INFINITY);
 
-					expect(def('parent')?.children.default.at(0)).toBe('child3');
+					expect(def('parent')?.children.default?.at(0)).toBe('child3');
 				},
 			);
 			it('should add the same child multiple times if called with the same arguments', () => {
