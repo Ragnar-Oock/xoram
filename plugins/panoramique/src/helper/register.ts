@@ -8,6 +8,8 @@ import type { ComponentDefinition } from '../service/component-definition.type';
  * Additionally, flag the host component as depending on panoramique's plugin.
  *
  * @param definition - the component definition to register on plugin creation
+ *
+ * @public
  */
 export function register<component extends Component>(definition: ComponentDefinition<component>): void {
 	dependsOn(panoramiquePlugin.id);

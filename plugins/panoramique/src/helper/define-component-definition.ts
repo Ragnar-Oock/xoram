@@ -11,6 +11,8 @@ import type { Multiplex, RemoveIndex } from '../service/helper.type';
 
 /**
  * Provide tools to describe a {@link ComponentHarness} in a composable way instead of using the option syntax.
+ *
+ * @public
  */
 export interface ComponentDefinitionHelpers<component extends Component> {
 	/**
@@ -56,9 +58,9 @@ export interface ComponentDefinitionHelpers<component extends Component> {
 	 * Insert a child in one of the component's slots.
 	 *
 	 * @param childId - id of the child to add
-	 * @param [slotName = 'default'] - slot to add the child into
-	 * @param [index = -1] - index, in the given slot, where the child should be inserted. Negative numbers are handled
-	 *   like `array.at()`.
+	 * @param slotName - slot to add the child into, default's to the `default` slot
+	 * @param index - index, in the given slot, where the child should be inserted. Negative numbers are handled
+	 *   like `array.at()`, defaults to then end of the existing child list.
 	 */
 	slot: (
 		this: void,
@@ -72,6 +74,14 @@ export type DefinedComponentDefinition<component extends Component, id extends s
 	Omit<Required<ComponentDefinition<component, id>>, 'children'>
 	& { children: HarnessChildren<component> }
 
+/**
+ *
+ * @param id - the unique identifier of the definition to create
+ * @param component - the Vue component to mount when using the harness
+ * @param setup - a function to programmatically describe the props, event listeners and children of the harness
+ *
+ * @public
+ */
 export function defineComponentDefinition<id extends string, component extends Component>(
 	id: id,
 	component: component,
