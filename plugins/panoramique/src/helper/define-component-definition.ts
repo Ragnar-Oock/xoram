@@ -94,9 +94,8 @@ export function defineComponentDefinition<id extends string, component extends C
 			}
 		},
 		on: (event, handler) =>
-			(definition.events[event as keyof Multiplex<HarnessListenableEvents<component>>] ??= [])
-				// @ts-expect-error handler type can't be resolved here
-				.push(handler),
+			((definition.events as Record<string, ((...args: unknown[]) => void)[]>)[event] ??= [])
+				.push(handler as (...args: unknown[]) => void),
 		slot: (
 			childId,
 			// eslint-disable-next-line default-param-last
