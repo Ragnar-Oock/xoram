@@ -4,9 +4,9 @@ import { addPlugins, createApp, definePlugin, destroyApp, onCreated } from '@zor
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 import { panoramiquePlugin } from '../../../src';
-import ContextMenu from '../../component/ContextMenu.vue';
-import ContextOption from '../../component/ContextOption.vue';
-import TestComponent from '../../component/TestComponent.vue';
+import ContextMenu from '../../component/context-menu.vue';
+import ContextOption from '../../component/context-option.vue';
+import TestComponent from '../../component/test-component.vue';
 
 describe('PanoramiquePlatform', () => {
 

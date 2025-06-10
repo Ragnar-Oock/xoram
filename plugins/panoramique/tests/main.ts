@@ -3,9 +3,9 @@ import { addChild } from '../src/helper/add-child';
 import { defineComponentDefinition } from '../src/helper/define-component-definition';
 import { register } from '../src/helper/register';
 import { panoramiquePlugin } from '../src/plugin';
-import ContextMenu from './component/ContextMenu.vue';
-import ContextOption from './component/ContextOption.vue';
-import TestComponentComposition from './component/TestComponentComposition.vue';
+import ContextMenu from './component/context-menu.vue';
+import ContextOption from './component/context-option.vue';
+import TestComponentComposition from './component/test-component-composition.vue';
 
 const menuPlugin = definePlugin('menu', () => {
 	register({

@@ -5,8 +5,8 @@ import { panoramiquePlugin } from '../../../src';
 import type { ComponentDefinition } from '../../../src/service/component-definition.type';
 import { panoramique } from '../../../src/service/panoramique.service';
 import { vueService } from '../../../src/service/vue.service';
-import ContextMenu from '../../component/ContextMenu.vue';
-import ContextOption from '../../component/ContextOption.vue';
+import ContextMenu from '../../component/context-menu.vue';
+import ContextOption from '../../component/context-option.vue';
 import { it } from '../../fixture/test.fixture';
 
 
