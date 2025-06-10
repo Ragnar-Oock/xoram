@@ -10,7 +10,7 @@ import type {
 import type { Multiplex, RemoveIndex } from '../service/helper.type';
 
 /**
- * Provide tools to describe a {@link ComponentDefinition} in a composable way instead of using the option syntax.
+ * Provide tools to describe a {@link ComponentHarness} in a composable way instead of using the option syntax.
  */
 export interface ComponentDefinitionHelpers<component extends Component> {
 	/**

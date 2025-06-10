@@ -2,14 +2,14 @@
 	/**
 	 * PanoramiquePlatform
 	 *
-	 * This component is in charge of dynamically loading the {@link ComponentDefinition} corresponding to the
+	 * This component is in charge of dynamically loading the {@link ComponentHarness} corresponding to the
 	 * `identifier` prop. It binds the props, listeners and children registered on the definition so the
 	 * component can be mounted as if used like normal.
 	 */
 
 	import type { Component, ConcreteComponent } from 'vue';
 	import { computed } from 'vue';
-	import type { ComponentDefinition, ComponentEvents, HarnessChildren } from '../service/component-definition.type';
+	import type { ComponentEvents, ComponentHarness, HarnessChildren } from '../service/component-definition.type';
 	import type { Multiplex } from '../service/helper.type';
 	import { usePanoramiqueStore } from '../service/panoramique.service';
 
