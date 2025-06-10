@@ -47,6 +47,7 @@
 		:data-testid="testid"
 	>
 		<slot name="default"></slot>
+		<slot name="bottom"></slot>
 	</div>
 </template>
 
