@@ -42,3 +42,16 @@ export type Writable<record> = {
 export type NonNever<record> = {
 	[K in keyof record as record[K] extends never ? never : K]: record[K];
 }
+
+/**
+ * remove index signatures from object types
+ */
+export type RemoveIndex<T> = {
+	[K in keyof T as string extends K
+		? never
+		: number extends K
+			? never
+			: symbol extends K
+				? never
+				: K]: T[K];
+};

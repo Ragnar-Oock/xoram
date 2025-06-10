@@ -1,6 +1,12 @@
 import type { Component, MaybeRefOrGetter } from 'vue';
 import type { ComponentProps, ComponentSlots } from 'vue-component-type-helpers';
-import type { ComponentDefinition, ComponentEvents } from '../service/component-definition.type';
+import type {
+	ComponentDefinition,
+	ComponentPropAndModels,
+	HarnessChildren,
+	HarnessListenableEvents,
+} from '../service/component-definition.type';
+import type { Multiplex, RemoveIndex } from '../service/helper.type';
 
 /**
  * Provide tools to describe a {@link ComponentDefinition} in a composable way instead of using the option syntax.
@@ -71,9 +77,9 @@ export function defineComponentDefinition<id extends string, component extends C
 	const definition = {
 		id,
 		type: component,
-		props: {},
-		events: {},
-		children: {},
+		props: {} as Partial<ComponentPropAndModels<component>>,
+		events: {} as Partial<Multiplex<HarnessListenableEvents<component>>>,
+		children: {} as HarnessChildren<component>,
 	};
 
 	setup?.({
@@ -87,8 +93,8 @@ export function defineComponentDefinition<id extends string, component extends C
 			}
 		},
 		on: (event, handler) =>
-			// @ts-expect-error event can't index events safely, but we don't care about safe here
-			(definition.events[event] ??= [])
+			(definition.events[event as keyof Multiplex<HarnessListenableEvents<component>>] ??= [])
+				// @ts-expect-error handler type can't be resolved here
 				.push(handler),
 		slot: (
 			childId,
