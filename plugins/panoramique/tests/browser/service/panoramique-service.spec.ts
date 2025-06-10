@@ -7,6 +7,7 @@ import { panoramique } from '../../../src/service/panoramique.service';
 import { vueService } from '../../../src/service/vue.service';
 import ContextMenu from '../../component/context-menu.vue';
 import ContextOption from '../../component/context-option.vue';
+import { expectPrettyWarn } from '../../fixture/expect.fixture';
 import { it } from '../../fixture/test.fixture';
 
 
@@ -489,6 +490,20 @@ describe('panoramique service', () => {
 
 				expect(consoleWarn).toHaveBeenCalledExactlyOnceWith(
 					'🔭 Tried to assign a child (id: child) to a non-existing harness (id: parent). Skipping...');
+			});
+			it('should use default value when given a non-integer index', () => {
+				const consoleWarn = vi
+					.spyOn(console, 'warn')
+					// eslint-disable-next-line no-empty-function
+					.mockImplementation(() => {});
+				app.services.panoramique.register({ id: 'parent', type: ContextMenu });
+				app.services.panoramique.addChild('parent', 'child', 'default', 0.5);
+
+
+				expectPrettyWarn(
+					consoleWarn,
+					new Error('addChild() index parameter must be an integer, received 0.5, rounding to nearest integer.'),
+				);
 			});
 		});
 		describe('removeChild()', () => {
