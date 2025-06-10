@@ -4,7 +4,9 @@
     "build": "turbo run build:code build:types build:doc",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "test": "vitest run"
+    "test": "vitest run --browser.headless",
+    "test:coverage": "vitest run --coverage --browser=chromium --browser.headless",
+    "test:watch": "vitest --browser=firefox --browser.provider=preview"
   },
   "type": "module",
   "devDependencies": {

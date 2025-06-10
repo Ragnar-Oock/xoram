@@ -18,11 +18,10 @@ export function getBrowserTestConfig(pkg: PackageJSON): UserProjectConfigFn {
 				provider: 'playwright',
 				enabled: true,
 				headless: env.mode === 'CI',
-				// headless: true,
 				instances: [
 					{ browser: 'firefox' },
-					// { browser: 'chromium' },
-					// { browser: 'webkit' },
+					{ browser: 'chromium' },
+					{ browser: 'webkit' },
 				],
 			},
 		},
