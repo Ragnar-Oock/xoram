@@ -60,6 +60,7 @@ export interface PanoramiqueService extends Service {
 	removeChild: (parent: string, child: string, slotName?: string) => void;
 }
 
+// where to insert children by default
 export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueService, keyof Service>>(
 	'panoramique',
 	() => {
@@ -113,9 +114,9 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 
 			if (index !== undefined && !Number.isInteger(index)) {
 				if (import.meta.env.DEV) {
-					_warn(new Error(`slot() index parameter must be an integer, received ${ index.toString(10) }.`));
+					_warn(new Error(`addChild() index parameter must be an integer, received ${ index.toString(10) }, rounding to nearest integer.`));
 				}
-				index = undefined;
+				index = Math.round(index);
 			}
 
 			const slot = (parentHarness.children[slotName] ??= []);

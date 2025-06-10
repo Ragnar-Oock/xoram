@@ -303,7 +303,10 @@ describe('defineComponentDefinition', () => {
 						slot('option2', 'default', 0.5);
 					});
 
-					expectPrettyWarn(consoleWarn, new Error('slot() index parameter must be an integer, received 0.5.'));
+					expectPrettyWarn(
+						consoleWarn,
+						new Error('slot() index parameter must be an integer, received 0.5, rounding to nearest integer.'),
+					);
 					expect(definition.children.default).toStrictEqual([ 'option1', 'option2' ]);
 				});
 			});
