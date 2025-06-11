@@ -7,7 +7,7 @@
     "lint": "oxlint",
     "build:code:prod": "vite build --mode production",
     "build:code:dev": "NODE_ENV=development vite build --mode development",
-    "build:code": "node ./script/build.script.mjs",
+    "build:code": "node ../../script/build.script.mjs",
     "build:types": "tsc --project tsconfig.types.json && api-extractor run --local --verbose",
     "build:doc": "api-documenter markdown --input-folder ./types --output-folder ../../apps/docs/src/api-reference"
   },
