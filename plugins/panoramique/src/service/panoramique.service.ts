@@ -4,6 +4,11 @@ import { type Component, computed, type ComputedRef, markRaw, reactive } from 'v
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
 
 /**
+ * The identifier of the harness mounted as the application root.
+ */
+export const rootHarness = 'root';
+
+/**
  * Store a collection {@link ComponentHarness | `ComponentHarness`} to build dynamically structured UI in a Vue
  * application.
  *
@@ -140,7 +145,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 		// this element is the one every other mounted in the app will descent from, it is implemented by
 		// panoramique-root.vue but its type isn't used and importing it would lead to a circular import
 		register({
-			id: 'root',
+			id: rootHarness,
 			type: {} as unknown as Component,
 		});
 

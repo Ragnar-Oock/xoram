@@ -1,8 +1,5 @@
 import { createApp, definePlugin, dependsOn, onCreated } from '@zoram/core';
-import { addChild } from '../src/helper/add-child';
-import { defineComponentDefinition } from '../src/helper/define-component-definition';
-import { register } from '../src/helper/register';
-import { panoramiquePlugin } from '../src/plugin';
+import { addChild, defineComponentDefinition, panoramiquePlugin, register, rootHarness } from '../src';
 import ContextMenu from './component/context-menu.vue';
 import ContextOption from './component/context-option.vue';
 import TestComponentComposition from './component/test-component-composition.vue';
@@ -16,7 +13,7 @@ const menuPlugin = definePlugin('menu', () => {
 		},
 	});
 
-	addChild('root', 'context-menu');
+	addChild(rootHarness, 'context-menu');
 
 	onCreated(app => app.services.vue.app.mount(document.body));
 });
@@ -58,7 +55,7 @@ const app = createApp([
 			on('update:text', console.log);
 		}));
 
-		addChild('root', 'input');
+		addChild(rootHarness, 'input');
 	}),
 	panoramiquePlugin,
 	menuPlugin,

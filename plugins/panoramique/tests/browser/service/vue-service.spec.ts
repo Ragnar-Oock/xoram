@@ -1,7 +1,7 @@
 import { page } from '@vitest/browser/context';
 import { addPlugins, addService, createApp, definePlugin, destroyApp } from '@zoram/core';
 import { describe, expect } from 'vitest';
-import { panoramiquePlugin } from '../../../src';
+import { panoramiquePlugin, rootHarness } from '../../../src';
 import { panoramique } from '../../../src/service/panoramique.service';
 import { vueService } from '../../../src/service/vue.service';
 import ContextMenu from '../../component/context-menu.vue';
@@ -58,7 +58,7 @@ describe('Vue service', () => {
 			},
 		});
 
-		app.services.panoramique.addChild('root', 'test');
+		app.services.panoramique.addChild(rootHarness, 'test');
 
 		await expect.element(page.getByRole('menu')).toBeVisible();
 

@@ -3,7 +3,7 @@ import type { Application } from '@zoram/core';
 import { addPlugins, createApp, definePlugin, destroyApp, onCreated } from '@zoram/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
-import { panoramiquePlugin } from '../../../src';
+import { panoramiquePlugin, rootHarness } from '../../../src';
 import ContextMenu from '../../component/context-menu.vue';
 import ContextOption from '../../component/context-option.vue';
 import TestComponent from '../../component/test-component.vue';
@@ -43,7 +43,7 @@ describe('PanoramiquePlatform', () => {
 					},
 				}));
 
-				app.services.panoramique.addChild('root', menuId);
+				app.services.panoramique.addChild(rootHarness, menuId);
 				app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
 
 				// check
@@ -79,7 +79,7 @@ describe('PanoramiquePlatform', () => {
 					},
 				}));
 
-			app.services.panoramique.addChild('root', menuId);
+			app.services.panoramique.addChild(rootHarness, menuId);
 			app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
 
 			// check
@@ -116,7 +116,7 @@ describe('PanoramiquePlatform', () => {
 					({ id }) => app.services.panoramique.addChild(menuId, id, 'default', 0),
 				);
 
-			app.services.panoramique.addChild('root', menuId);
+			app.services.panoramique.addChild(rootHarness, menuId);
 
 			// exec
 			app.services.vue.app.mount(document.body); // mount the Vue app in the DOM
@@ -141,7 +141,7 @@ describe('PanoramiquePlatform', () => {
 					open: true,
 				},
 			});
-			app.services.panoramique.addChild('root', id);
+			app.services.panoramique.addChild(rootHarness, id);
 
 			app.services.vue.app.mount(document.body);
 
@@ -164,7 +164,7 @@ describe('PanoramiquePlatform', () => {
 					open: isOpen,
 				},
 			});
-			app.services.panoramique.addChild('root', id);
+			app.services.panoramique.addChild(rootHarness, id);
 
 			app.services.vue.app.mount(document.body);
 
@@ -189,7 +189,7 @@ describe('PanoramiquePlatform', () => {
 						open: isOpen,
 					},
 				});
-				app.services.panoramique.addChild('root', id);
+				app.services.panoramique.addChild(rootHarness, id);
 
 				app.services.vue.app.mount(document.body);
 
@@ -230,7 +230,7 @@ describe('PanoramiquePlatform', () => {
 					click: [ spy, spy ],
 				},
 			});
-			app.services.panoramique.addChild('root', menuId);
+			app.services.panoramique.addChild(rootHarness, menuId);
 
 			app.services.vue.app.mount(document.body);
 
@@ -259,7 +259,7 @@ describe('PanoramiquePlatform', () => {
 					click: [ spy, spy ],
 				},
 			});
-			app.services.panoramique.addChild('root', menuId);
+			app.services.panoramique.addChild(rootHarness, menuId);
 
 			app.services.vue.app.mount(document.body);
 
@@ -294,7 +294,7 @@ describe('PanoramiquePlatform', () => {
 					},
 				});
 			}
-			app.services.panoramique.addChild('root', 'level0');
+			app.services.panoramique.addChild(rootHarness, 'level0');
 
 			app.services.vue.app.mount(document.body);
 
@@ -323,7 +323,7 @@ describe('PanoramiquePlatform', () => {
 			});
 
 			// only add 'present' to the root
-			app.services.panoramique.addChild('root', 'present');
+			app.services.panoramique.addChild(rootHarness, 'present');
 
 			app.services.vue.app.mount(document.body);
 
@@ -355,7 +355,7 @@ describe('PanoramiquePlatform', () => {
 			});
 
 			// only add the menu
-			app.services.panoramique.addChild('root', menuId);
+			app.services.panoramique.addChild(rootHarness, menuId);
 
 			app.services.vue.app.mount(document.body);
 
@@ -388,7 +388,7 @@ describe('PanoramiquePlatform', () => {
 				},
 			});
 
-			app.services.panoramique.addChild('root', menuId);
+			app.services.panoramique.addChild(rootHarness, menuId);
 
 			app.services.vue.app.mount(document.body);
 
@@ -423,8 +423,8 @@ describe('PanoramiquePlatform', () => {
 				},
 			});
 
-			app.services.panoramique.addChild('root', menuId);
-			app.services.panoramique.addChild('root', 'control');
+			app.services.panoramique.addChild(rootHarness, menuId);
+			app.services.panoramique.addChild(rootHarness, 'control');
 			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => void 0);
 
 			app.services.vue.app.mount(document.body);
@@ -459,7 +459,7 @@ describe('PanoramiquePlatform', () => {
 							children: [ 'cycle1' ],
 						});
 
-						app.services.panoramique.addChild('root', 'cycle1');
+						app.services.panoramique.addChild(rootHarness, 'cycle1');
 					});
 				}),
 			], app);
