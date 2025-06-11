@@ -24,7 +24,7 @@ export function defineLibConfig(pkg: PackageJSON): UserConfigFnObject {
 				external: Object.keys(pkg.dependencies ?? {}),
 			},
 			minify: mode === 'development' ? false : 'esbuild',
-			target: 'es2020',
+			target: 'esnext',
 			emptyOutDir: false,
 			resolve: {
 				condition: [ 'module', 'browser', 'development|production', 'zoram:internal' ],
