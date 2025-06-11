@@ -65,7 +65,10 @@ export interface PanoramiqueService extends Service {
 	removeChild: (parent: string, child: string, slotName?: string) => void;
 }
 
-// where to insert children by default
+/**
+ * Pinia store composable of the panoramique service. Can be used in Vue components or composable to interact with
+ * harnesses.
+ */
 export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueService, keyof Service>>(
 	'panoramique',
 	() => {

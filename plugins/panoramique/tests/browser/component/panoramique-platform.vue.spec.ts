@@ -18,7 +18,7 @@ describe('PanoramiquePlatform', () => {
 	afterEach(() => {
 		destroyApp(app);
 	});
-	// move that to PanoramiquePlatform.vue.spec.ts
+
 	describe('mounted children order', () => {
 		it(
 			'should have the same DOM order for children as in slot of parent\'s harness',
