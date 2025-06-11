@@ -5,8 +5,6 @@
   "type": "module",
   "scripts": {
     "lint": "oxlint",
-    "test:watch": "vitest watch --typecheck",
-    "test:coverage": "vitest run --coverage --passWithNoTests",
     "build:code:prod": "vite build --mode production",
     "build:code:dev": "NODE_ENV=development vite build --mode development",
     "build:code": "node ./script/build.script.mjs",
