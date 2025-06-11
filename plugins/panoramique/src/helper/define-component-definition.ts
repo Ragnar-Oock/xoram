@@ -8,6 +8,7 @@ import type {
 	HarnessListenableEvents,
 } from '../service/component-definition.type';
 import type { Multiplex, RemoveIndex } from '../service/helper.type';
+import { defaultSlotName } from '../service/panoramique.service';
 
 /**
  * Provide tools to describe a {@link ComponentHarness} in a composable way instead of using the option syntax.
@@ -112,7 +113,7 @@ export function defineComponentDefinition<id extends string, component extends C
 		slot: (
 			childId,
 			// eslint-disable-next-line default-param-last
-			slotName = 'default' as keyof RemoveIndex<ComponentSlots<component>> & string,
+			slotName = defaultSlotName as keyof RemoveIndex<ComponentSlots<component>> & string,
 			index,
 		) => {
 			if (index !== undefined && !Number.isInteger(index)) {
