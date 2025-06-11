@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage --passWithNoTests"
+    "build:types": "vue-tsc --project tsconfig.types.json && api-extractor run --local --verbose"
   },
   "repository": {
     "type": "git",
