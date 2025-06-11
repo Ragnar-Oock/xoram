@@ -66,6 +66,14 @@ export interface PanoramiqueService extends Service {
 }
 
 /**
+ * Use the `default` slot when inserting children implicitly.
+ */
+export const defaultSlotName = 'default';
+/**
+ * Insert children at the end of the existing child list of a particular slot when index is left out.
+ */
+export const defaultInsertionIndex = -1;
+/**
  * Pinia store composable of the panoramique service. Can be used in Vue components or composable to interact with
  * harnesses.
  */
@@ -82,7 +90,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 		): ComponentHarness<component, id> {
 			const { id, type, props = {}, events = {}, children = { default: [] } } = definition;
 			if (_harnesses[id]) {
-				if (import.meta.env.NODE_ENV !== 'production') {
+				if (import.meta.env.DEV) {
 					console.warn(`🔭 A harness with the id ${ id } is already registered in the store. Skipping...`);
 				}
 
@@ -90,9 +98,10 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 				return _harnesses[id] as ComponentHarness<component, id>;
 			}
 
+			// using markRaw to prevents the component from being made reactive to avoid performance issues (and a deserved
+			// warning from Vue)
 			_harnesses[id] = {
 				id,
-				// prevents the component from being made reactive to avoid performance issues (and a deserved warning from Vue)
 				type: markRaw(type),
 				props,
 				events,
@@ -109,7 +118,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 			return computed(() => (_harnesses[id] as ComponentHarness<component, id> | undefined));
 		}
 
-		function addChild(parent: string, child: string, slotName = 'default', index = -1): void {
+		function addChild(parent: string, child: string, slotName = defaultSlotName, index = defaultInsertionIndex): void {
 			const parentHarness = _harnesses[parent];
 
 			if (parentHarness === undefined) {
@@ -132,7 +141,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueSe
 			parentHarness.children[slotName] = slot;
 		}
 
-		function removeChild(parent: string, child: string, slotName = 'default'): void {
+		function removeChild(parent: string, child: string, slotName = defaultSlotName): void {
 			const parentHarness = _harnesses[parent];
 
 			if (!parentHarness) {return;}

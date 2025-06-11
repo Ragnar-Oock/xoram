@@ -7,7 +7,7 @@ import { vueService } from './service/vue.service';
  *
  * @public
  */
-export const panoramiquePlugin = definePlugin('panoramic', () => {
+export const panoramiquePlugin = definePlugin('panoramique', () => {
 	addService('vue', vueService);
 	addService('panoramique', panoramique);
 });
