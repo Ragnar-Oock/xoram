@@ -6,6 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "build:code:prod": "vite build --mode production",
+    "build:code:dev": "NODE_ENV=development vite build --mode development",
+    "build:code": "node ../../script/build.script.mjs",
     "build:types": "vue-tsc --project tsconfig.types.json && api-extractor run --local --verbose"
   },
   "repository": {
