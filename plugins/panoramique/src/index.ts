@@ -28,6 +28,7 @@ export { addChild } from './helper/add-child';
 export { register } from './helper/register';
 export type { ComponentDefinitionHelpers, DefinedComponentDefinition } from './helper/define-component-definition';
 export { defineComponentDefinition } from './helper/define-component-definition';
+export { rootHarness } from './service/panoramique.service';
 
 export type {
 	ComponentEvents,

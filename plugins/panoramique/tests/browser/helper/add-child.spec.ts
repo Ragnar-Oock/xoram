@@ -9,7 +9,7 @@ import {
 	removePlugin,
 } from '@zoram/core';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { addChild, panoramiquePlugin } from '../../../src';
+import { addChild, panoramiquePlugin, rootHarness } from '../../../src';
 
 describe('addChild', () => {
 
@@ -30,11 +30,11 @@ describe('addChild', () => {
 			addPlugins([
 				definePlugin(() => {
 					onCreated((app) => {
-						hasChildBefore = app.services.panoramique._harnesses['root'].children.default?.includes(componentId);
+						hasChildBefore = app.services.panoramique._harnesses[rootHarness].children.default?.includes(componentId);
 					});
-					addChild('root', componentId);
+					addChild(rootHarness, componentId);
 					onCreated((app) => {
-						hasChildAfter = app.services.panoramique._harnesses['root'].children.default?.includes(componentId);
+						hasChildAfter = app.services.panoramique._harnesses[rootHarness].children.default?.includes(componentId);
 					});
 				}),
 			], app);
@@ -46,11 +46,11 @@ describe('addChild', () => {
 			let hasChildBefore, hasChildAfter;
 			const pluginDefinition = definePlugin(() => {
 				onBeforeDestroy((app) => {
-					hasChildBefore = app.services.panoramique._harnesses['root'].children.default?.includes(componentId);
+					hasChildBefore = app.services.panoramique._harnesses[rootHarness].children.default?.includes(componentId);
 				});
-				addChild('root', componentId);
+				addChild(rootHarness, componentId);
 				onBeforeDestroy((app) => {
-					hasChildAfter = app.services.panoramique._harnesses['root'].children.default?.includes(componentId);
+					hasChildAfter = app.services.panoramique._harnesses[rootHarness].children.default?.includes(componentId);
 				});
 			});
 			addPlugins([
@@ -67,7 +67,7 @@ describe('addChild', () => {
 	describe('dependencies', () => {
 		it('should mark the host plugin as dependent on panoramique', () => {
 			const pluginDefinition = definePlugin(() => {
-				addChild('root', componentId);
+				addChild(rootHarness, componentId);
 			});
 
 			const plugin = pluginDefinition();
