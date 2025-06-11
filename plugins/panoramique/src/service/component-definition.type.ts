@@ -8,9 +8,11 @@ import type { AfterFirst, First, Multiplex, NonNever, OverloadParameters, Writab
  *
  * @public
  */
-export type ComponentEvents<component extends Component> = {
-	[event in First<OverloadParameters<ComponentEmit<component> & ((...args: unknown[]) => unknown)>> & string]?:
-	((...args: AfterFirst<Extract<OverloadParameters<ComponentEmit<component> & ((...args: unknown[]) => unknown)>, [ event, ...unknown[] ]>>) => void)
+export type ComponentEvents<
+	component extends Component,
+	params = OverloadParameters<ComponentEmit<component> & ((...args: unknown[]) => unknown)>
+> = {
+	[event in First<params> & string]?: ((...args: AfterFirst<Extract<params, [ event, ...unknown[] ]>>) => void)
 };
 /**
  * List native events that can be fired on any HTML Element as a strongly typed `Record<EventName, EventHandler>`.
