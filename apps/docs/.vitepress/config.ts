@@ -61,6 +61,22 @@ export default defineConfig({
 					],
 				},
 			],
+			plugins: [
+				{
+					text: 'Collection',
+					link: 'plugins/index',
+					items: [
+						{
+							text: 'Panoramique',
+							link: '/plugins/panoramique',
+							collapsed: true,
+							items: [
+								{ text: 'ComponentDefinitions', link: '/plugins/panoramique/definitions' },
+							],
+						},
+					],
+				},
+			],
 		},
 
 		socialLinks: [
