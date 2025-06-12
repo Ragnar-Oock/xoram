@@ -1,6 +1,7 @@
 import type { Emitter } from 'mitt';
 import type { ApplicationPluginHooks, DefinedPlugin, PluginId } from '../plugins';
 import type { ApplicationServiceHooks, Service } from '../services/services.type';
+import type { Prettify } from '../type-helper';
 
 /**
  * The payload of an event emitted by the application as part of a plugin's life cycle.
@@ -48,9 +49,10 @@ export type ApplicationHooks = ApplicationServiceHooks & ApplicationPluginHooks;
  * }
  * ```
  */
-// oxlint-disable-next-line no-empty-interface, no-empty-object-type
 export interface ServiceCollection {
 	// services will be added here by plugins
+	// we have to use an interface to enable declaration merging
+	// eslint-disable-next-line consistent-indexed-object-style
 	[id: string | symbol]: Service;
 }
 
@@ -95,7 +97,7 @@ export interface Application {
 	/**
 	 * The services registered on the application, usable by plugins.
 	 */
-	readonly services: Readonly<ServiceCollection>;
+	readonly services: Readonly<Prettify<ServiceCollection>>;
 
 	/**
 	 * All the plugins loaded in the application.
