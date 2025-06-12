@@ -1,35 +1,15 @@
-import {existsSync, mkdirSync, readFileSync, rmSync} from 'node:fs';
 import {spawn} from 'node:child_process';
-
-
-// clear dist folder
-if (existsSync('./dist')) {
-	rmSync('./dist', {recursive: true});
-	mkdirSync('./dist');
-}
-
-const pkg = JSON.parse(readFileSync('package.json', {encoding: 'utf-8'}));
-
-const targets = [
-	'dev',
-	'prod',
-];
-
-for (const target of targets) {
-	// might lead to issue if we add other targets later...
-	console.log(`building ${pkg.name}, target : ${target}`);
-	await exec('yarn', [`build:code:${target}`], {stdio: 'inherit'});
-	console.log('-----');
-}
 
 /**
  * run command in sub process, stolen from Vue's build scripts
  *
- * @param {string} command
- * @param {string[]} args
- * @param {object} [options]
+ * @param {string} command the command to execute in the child process
+ * @param {string[]} args args to pass to the command
+ * @param {object} [options] options to pass to the child process
  */
+// eslint-disable-next-line require-await
 export async function exec(command, args, options) {
+	// eslint-disable-next-line avoid-new
 	return new Promise((resolve, reject) => {
 		const _process = spawn(command, args, {
 			stdio: [
