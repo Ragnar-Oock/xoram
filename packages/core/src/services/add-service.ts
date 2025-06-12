@@ -1,6 +1,6 @@
 import type { Application, ServiceCollection } from '../application';
 import { getActivePlugin } from '../plugins/active-plugin';
-import { beforeCreate, beforeDestroy } from '../plugins/plugin-hooks.type';
+import { beforeCreate, destroyed } from '../plugins/plugin-hooks.type';
 import { warn } from '../warn.helper';
 import type { Service, ServiceId } from './services.type';
 
@@ -70,7 +70,7 @@ export function addService<id extends ServiceId>(
 		app.emitter.emit('serviceAdded', { app, service, serviceId });
 	});
 
-	plugin.hooks.on(beforeDestroy, app => {
+	plugin.hooks.on(destroyed, app => {
 		if (!service) {
 			// if service is undefined an error occurred during the creation process so the service wasn't added
 			// We should abort.

@@ -1,0 +1,35 @@
+{
+  "name": "@zoram-plugin/panoramique",
+  "version": "0.0.0",
+  "description": "A dynamic VueJS integration for zoram",
+  "main": "./dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build:code:prod": "vite build --mode production",
+    "build:code:dev": "NODE_ENV=development vite build --mode development",
+    "build:code": "node ../../script/build-code.script.mjs",
+    "build:types": "node ../../script/build-types.script.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ragnar-Oock/zoram.git"
+  },
+  "private": true,
+  "dependencies": {
+    "@zoram/core": "^0.0.0",
+    "pinia": "^3.0.2",
+    "vue": "^3.5.14",
+    "vue-component-type-helpers": "^2.2.10"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vue/test-utils": "^2.4.6",
+    "sass": "^1.89.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-vue-devtools": "^7.7.6",
+    "vitest": "3.2.1",
+    "vue-tsc": "^2.2.10"
+  }
+}

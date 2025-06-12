@@ -12,6 +12,8 @@ export const warnParams = [
  * Log a string message or a non-blocking error as a warning in dev.
  * @param msgOrError message or non-blocking error to log
  * @param args optional additional info to log alongside the message or error
+ *
+ * @internal
  */
 export function warn(msgOrError: string | Error, ...args: unknown[]): void {
 	console.warn(

@@ -1,17 +1,5 @@
-import {defineConfig} from 'vite';
-import {VitestConfig as test} from './vitest.config.js';
-
-
-/**
- * @typedef PackageJSON
- *
- * @property {string} name - package's name
- * @property {Record<string, string>} [dependencies] - package's dependencies if any
- */
-
-export default defineConfig({
-	test,
-});
+import { defineConfig, type UserConfigFnObject } from 'vite';
+import { type PackageJSON, unscope } from './package.helper.js';
 
 /**
  * Define a vite config for a lib.
@@ -23,23 +11,30 @@ export default defineConfig({
  * config file
  *
  * @param  {PackageJSON} pkg the content of the package's `package.json` file as an object
- *
- * @returns {import('vite').UserConfigFnObject}
  */
-export function defineLibConfig(pkg) {
-	return defineConfig(({mode}) => ({
+export function defineLibConfig(pkg: PackageJSON): UserConfigFnObject {
+	return defineConfig(({ mode }) => ({
 		build: {
 			lib: {
 				entry: './src/index.ts',
-				formats: ['es'],
-				fileName: `${pkg.name.replace(/@.+\//, '')}.${mode}`,
+				formats: [ 'es' ],
+				fileName: `${ unscope(pkg.name) }.${ mode }`,
 			},
 			rollupOptions: {
 				external: Object.keys(pkg.dependencies ?? {}),
 			},
 			minify: mode === 'development' ? false : 'esbuild',
-			target: 'es2020',
+			target: 'esnext',
 			emptyOutDir: false,
+			resolve: {
+				condition: [ 'module', 'browser', 'development|production', 'zoram:internal' ],
+			},
+		},
+		server: {
+			hmr: {
+				// error overlays can lead to false positives when running Vitest's browser mode in watch mode
+				overlay: mode !== 'test' && mode !== 'benchmark',
+			},
 		},
 	}));
 }

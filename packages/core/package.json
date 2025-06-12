@@ -5,24 +5,24 @@
   "type": "module",
   "scripts": {
     "lint": "oxlint",
-    "test:watch": "vitest watch --typecheck",
     "build:code:prod": "vite build --mode production",
     "build:code:dev": "NODE_ENV=development vite build --mode development",
-    "build:code": "node ./script/build.script.mjs",
-    "build:types": "tsc --project tsconfig.types.json && api-extractor run --local --verbose",
+    "build:code": "node ../../script/build-code.script.mjs",
+    "build:types": "node ../../script/build-types.script.mjs",
     "build:doc": "api-documenter markdown --input-folder ./types --output-folder ../../apps/docs/src/api-reference"
   },
   "exports": {
     ".": {
       "import": {
-        "types": "./types/core.public.d.ts",
-        "default": "./dist/core.production.js"
-      }
-    },
-    "./dev": {
-      "import": {
-        "types": "./types/core.public.d.ts",
-        "default": "./dist/core.development.js"
+        "types": {
+          "zoram:internal": "./types/core.internal.d.ts",
+          "default": "./types/core.public.d.ts"
+        },
+        "default": {
+          "zoram:internal": "./dist/core.development.js",
+          "development": "./dist/core.development.js",
+          "default": "./dist/core.production.js"
+        }
       }
     }
   },
@@ -30,11 +30,10 @@
     "@repo/config-api-extractor": "workspace:*",
     "@repo/config-typescript": "workspace:*",
     "@repo/config-vite": "workspace:*",
-    "@vitest/coverage-v8": "3.1.4",
     "oxlint": "^0.17.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
-    "vitest": "3.1.4"
+    "vitest": "3.2.1"
   },
   "dependencies": {
     "mitt": "^3.0.1"

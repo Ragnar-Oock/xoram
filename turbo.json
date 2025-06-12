@@ -36,12 +36,17 @@
       "inputs": [
         "types/*.api.json"
       ],
-      "cache": false
+      "cache": true
     },
     "lint": {},
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "test:coverage": {
+      "outputs": [
+        "coverage"
+      ]
     }
   }
 }

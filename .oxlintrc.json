@@ -5,7 +5,15 @@
     "perf": "warn",
     "suspicious": "warn"
   },
-  "plugins": ["unicorn", "typescript", "oxc", "eslint", "import", "promise", "jsdoc"],
+  "plugins": [
+    "unicorn",
+    "typescript",
+    "oxc",
+    "eslint",
+    "import",
+    "promise",
+    "jsdoc"
+  ],
   "rules": {
     "no-bitwise": "error",
     "no-div-regex": "error",
@@ -46,9 +54,12 @@
     "no-useless-constructor": "error",
     "no-named-as-default-member": "warn",
     "no-absolute-path": "error",
-    "no-duplicates": ["warn", {
-      "preferInline": false
-    }],
+    "no-duplicates": [
+      "warn",
+      {
+        "preferInline": false
+      }
+    ],
     "no-empty-named-blocks": "error",
     "no-self-import": "error",
     "no-commented-out-tests": "warn",
@@ -82,7 +93,7 @@
     "require-param": "warn",
     "require-param-description": "warn",
     "require-param-name": "warn",
-    "ban-ts-comment": "error",
+    "ban-ts-comment": "warn",
     "no-unsafe-function-type": "warn",
     "prefer-ts-expect-error": "error",
     "escape-case": "warn",
@@ -116,13 +127,18 @@
     "curly": "warn",
     "default-case-last": "error",
     "default-param-last": "error",
-    "func-names": ["warn", "always"],
-    "func-style": ["warn", "declaration"],
+    "func-names": [
+      "warn",
+      "always"
+    ],
+    "func-style": [
+      "warn",
+      "declaration"
+    ],
     "grouped-accessor-pairs": "error",
     "guard-for-in": "warn",
     "new-cap": "warn",
     "no-labels": "error",
-    "no-magic-numbers": "warn",
     "no-return-assign": "warn",
     "no-multi-str": "warn",
     "no-nested-ternary": "error",
@@ -136,7 +152,13 @@
     "prefer-spread": "error",
     "yoda": "error",
     "import/first": "error",
-    "consistent-test-it": ["error", {"fn": "it", "withinDescribe": "it"}],
+    "consistent-test-it": [
+      "error",
+      {
+        "fn": "it",
+        "withinDescribe": "it"
+      }
+    ],
     "no-alias-methods": "error",
     "no-confusing-set-timeout": "error",
     "no-deprecated-functions": "warn",
@@ -193,5 +215,15 @@
     "switch-case-braces": "error",
     "throw-new-error": "error",
     "no-import-node-test": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/tests/browser/**/*.spec.ts"
+      ],
+      "rules": {
+        "no-await-in-loop": "off"
+      }
+    }
+  ]
 }

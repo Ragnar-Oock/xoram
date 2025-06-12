@@ -22,6 +22,9 @@
       "ESNext",
       "DOM",
       "DOM.Iterable"
+    ],
+    "customConditions": [
+      "zoram:internal"
     ]
   },
   "exclude": [

@@ -15,8 +15,13 @@ public/dist
 # === packages stuff ===
 
 # exclude temporary files
-/packages/**/temp/
+/packages/**/temp/**
+/plugins/**/temp/**
 # exclude generated types declaration
-/packages/**/types/
-# preserve api report file
-!/packages/**/types/*.api.md
+/packages/**/types/*.api.json
+/packages/**/types/*.d.ts
+/plugins/**/types/*.api.json
+/plugins/**/types/*.d.ts
+
+# exclude coverage reports
+**/coverage
