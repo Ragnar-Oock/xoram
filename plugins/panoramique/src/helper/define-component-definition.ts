@@ -71,11 +71,15 @@ export interface ComponentDefinitionHelpers<component extends Component> {
 	) => void;
 }
 
+/**
+ * @public
+ */
 export type DefinedComponentDefinition<component extends Component, id extends string> =
 	Omit<Required<ComponentDefinition<component, id>>, 'children'>
 	& { children: HarnessChildren<component> }
 
 /**
+ * Programmatically describe a {@link ComponentDefinition}
  *
  * @param id - the unique identifier of the definition to create
  * @param component - the Vue component to mount when using the harness
