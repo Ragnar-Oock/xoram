@@ -8,8 +8,8 @@
     "dev": "vite dev",
     "build:code:prod": "vite build --mode production",
     "build:code:dev": "NODE_ENV=development vite build --mode development",
-    "build:types": "vue-tsc --project tsconfig.types.json && api-extractor run --local --verbose"
     "build:code": "node ../../script/build-code.script.mjs",
+    "build:types": "node ../../script/build-types.script.mjs"
   },
   "repository": {
     "type": "git",
