@@ -1,10 +1,5 @@
-import type { PanoramiqueService } from './service/panoramique.service';
-import type { VueService } from './service/vue.service';
-
-export type {
-	VueService,
-	PanoramiqueService,
-};
+export type { PanoramiqueService } from './service/panoramique.service';
+export type { VueService } from './service/vue.service';
 
 export { panoramiquePlugin } from './plugin';
 
