@@ -1,12 +1,5 @@
-import {appendFileSync, existsSync, mkdirSync, readFileSync, rmSync} from 'node:fs';
+import {appendFileSync, existsSync, readFileSync, rmSync} from 'node:fs';
 import {exec} from './exec.helper.mjs';
-
-
-// clear types folder
-if (existsSync('./types')) {
-	rmSync('./types', {recursive: true});
-	mkdirSync('./types');
-}
 
 const pkg = JSON.parse(readFileSync('package.json', {encoding: 'utf-8'}));
 
@@ -19,6 +12,7 @@ await exec('api-extractor', ['run', '--local', '--verbose'], {stdio: 'inherit'})
 
 const targets = ['internal', 'public'];
 const serviceAugmentationFile = './src/service.ts';
+const trimmedPackageName = pkg.name.replace(/@.*?\//, '');
 if (existsSync(serviceAugmentationFile)) {
 	const data = readFileSync(serviceAugmentationFile, {encoding: 'utf-8'});
 	const cleanedUp = data
@@ -29,6 +23,10 @@ if (existsSync(serviceAugmentationFile)) {
 		.join('\n');
 
 	for (const target of targets) {
-		appendFileSync(`./types/${pkg.name.replace(/@.*?\//, '')}.${target}.d.ts`, cleanedUp);
+		appendFileSync(`./types/${trimmedPackageName}.${target}.d.ts`, cleanedUp);
 	}
 }
+
+// cleanup temporary files
+rmSync('./temp/types', {recursive: true});
+rmSync(`./temp/${trimmedPackageName}.api.md`);

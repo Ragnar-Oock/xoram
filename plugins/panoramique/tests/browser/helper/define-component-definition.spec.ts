@@ -205,7 +205,7 @@ describe('defineComponentDefinition', () => {
 				});
 				// dunno how many modifiers can be expected, no idea how to test for any number of them so the 4 of the
 				// previous test will do for now
-				it.skip('should not limit the number of model modifiers', () => {});
+				it.skip('should not limit the number of model modifiers', () => {}); // oxlint-disable-line no-empty-function
 				it('should take a direct value', () => {
 					const definition = defineComponentDefinition(id, ContextMenu, ({ bind }) => {
 						bind('open', true);
