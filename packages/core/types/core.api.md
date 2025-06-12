@@ -36,7 +36,7 @@ export interface Application {
     readonly emitter: Emitter<ApplicationHooks>;
     readonly id: string;
     readonly options: Partial<ApplicationOptions>;
-    readonly services: Readonly<ServiceCollection>;
+    readonly services: Readonly<Prettify<ServiceCollection>>;
 }
 
 // @public
