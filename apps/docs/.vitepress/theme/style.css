@@ -161,28 +161,10 @@
 }
 
 /**
- * customize how tabs are rendered
+ * customize code blocks are rendered
  */
-.tabs label[data-title]::before {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    margin: 0 .5em -.2em 0;
-    background: var(--icon) no-repeat center / contain;
-}
 
-.tabs label[data-title$=".ts"]::before,
-.tabs label[data-title="TypeScript"]::before {
-    content: "";
-    --icon: url("/assets/icon/typescript.svg")
-}
 
-.tabs label[data-title$=".js"]::before,
-.tabs label[data-title="JavaScript"]::before {
-    content: "";
-    --icon: url("/assets/icon/javascript.svg")
-}
-
-.vp-doc .language-ts code {
+.vp-doc [class*="language-"] code {
     tab-size: 2;
 }

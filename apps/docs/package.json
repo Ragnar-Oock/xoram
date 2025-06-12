@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@repo/core-size-check": "workspace:*",
-    "@xoram/core": "workspace:*"
+    "@xoram/core": "workspace:*",
+    "vitepress-plugin-group-icons": "^1.6.0"
   },
   "devDependencies": {
     "@repo/config-typescript": "*",
