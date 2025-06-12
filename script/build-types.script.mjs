@@ -1,0 +1,34 @@
+import {appendFileSync, existsSync, mkdirSync, readFileSync, rmSync} from 'node:fs';
+import {exec} from './exec.helper.mjs';
+
+
+// clear types folder
+if (existsSync('./types')) {
+	rmSync('./types', {recursive: true});
+	mkdirSync('./types');
+}
+
+const pkg = JSON.parse(readFileSync('package.json', {encoding: 'utf-8'}));
+
+// might lead to issue if we add other targets later...
+console.log(`building types ${pkg.name}`);
+
+await exec('vue-tsc', ['--project', 'tsconfig.types.json'], {stdio: 'inherit'});
+await exec('api-extractor', ['run', '--local', '--verbose'], {stdio: 'inherit'});
+
+
+const targets = ['internal', 'public'];
+const serviceAugmentationFile = './src/service.ts';
+if (existsSync(serviceAugmentationFile)) {
+	const data = readFileSync(serviceAugmentationFile, {encoding: 'utf-8'});
+	const cleanedUp = data
+		.split('\n')
+		// this might lead to issues down the road if we expose third party types as services, it'll need to be modified
+		// accordingly if that ever happen
+		.filter(line => !line.includes('import'))
+		.join('\n');
+
+	for (const target of targets) {
+		appendFileSync(`./types/${pkg.name.replace(/@.*?\//, '')}.${target}.d.ts`, cleanedUp);
+	}
+}

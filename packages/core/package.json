@@ -8,7 +8,7 @@
     "build:code:prod": "vite build --mode production",
     "build:code:dev": "NODE_ENV=development vite build --mode development",
     "build:code": "node ../../script/build-code.script.mjs",
-    "build:types": "tsc --project tsconfig.types.json && api-extractor run --local --verbose",
+    "build:types": "node ../../script/build-types.script.mjs",
     "build:doc": "api-documenter markdown --input-folder ./types --output-folder ../../apps/docs/src/api-reference"
   },
   "exports": {
