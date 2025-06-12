@@ -5,6 +5,8 @@ import type { ComponentDefinition, ComponentHarness } from './component-definiti
 
 /**
  * The identifier of the harness mounted as the application root.
+ *
+ * @public
  */
 export const rootHarness = 'root';
 
