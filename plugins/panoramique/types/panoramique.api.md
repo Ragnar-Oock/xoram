@@ -61,11 +61,9 @@ export type ComponentPropAndModels<component extends Component, props = ExposedC
     [prop in keyof props & string as `${prop}Modifiers`]: `onUpdate:${prop}` extends keyof props ? Record<string, true | undefined> : never;
 }>>>;
 
-// @public (undocumented)
+// @public
 export function defineComponentDefinition<id extends string, component extends Component>(id: id, component: component, setup?: (helpers: ComponentDefinitionHelpers<component>) => void): DefinedComponentDefinition<component, id>;
 
-// Warning: (ae-missing-release-tag) "DefinedComponentDefinition" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type DefinedComponentDefinition<component extends Component, id extends string> = Omit<Required<ComponentDefinition<component, id>>, 'children'> & {
     children: HarnessChildren<component>;
@@ -134,8 +132,6 @@ export type RemoveIndex<T> = {
     [K in keyof T as string extends K ? never : number extends K ? never : symbol extends K ? never : K]: T[K];
 };
 
-// Warning: (ae-missing-release-tag) "rootHarness" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const rootHarness = "root";
 
