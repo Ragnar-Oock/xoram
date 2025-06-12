@@ -36,7 +36,7 @@
       "inputs": [
         "types/*.api.json"
       ],
-      "cache": false
+      "cache": true
     },
     "lint": {},
     "dev": {

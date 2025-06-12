@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "turbo run build:code build:types build:doc",
+    "build": "turbo run build:code build:types build:doc --output-logs=new-only",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "vitest run --browser.headless",
