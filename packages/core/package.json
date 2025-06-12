@@ -29,7 +29,6 @@
   "devDependencies": {
     "@repo/config-api-extractor": "workspace:*",
     "@repo/config-typescript": "workspace:*",
-    "@repo/config-vite": "workspace:*",
     "oxlint": "^0.17.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",

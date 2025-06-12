@@ -1378,20 +1378,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@repo/config-typescript@npm:*, @repo/config-typescript@workspace: *, @repo/config-typescript@workspace:*, @repo/config-typescript@workspace:config/typescript":
+"@repo/config-typescript@npm:*, @repo/config-typescript@workspace:*, @repo/config-typescript@workspace:config/typescript":
   version: 0.0.0-use.local
   resolution: "@repo/config-typescript@workspace:config/typescript"
-  languageName: unknown
-  linkType: soft
-
-"@repo/config-vite@workspace:*, @repo/config-vite@workspace:config/vite":
-  version: 0.0.0-use.local
-  resolution: "@repo/config-vite@workspace:config/vite"
-  dependencies:
-    "@repo/config-typescript": "workspace: *"
-  peerDependencies:
-    vite: ^6.3.5
-    vitest: "*"
   languageName: unknown
   linkType: soft
 
@@ -2786,7 +2775,6 @@ __metadata:
   dependencies:
     "@repo/config-api-extractor": "workspace:*"
     "@repo/config-typescript": "workspace:*"
-    "@repo/config-vite": "workspace:*"
     mitt: "npm:^3.0.1"
     oxlint: "npm:^0.17.0"
     typescript: "npm:^5.8.3"
