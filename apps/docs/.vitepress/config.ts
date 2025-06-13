@@ -72,7 +72,7 @@ export default defineConfig({
 							link: '/plugins/panoramique',
 							collapsed: true,
 							items: [
-								{ text: 'ComponentDefinitions', link: '/plugins/panoramique/definitions' },
+								{ text: 'Describing components', link: '/plugins/panoramique/describing-components' },
 							],
 						},
 					],
