@@ -91,6 +91,7 @@ export default defineConfig({
 		search: {
 			provider: 'local',
 		},
+		externalLinkIcon: true,
 	},
 	srcDir: 'src',
 	outDir: 'dist',
