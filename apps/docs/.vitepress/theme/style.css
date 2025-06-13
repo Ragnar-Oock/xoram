@@ -193,3 +193,52 @@ pre.shiki .line .inline-hint {
     margin-inline: .8ch;
     pointer-events: none;
 }
+
+/**
+ * previous page and next page links
+ */
+.pager-link {
+    position: relative;
+    isolation: isolate;
+
+    --angle: 310deg;
+    --background-position: 0%;
+}
+
+.pager-link.prev {
+    --angle: 130deg;
+    --background-position: 100%;
+}
+
+.pager-link::before {
+    content: '';
+    inset: 0;
+    position: absolute;
+    z-index: -1;
+    background-image: linear-gradient(
+            var(--angle) in hsl,
+            hsl(281, 80%, 30%, 75%),
+            transparent 35%
+    );
+    transition: background-position ease-in-out 500ms;
+
+    background-size: 200% 100%;
+    background-origin: border-box;
+    filter: blur(15px);
+    background-position: calc(var(--background-position));
+}
+
+
+.pager-link.pager-link.pager-link:hover {
+    border-color: var(--vp-c-divider);
+}
+
+.pager-link:hover,
+.pager-link:focus-visible {
+    --background-position: 100%;
+}
+
+.pager-link.prev:hover,
+.pager-link.prev:focus-visible {
+    --background-position: 0;
+}
