@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress';
 import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons';
+import { inlineDecorator } from './shiki-inline-decorator';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -99,6 +100,9 @@ export default defineConfig({
 		config(md) {
 			md.use(groupIconMdPlugin);
 		},
+		codeTransformers: [
+			inlineDecorator,
+		],
 	},
 	vite: {
 		plugins: [

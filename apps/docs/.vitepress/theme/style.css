@@ -168,3 +168,28 @@
 .vp-doc [class*="language-"] code {
     tab-size: 2;
 }
+
+/**
+ * custom shiki inline hint decoration
+ */
+
+:root {
+    --inline-hint-color: hsl(223, 6%, 40%);
+    --inline-hint-bgc: hsl(220, 7%, 91.8%);
+}
+
+.dark {
+    --inline-hint-color: hsl(220, 7%, 55%);
+    --inline-hint-bgc: hsl(223, 6%, 15%);
+}
+
+pre.shiki .line .inline-hint {
+    font-size: .85em;
+    color: var(--inline-hint-color);
+    background-color: var(--inline-hint-bgc);
+    border-radius: 3px;
+    padding: .1em .4em;
+    user-select: none;
+    margin-inline: .8ch;
+    pointer-events: none;
+}
