@@ -1,7 +1,8 @@
-import type { ShikiTransformer } from '@shikijs/types';
+import type { ShikiTransformer, ThemedToken } from '@shikijs/types';
 import type { Element } from 'hast';
 
-const inlineDecoratorMatcher = /\/\*\s*\[!hint:\s*(?<text>.*?)]\s*\*\//gm;
+const inlineDecoratorMatcher = /(?<content>\/\*\s*\[!hint:\s*(?<text>.*?)]\s*\*\/)/gm;
+const tokenMatcher = /(?<indent>[\s\t]*)(?<content>.*)/;
 
 export const inlineDecorator = {
 	name: 'inline-hint-decorations',
@@ -15,10 +16,38 @@ export const inlineDecorator = {
 
 		if (match === null) { return hast; }
 
-		child.value = match[1];
+		child.value = match.groups.text;
 		// mark the hint as such
 		this.addClassToHast(hast, 'inline-hint');
 		// hide the hint from the copy button
 		this.addClassToHast(hast, 'vp-copy-ignore');
+	},
+
+	tokens(lines: ThemedToken[][]): ThemedToken[][] {
+		lines.forEach(line => {
+			line.forEach((token, index) => {
+				if (!token.content.includes('!hint')) { return; }
+
+				const match = tokenMatcher.exec(token.content);
+				if (match === null || match.groups.indent.length === 0) { return; }
+
+				const { indent, content } = match.groups;
+				line.splice(
+					index,
+					1,
+					{
+						content: indent,
+						offset: token.offset,
+					} satisfies ThemedToken,
+					{
+						...token,
+						content: content,
+						offset: token.offset + indent.length,
+					} satisfies ThemedToken,
+				);
+			});
+		});
+
+		return lines;
 	},
 } satisfies ShikiTransformer;
