@@ -204,7 +204,7 @@ pre.shiki .line .inline-hint {
 	initial-value: 0deg;
 }
 
-@keyframes --rotate-background {
+@keyframes --oscillate-background {
 	from {
 		--background-angle: -30deg;
 	}
@@ -213,50 +213,110 @@ pre.shiki .line .inline-hint {
 	}
 }
 
-.pager-link {
+
+@property --duration-multiplier {
+	initial-value: 1;
+	syntax: "<number>";
+	inherits: true;
+}
+
+.pager-link,
+a.VPFeature {
 	position: relative;
 	background-color: #1b1b1f;
 
+	--opacity: 0%;
+
+	&::before {
+		content: '';
+		inset: -5px;
+		position: absolute;
+		z-index: -1;
+
+		background-image: conic-gradient(
+				from calc(var(--angle) + var(--background-angle)) at center in hsl,
+				transparent 30%,
+				hsl(281, 80%, 30%, 75%) 48%,
+				hsl(281, 80%, 30%, 75%) 52%,
+				transparent 70%
+		);
+		transition: opacity ease-in-out 500ms 200ms;
+		filter: blur(15px) url('/assets/filter.svg#grain');
+		border-radius: 8px;
+		animation: --oscillate-background infinite 3s ease-in-out alternate;
+		opacity: var(--opacity);
+	}
+
+	&&&:hover {
+		border-color: var(--vp-c-divider);
+	}
+
+	&:hover,
+	&:focus-visible {
+		--opacity: 100%;
+
+		/*&::before {*/
+		/*	transition: opacity linear(*/
+		/*			0,*/
+		/*			0.2 0%,*/
+		/*			0.3 3.2%,*/
+		/*			0.2 6.4%,*/
+		/*			0.4 16%,*/
+		/*			0.2 17.6%,*/
+		/*			0.3 19%,*/
+		/*			0.2 32%,*/
+		/*			0.3 48%,*/
+		/*			0.1 51%,*/
+		/*			0.3 54%,*/
+		/*			0.2 57%,*/
+		/*			0.3 60%,*/
+		/*			0.2 64%,*/
+		/*			0.3 67%,*/
+		/*			0.1 96%,*/
+		/*			0.2 98%,*/
+		/*			1 100%*/
+		/*	) calc(400ms * var(--duration-multiplier, 1));*/
+		/*}*/
+	}
+
+
+	&:focus-visible {
+		outline: 2px solid hsl(281, 80%, 40%);
+		outline-offset: 3px;
+	}
+}
+
+.pager-link {
 	--angle: 310deg;
-	--background-position: 0%;
+
+	&.prev {
+		--angle: 130deg;
+	}
 }
 
-.pager-link.prev {
-	--angle: 130deg;
-	--background-position: 100%;
+.VPFeatures .item:has(a.VPFeature):nth-of-type(5n) {
+	--angle: .85turn;
+	--duration-multiplier: 1.5;
 }
 
-.pager-link::before {
-	content: '';
-	inset: 0;
-	position: absolute;
-	z-index: -5;
-	background-image: linear-gradient(
-			calc(var(--angle) + var(--background-angle)) in hsl,
-			hsl(281, 80%, 30%, 75%),
-			transparent 35%
-	);
-	transition: background-position ease-in-out 500ms;
-
-	background-size: 200% 100%;
-	filter: blur(15px) url('/assets/filter.svg#grain');
-	background-position: calc(var(--background-position));
-	border-radius: 8px;
-	animation: --rotate-background infinite 3s ease-in-out alternate;
+.VPFeatures .item:has(a.VPFeature):nth-of-type(5n+1) {
+	--angle: .05turn;
+	--duration-multiplier: .75;
 }
 
-.pager-link.pager-link.pager-link:hover {
-	border-color: var(--vp-c-divider);
+.VPFeatures .item:has(a.VPFeature):nth-of-type(5n+2) {
+	--angle: .45turn;
+	--duration-multiplier: 2;
 }
 
-.pager-link:hover,
-.pager-link:focus-visible {
-	--background-position: 100%;
+.VPFeatures .item:has(a.VPFeature):nth-of-type(5n+3) {
+	--angle: .2turn;
+	--duration-multiplier: 0.6;
 }
 
-.pager-link.prev:hover,
-.pager-link.prev:focus-visible {
-	--background-position: 0;
+.VPFeatures .item:has(a.VPFeature):nth-of-type(5n+4) {
+	--angle: .7turn;
+	--duration-multiplier: 1;
 }
 
 /**
