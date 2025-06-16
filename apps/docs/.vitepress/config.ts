@@ -74,6 +74,8 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{ text: 'Describing components', link: '/plugins/panoramique/describing-components' },
+								{ text: 'Registering components', link: '/plugins/panoramique/registering-components' },
+								{ text: 'Parent-Child relationships', link: '/plugins/panoramique/parent-child-relationships' },
 							],
 						},
 					],
