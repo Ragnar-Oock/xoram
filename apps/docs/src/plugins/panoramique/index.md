@@ -3,8 +3,8 @@ prev:
   text: 'Collection'
   link: '/plugins'
 next:
-  text: 'Component Definitions'
-  link: '/plugins/panoramique/definitions'
+  text: 'Describing components'
+  link: '/plugins/panoramique/describing-components'
 ---
 
 # Panoramique
