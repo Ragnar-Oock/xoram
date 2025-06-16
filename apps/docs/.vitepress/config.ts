@@ -17,7 +17,7 @@ export default defineConfig({
 					{ text: 'Tutorial', link: '/tutorial/index' },
 				],
 			},
-			{ text: 'Plugins', link: '/plugins' },
+			{ text: 'Plugins', link: '/plugins/', activeMatch: '/plugins(/.*)*/' },
 			{ text: 'API', link: '/api-reference' },
 		],
 
