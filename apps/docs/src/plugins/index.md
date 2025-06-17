@@ -23,5 +23,5 @@ https://github.com/Ragnar-Oock/zoram/issues).
 
 [//]: # (justify it)
 
-- [Panoramique](./panoramique) : an integration to use Vue components to build
-  dynamic UI
+- [Panoramique](./panoramique/index) : an integration to use Vue components to
+  build dynamic UI
