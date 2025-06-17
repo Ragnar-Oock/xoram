@@ -274,3 +274,11 @@ such context would lead to an error. And `removeChild` only makes sens in an
 asynchronous context (when the user or another system of the application do
 something) which would not be able to provide the needed application reference.
 
+## Mounting to the application root
+
+You might have noticed that on all the examples above the parent as been set to
+a mysterious `rootHarness` value imported from panoramique. This value is the id
+of the harness used by the Vue app to load the components that should be
+mounted, all components that are set as children of this harness and all of
+their children will be mounted to the DOM when you mount the Vue application
+instance. 
