@@ -136,6 +136,9 @@ export type RemoveIndex<T> = {
 export const rootHarness = "root";
 
 // @public
+export type ServiceAsStore<service extends Service> = Omit<service, keyof Service>;
+
+// @public
 export interface VueService extends Service {
 	// (undocumented)
 	app: App;

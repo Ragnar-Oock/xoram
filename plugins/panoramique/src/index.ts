@@ -1,4 +1,4 @@
-export type { PanoramiqueService } from './service/panoramique.service';
+export type { PanoramiqueService, ServiceAsStore } from './service/panoramique.service';
 export type { VueService } from './service/vue.service';
 
 export { panoramiquePlugin } from './plugin';
