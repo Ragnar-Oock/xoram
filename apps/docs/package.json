@@ -5,20 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
-    "build:doc": "vitepress build",
+    "build:doc": "node scripts/gather-models.script.js && api-documenter markdown --input-folder ./models --output-folder ./src/api-reference && vitepress build",
     "preview": "vitepress preview",
     "lint": "oxlint \"src/**/*.ts\""
   },
   "dependencies": {
     "@repo/core-size-check": "workspace:*",
+    "@xoram/plugin-panoramique": "workspace:*",
     "@xoram/core": "workspace:*",
-    "vitepress-plugin-group-icons": "^1.6.0"
+    "markdown-it": "^14.1.0",
+    "vitepress-plugin-group-icons": "^1.6.0",
+    "vue": "^3.5.16"
   },
   "devDependencies": {
+    "@microsoft/api-documenter": "^7.26.27",
     "@repo/config-typescript": "*",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
-    "vitepress": "^1.6.3",
-    "vue": "^3.5.16"
+    "vitepress": "^1.6.3"
   }
 }

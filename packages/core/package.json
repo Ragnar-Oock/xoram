@@ -8,8 +8,7 @@
     "build:code:prod": "vite build --mode production",
     "build:code:dev": "NODE_ENV=development vite build --mode development",
     "build:code": "node ../../script/build-code.script.mjs",
-    "build:types": "node ../../script/build-types.script.mjs",
-    "build:doc": "api-documenter markdown --input-folder ./types --output-folder ../../apps/docs/src/api-reference"
+    "build:types": "node ../../script/build-types.script.mjs"
   },
   "homepage": "https://xoram.dev",
   "bugs": "https://github.com/Ragnar-Oock/xoram/issues",

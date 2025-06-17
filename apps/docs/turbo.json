@@ -4,9 +4,17 @@
   ],
   "tasks": {
     "build:doc": {
+      "dependsOn": [
+        "^build:types"
+      ],
+      "outputs": [
+        "dist"
+      ],
       "inputs": [
-        "./src"
-      ]
+        "./src",
+        "./models"
+      ],
+      "cache": true
     }
   }
 }
