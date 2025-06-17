@@ -1,2 +1,3 @@
 .vitepress/cache/**
 /src/api-reference/
+/models/
