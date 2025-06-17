@@ -149,6 +149,4 @@ export type Writable<record> = {
 	-readonly [P in keyof record]: record[P];
 };
 
-// (No @packageDocumentation comment for this package)
-
 ```
