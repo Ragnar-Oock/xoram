@@ -330,10 +330,25 @@ a.VPFeature {
 	--duration-multiplier: 1;
 }
 
-/**
- * SVG filters stuff
- */
+.custom-block {
+	position: relative;
 
-svg[height='0'][aria-hidden='true'] {
-	position: fixed
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		opacity: 0.12;
+		filter: url('/assets/filter.svg#grain');
+		border-radius: 8px;
+		background-image: radial-gradient(
+				circle 400px at top right,
+				hsl(280.4, 50%, 40%),
+				transparent
+		);
+	}
+}
+
+.dark .custom-block::before {
+	opacity: 0.25;
 }
