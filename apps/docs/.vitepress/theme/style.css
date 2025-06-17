@@ -223,24 +223,28 @@ pre.shiki .line .inline-hint {
 .pager-link,
 a.VPFeature {
 	position: relative;
-	background-color: #1b1b1f;
+	background-color: var(--vp-c-bg);
 
 	--opacity: 0%;
+	--accent: hsla(292, 66%, 68%, 0.75);
+
+	.dark & {
+		--accent: hsl(281, 80%, 30%, 75%);
+	}
 
 	&::before {
 		content: '';
 		inset: -5px;
 		position: absolute;
 		z-index: -1;
-
 		background-image: conic-gradient(
 				from calc(var(--angle) + var(--background-angle)) at center in hsl,
 				transparent 30%,
-				hsl(281, 80%, 30%, 75%) 48%,
-				hsl(281, 80%, 30%, 75%) 52%,
+				var(--accent) 48%,
+				var(--accent) 52%,
 				transparent 70%
 		);
-		transition: opacity ease-in-out 500ms 200ms;
+		transition: opacity ease-in-out 200ms 0s;
 		filter: blur(15px) url('/assets/filter.svg#grain');
 		border-radius: 8px;
 		animation: --oscillate-background infinite 3s ease-in-out alternate;
@@ -279,6 +283,13 @@ a.VPFeature {
 		/*}*/
 	}
 
+	&:hover::before {
+		transition: opacity ease-in-out 500ms 200ms;
+	}
+
+	&:focus-visible::before {
+		transition: opacity ease-in-out 300ms;
+	}
 
 	&:focus-visible {
 		outline: 2px solid hsl(281, 80%, 40%);
