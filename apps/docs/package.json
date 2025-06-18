@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
-    "build:doc": "node scripts/gather-models.script.js && api-documenter markdown --input-folder ./models --output-folder ./src/api-reference && vitepress build",
+    "build:api": "node scripts/gather-models.script.js && api-documenter markdown --input-folder ./models --output-folder ./src/api-reference",
+    "build:doc": "vitepress build",
     "preview": "vitepress preview",
     "lint": "oxlint \"src/**/*.ts\""
   },
