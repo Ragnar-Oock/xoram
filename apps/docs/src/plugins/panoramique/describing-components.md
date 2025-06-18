@@ -24,14 +24,6 @@ to the component you want to mount as all you would need to provide is an id and
 the Vue component itself, the id is used to define parent-child relationships
 like you would use the component name in another's template.
 
-::: info
-
-Under the hood Panoramique uses [Pinia](https://pinia.vuejs.org/) to store
-harnesses, you can find them in the devtools under the `panoramique` store in
-the `_harnesses` key.
-
-:::
-
 ::: details Component used in the examples
 
 For all examples on this page the following `NewsletterSubscriptionModal.vue`

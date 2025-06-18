@@ -45,14 +45,15 @@ dependency to panoramique for you (but you can add it yourself too if you prefer
 being explicit).
 
 ```ts
-import { addChild, rootHarness } from '@zoram-plugin/panoramique';
+import { addChild } from '@zoram-plugin/panoramique';
 import { definePlugin } from '@zoram/core';
 import { emailPromptDefinition } from './definitions';
 
-export default definePlugin(() => { // [!code focus:200]
-	/* add the child at the end of the default slot */
+// [!code focus:200]
+export default definePlugin(() => {
+	// add the child at the end of the default slot
 	addChild(
-		/*[!hint: parent:]*/rootHarness,
+		/*[!hint: parent:]*/'modal-container',
 		/*[!hint: child:]*/emailPromptDefinition.id,
 	);
 });
@@ -75,18 +76,19 @@ In that case you can interact with the service directly, in an `onEvent`
 listener or anywhere else where you have access to the application.
 
 ```ts
-import { panoramiquePlugin, rootHarness } from '@zoram-plugin/panoramique';
+import { panoramiquePlugin } from '@zoram-plugin/panoramique';
 import { definePlugin, dependsOn, onCreated } from '@zoram/core';
 import { emailPromptDefinition } from './definitions';
 
-export default definePlugin(() => {// [!code focus:200]
-	/* remember to declare the dependency */
+// [!code focus:200]
+export default definePlugin(() => {
+	// remember to declare the dependency
 	dependsOn(panoramiquePlugin.id);
 
 	onCreated(app => {
-		/* add the child at the end of the default slot */
+		// add the child at the end of the default slot
 		app.services.panoramique.addChild(
-			/*[!hint: parent:]*/rootHarness,
+			/*[!hint: parent:]*/'modal-container',
 			/*[!hint: child:]*/emailPromptDefinition.id,
 		);
 	});
@@ -103,14 +105,15 @@ both the method or the helper.
 ::: code-group
 
 ```ts [helper]
-import { addChild, rootHarness } from '@zoram-plugin/panoramique';
+import { addChild } from '@zoram-plugin/panoramique';
 import { definePlugin } from '@zoram/core';
 import { emailPromptDefinition } from './definitions';
 
-export default definePlugin(() => { // [!code focus:200]
-	/* add the child in a named slot */
+// [!code focus:200]
+export default definePlugin(() => {
+	// add the child in a named slot
 	addChild(
-		/*[!hint: parent:]*/rootHarness,
+		/*[!hint: parent:]*/'modal-container',
 		/*[!hint: child:]*/emailPromptDefinition.id,
 		/*[!hint: slot:]*/'named-slot',
 	);
@@ -118,18 +121,19 @@ export default definePlugin(() => { // [!code focus:200]
 ```
 
 ```ts [method]
-import { panoramiquePlugin, rootHarness } from '@zoram-plugin/panoramique';
+import { panoramiquePlugin } from '@zoram-plugin/panoramique';
 import { definePlugin, dependsOn, onCreated } from '@zoram/core';
 import { emailPromptDefinition } from './definitions';
 
-export default definePlugin(() => {// [!code focus:200]
-	/* remember to declare the dependency */
+// [!code focus:200]
+export default definePlugin(() => {
+	// remember to declare the dependency
 	dependsOn(panoramiquePlugin.id);
 
 	onCreated(app => {
-		/* add the child in a named slot */
+		// add the child in a named slot
 		app.services.panoramique.addChild(
-			/*[!hint: parent:]*/rootHarness,
+			/*[!hint: parent:]*/'modal-container',
 			/*[!hint: child:]*/emailPromptDefinition.id,
 			/*[!hint: slot:]*/'named-slot',
 		);
@@ -139,7 +143,7 @@ export default definePlugin(() => {// [!code focus:200]
 
 :::
 
-## Children order
+## Ordering children
 
 It can happen that you need to specify where to insert a component in its parent
 child list, for example if you need some button to be at the start even if it is
@@ -150,36 +154,36 @@ To do so you can pass an index to the `addChild` method and helper to set the
 index where the component will be inserted, note that you will need to provide a
 slot name even if you insert in the default slot.
 
-Just like
-[
+Just like [
 `Array.prototype.at()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/at)
 the index you pass in can be negative to denote an index counting from the end
 
 ::: code-group
 
 ```ts [helper]
-import { addChild, rootHarness } from '@zoram-plugin/panoramique';
+import { addChild } from '@zoram-plugin/panoramique';
 import { definePlugin } from '@zoram/core';
 import { emailPromptDefinition } from './definitions';
 
-export default definePlugin(() => { // [!code focus:200]
-	/* add the child at the start */
+// [!code focus:200]
+export default definePlugin(() => {
+	// add the child at the start
 	addChild(
-		/*[!hint: parent:]*/rootHarness,
+		/*[!hint: parent:]*/'modal-container',
 		/*[!hint: child:]*/emailPromptDefinition.id,
 		/*[!hint: slot:]*/'default',
 		/*[!hint: index:]*/0
 	);
-	/* add the child at the end */
+	// add the child at the end
 	addChild(
-		/*[!hint: parent:]*/rootHarness,
+		/*[!hint: parent:]*/'modal-container',
 		/*[!hint: child:]*/emailPromptDefinition.id,
 		/*[!hint: slot:]*/'default',
 		/*[!hint: index:]*/-1
 	);
-	/* add the child somewhere in the middle */
+	// add the child somewhere in the middle
 	addChild(
-		/*[!hint: parent:]*/rootHarness,
+		/*[!hint: parent:]*/'modal-container',
 		/*[!hint: child:]*/emailPromptDefinition.id,
 		/*[!hint: slot:]*/'default',
 		/*[!hint: index:]*/5
@@ -188,32 +192,33 @@ export default definePlugin(() => { // [!code focus:200]
 ```
 
 ```ts [method]
-import { panoramiquePlugin, rootHarness } from '@zoram-plugin/panoramique';
+import { panoramiquePlugin } from '@zoram-plugin/panoramique';
 import { definePlugin, dependsOn, onCreated } from '@zoram/core';
 import { emailPromptDefinition } from './definitions';
 
-export default definePlugin(() => {// [!code focus:200]
-	/* remember to declare the dependency */
+// [!code focus:200]
+export default definePlugin(() => {
+	// remember to declare the dependency
 	dependsOn(panoramiquePlugin.id);
 
 	onCreated(app => {
-		/* add the child at the start */
+		// add the child at the start
 		app.services.panoramique.addChild(
-			/*[!hint: parent:]*/rootHarness,
+			/*[!hint: parent:]*/'modal-container',
 			/*[!hint: child:]*/emailPromptDefinition.id,
 			/*[!hint: slot:]*/'default',
 			/*[!hint: index:]*/0
 		);
-		/* add the child at the end */
+		// add the child at the end
 		app.services.panoramique.addChild(
-			/*[!hint: parent:]*/rootHarness,
+			/*[!hint: parent:]*/'modal-container',
 			/*[!hint: child:]*/emailPromptDefinition.id,
 			/*[!hint: slot:]*/'default',
 			/*[!hint: index:]*/-1
 		);
-		/* add the child somewhere in the middle */
+		// add the child somewhere in the middle
 		app.services.panoramique.addChild(
-			/*[!hint: parent:]*/rootHarness,
+			/*[!hint: parent:]*/'modal-container',
 			/*[!hint: child:]*/emailPromptDefinition.id,
 			/*[!hint: slot:]*/'default',
 			/*[!hint: index:]*/5
@@ -226,37 +231,37 @@ export default definePlugin(() => {// [!code focus:200]
 
 ::: warning
 
-The child index is set when you call the `addChild` method or helper, there is
-no guaranty that another call moves your component because it inserted another
-component before it.
+The child index is assigned when you call the `addChild` method or helper, but
+it's not guaranteed that your component will stay at that index as other
+components might be added later at a lower position.
 
 :::
 
 ## Removing children
 
-If you have to break a parent-child relationship, for example if you need to
-change where a component is mounted in the app, you have to interact with the
-store directly by calling it's `removeChild` method.
+To break a parent-child relationship—for example, when changing where a
+component is mounted—you need to call the `removeChild` method directly on the
+store&nbsp;:
 
 ```ts
-import { panoramiquePlugin, rootHarness } from '@zoram-plugin/panoramique';
+import { panoramiquePlugin } from '@zoram-plugin/panoramique';
 import { definePlugin, dependsOn, onCreated } from '@zoram/core';
 import { emailPromptDefinition } from './definitions';
-
-export default definePlugin(() => {// [!code focus:200]
-	/* remember to declare the dependency */
+// [!code focus:200]
+export default definePlugin(() => {
+	// remember to declare the dependency
 	dependsOn(panoramiquePlugin.id);
 
 	onCreated(app => {
 		onEvent(app.services.button, 'clicked', () => {
 			app.services.panoramique.removeChild(
-				/*[!hint: parent:]*/rootHarness,
+				/*[!hint: parent:]*/'modal-container',
 				/*[!hint: child:]*/emailPromptDefinition.id
 			)
 		});
 		onEvent(app.services.button, 'clicked', () => {
 			app.services.panoramique.removeChild(
-				/*[!hint: parent:]*/rootHarness,
+				/*[!hint: parent:]*/'modal-container',
 				/*[!hint: child:]*/emailPromptDefinition.id
 			)
 		});
@@ -264,21 +269,59 @@ export default definePlugin(() => {// [!code focus:200]
 });
 ```
 
-You might ask : "_Why is there no `removeChild` helper ?_"
-
-The helpers exposed by panoramique need to have a reference to the application
-and plugin that invoked then. This reference is provided indirectly by the setup
-function and plugin hooks invocation context, but it is not available in a
-`onEvent` listener or any other asynchronous context, a call to a helper in one
-such context would lead to an error. And `removeChild` only makes sens in an
-asynchronous context (when the user or another system of the application do
-something) which would not be able to provide the needed application reference.
+Panoramique does not provide a `removeChild` helper because helpers require a
+reference to the application and plugin that registered them. This reference is
+available only within the setup function or during plugin lifecycle hooks, but
+not in asynchronous contexts like event listeners. Since `removeChild` is
+typically used in response to user actions or other runtime events, it must be
+called directly, as helpers in these contexts would fail due to the missing
+application reference. With those constraint providing a helper would lead to
+unexpected behavior and necessary foot guns.
 
 ## Mounting to the application root
 
-You might have noticed that on all the examples above the parent as been set to
-a mysterious `rootHarness` value imported from panoramique. This value is the id
-of the harness used by the Vue app to load the components that should be
-mounted, all components that are set as children of this harness and all of
-their children will be mounted to the DOM when you mount the Vue application
-instance. 
+For your application to display anything you need to have at least one component
+be a child of the `rootHarness`, the component provided to the vue application
+as a root.
+
+This special component has only a `default` slot so if you don't need to control
+the index of your component when adding it you can omit the slot name :
+
+::: code-group
+
+```ts [helper]
+import { addChild, rootHarness } from '@zoram-plugin/panoramique';
+import { definePlugin } from '@zoram/core';
+import { emailPromptDefinition } from './definitions';
+
+// [!code focus:200]
+export default definePlugin(() => {
+	// add a component at the root
+	addChild(
+		/*[!hint: parent:]*/rootHarness,
+		/*[!hint: child:]*/emailPromptDefinition.id
+	);
+});
+```
+
+```ts [method]
+import { panoramiquePlugin, rootHarness } from '@zoram-plugin/panoramique';
+import { definePlugin, dependsOn, onCreated } from '@zoram/core';
+import { emailPromptDefinition } from './definitions';
+
+// [!code focus:200]
+export default definePlugin(() => {
+	// remember to declare the dependency
+	dependsOn(panoramiquePlugin.id);
+
+	onCreated(app => {
+		// add the child in a named slot
+		app.services.panoramique.addChild(
+			/*[!hint: parent:]*/rootHarness,
+			/*[!hint: child:]*/emailPromptDefinition.id
+		);
+	});
+});
+```
+
+:::
