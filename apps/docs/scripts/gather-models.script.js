@@ -1,7 +1,7 @@
 import { copyFile, readFile } from 'node:fs/promises';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
 
-const list = await readFile('./scripts/documented-packages.json', { encoding: 'utf-8' });
+const list = await readFile('./scripts/documented-packages.txt', { encoding: 'utf-8' });
 
 const packageDirs = list
 	.split('\n')

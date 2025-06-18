@@ -1,0 +1,7 @@
+# List packages that must be included in the api-reference section of the doc, such packages should have a `build:type`
+# step that create an API model file (.api.md) with api-extractor.
+# Lines starting with a # will be ignored
+# Lines with packages names that don't start with @zoram/ or @zoram-plugin/ will be ignored
+
+@zoram/core
+@zoram-plugin/panoramique
