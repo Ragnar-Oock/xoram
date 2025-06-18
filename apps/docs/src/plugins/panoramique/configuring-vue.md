@@ -10,8 +10,8 @@ those components are mounted, this means you should only modify the vue
 configuration in a `onBeforeCreate` hook. That way the Vue app has already been
 registered but no component has been registered into panoramique yet.
 
-For example if you want to use `vue-router` a plugin that set it up would look
-like this :
+For example if you wanted to provide `vue-router` via a plugin it could look
+like this&nbsp;:
 
 ```ts [vue-router.plugin.ts]
 import { panoramiquePlugin } from '@zoram-plugin/panoramique';

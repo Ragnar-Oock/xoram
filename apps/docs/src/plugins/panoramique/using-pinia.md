@@ -19,82 +19,78 @@ an export from `pinia` to avoid issues with transitive dependencies.
 
 :::
 
-## Registering stores as services
+## Using stores in plugins
 
 When you need to interact a lot with complex components or groups of components
 in a plugin it might be interesting to move some of the logic to a pinia store,
 like you would usually do in a Vue application.
 
-While using the stores in components is a non issue, after all pinia was built
-for that, using them in plugins can be a bit more challenging. Indeed, pinia,
-much like zoram and vue, relies on an application context being available to
-enable you to write simple code without having to maintain a reference to the
-application instance yourself.
+While using those stores in components is no different from using them in a
+classic Vue application, using them in plugins is a bit more challenging; if you
+simply try to invoke `useMyStore()` in plugin code you might get unreliable
+results depending on how the code you wrote is invoked. This is caused by the
+way pinia, like vue and zoram, maintain an application state without you needing
+to pass an application instance around. In fact the way pinia implemented this
+behavior strongly influenced how zoram works.
 
-::: info Trivia
-
-In fact the way pinia implemented this behavior strongly influenced how zoram
-works.
-
-:::
-
-To use Stores in plugins and prevent issues with missing contexts, or context
-pollution if you have multiple apps running on the same page, you will need to
-register your stores as services in the zoram instance. To do that it can hardly
-get simpler than returning the pinia store in a service factory and registering
-it in the plugin, right ?
+To make sure your stores are always available and usable no matter how your code
+is invoked you will need to register them as services in the zoram application
+by passing them through `defineService()` :
 
 ::: code-group
 
-```ts [awesome.store.ts]
-import type { Service } from '@zoram/core';
-import type { ServiceAsStore } from '@zoram-plugin/panoramique';
-import { defineStore } from 'pinia';
+```ts [blog.plugin.ts]
+import { addService, definePlugin, defineService } from '@zoram/core';
+import type { BlogStore } from './blog.store';
+import { useBlogStore } from './blog.store';
 
-interface MyAwesomeStore extends Service {
-	/* your store public actions, getters and state goes here */
-}
-
-// create the store as usual
-export const useAwesomeStore = defineStore<
-	'awesome', ServiceAsStore<MyAwesomeStore>
->(/*[!hint:id:]*/'awesome', /*[!hint:setup:]*/() => {
-	/* your store implementation goes here */
-})
-```
-
-```ts [awesome.service.ts]
-import { defineService } from '@zoram/core';
-import { useAwesomeStore } from './awesome.store';
-
-// create a service from the store
-export const myAwesomeService = defineService<MyAwesomeStore>(
-	/*[!hint:setup:]*/({ services }/*[!hint::app]*/) => useAwesomeStore()
-);
-```
-
-```ts [awesome.plugin.ts]
-import { addService, definePlugin } from '@zoram/core';
-import { myAwesomeService } from './awesome.service';
-import type { MyAwesomeStore } from './awesome.store';
-
-// remember to augment the ServiceCollection
+// remember to augment the ServiceCollection  // [!code focus:100]
 declare module '@zoram/core' {
 	interface ServiceCollection {
-		/**
-		 * Do cool stuff with Pinia
-		 */
-		awesome: MyAwesomeStore;
+		/* Manage Blog posts */
+		blog: BlogStore;
 	}
 }
 
 // register the service
 export const panoramiquePlugin = definePlugin(() => {
-	addService('awesome', myAwesomeService);
+	addService(
+		/*[!hint:id:]*/'blog',
+		/*[!hint:serviceFactory:]*/defineService<BlogStore>(
+			/*[!hint:setup:]*/() => useBlogStore()
+		)
+	)
+	;
 });
+```
+
+```ts [blog.store.ts]
+import type { Service } from '@zoram/core';
+import type { ServiceAsStore } from '@zoram-plugin/panoramique';
+import { defineStore } from 'pinia';
+import type { ComputedGetter } from 'vue';
+import { computed } from 'vue';
+
+export interface Post { // [!code focus:100]
+	title: string,
+	content: string,
+	banner?: URL,
+}
+
+export interface BlogStore extends Service {
+	posts: ComputedGetter<Post[]>;
+}
+
+// create the store as usual
+export const useBlogStore = defineStore<'awesome', ServiceAsStore<BlogStore>>(
+	/*[!hint:id:]*/'awesome',
+	/*[!hint:setup:]*/() => ({
+		posts: computed(() => { /* aquire the posts */ })
+	})
+);
 ```
 
 :::
 
 And now you can use your store in Vue components like usual by importing and
-invoking `useAwesomeStore()` and in plugins via `app.services.awesome`.
+invoking `useBlogStore()` and in plugins via `app.services.blog`.

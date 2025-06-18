@@ -29,7 +29,3 @@
 		</footer>
 	</form>
 </template>
-
-<style scoped>
-
-</style>
