@@ -5,16 +5,38 @@
   "tasks": {
     "build:doc": {
       "dependsOn": [
-        "^build:types"
+        "build:api"
       ],
       "outputs": [
         "dist"
       ],
       "inputs": [
-        "./src",
-        "./models"
+        "./src"
       ],
       "cache": true
+    },
+    "dev": {
+      "dependsOn": [
+        "build:api"
+      ],
+      "inputs": [
+        "./src"
+      ],
+      "cache": false,
+      "interactive": true,
+      "interruptible": true
+    },
+    "build:api": {
+      "dependsOn": [
+        "^build:types"
+      ],
+      "outputs": [
+        "./src/api-reference"
+      ],
+      "inputs": [
+        "$TURBO_ROOT$/packages/*/types",
+        "$TURBO_ROOT$/plugins/*/types"
+      ]
     }
   }
 }
