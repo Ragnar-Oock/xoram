@@ -85,4 +85,7 @@ createApp([
 We only covered the very basics here, to learn more about all the features of
 Panoramique, check the in following pages were you'll learn more about component
 definitions, harnesses, the helpers provided and how you can use reactivity to
-your advantage. 
+your advantage.
+
+You can also check the API reference for the
+[`@zoram-plugin/panoramique`](/api-reference/panoramique) package.
