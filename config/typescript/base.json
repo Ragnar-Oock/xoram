@@ -24,7 +24,7 @@
       "DOM.Iterable"
     ],
     "customConditions": [
-      "zoram:internal"
+      "xoram:internal"
     ]
   },
   "exclude": [

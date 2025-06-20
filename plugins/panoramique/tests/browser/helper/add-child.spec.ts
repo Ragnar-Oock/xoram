@@ -7,7 +7,7 @@ import {
 	onBeforeDestroy,
 	onCreated,
 	removePlugin,
-} from '@zoram/core';
+} from '@xoram/core';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { addChild, panoramiquePlugin, rootHarness } from '../../../src';
 

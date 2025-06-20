@@ -1,3 +1,4 @@
-import {createApp, definePlugin} from "@zoram/core";
+import {createApp, definePlugin} from '@xoram/core';
 
-createApp([definePlugin(()=>{})]);
+createApp([definePlugin(() => {
+})]);

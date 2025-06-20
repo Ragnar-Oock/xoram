@@ -1,4 +1,4 @@
-import type { Prettify } from '@zoram/core';
+import type { Prettify } from '@xoram/core';
 import type { Component, ComponentPublicInstance, VNodeProps } from 'vue';
 import type { ComponentEmit, ComponentProps } from 'vue-component-type-helpers';
 import type { AfterFirst, First, Multiplex, NonNever, OverloadParameters, Writable } from './helper.type';

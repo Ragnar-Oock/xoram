@@ -1,7 +1,7 @@
 {
-  "name": "@zoram/core",
+  "name": "@xoram/core",
   "version": "0.0.0",
-  "description": "zoram core",
+  "description": "xoram core",
   "type": "module",
   "scripts": {
     "lint": "oxlint",
@@ -15,11 +15,11 @@
     ".": {
       "import": {
         "types": {
-          "zoram:internal": "./types/core.internal.d.ts",
+          "xoram:internal": "./types/core.internal.d.ts",
           "default": "./types/core.public.d.ts"
         },
         "default": {
-          "zoram:internal": "./dist/core.development.js",
+          "xoram:internal": "./dist/core.development.js",
           "development": "./dist/core.development.js",
           "default": "./dist/core.production.js"
         }

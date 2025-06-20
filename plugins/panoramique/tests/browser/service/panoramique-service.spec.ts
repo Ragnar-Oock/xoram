@@ -1,4 +1,4 @@
-import { addService, type Application, createApp, definePlugin, destroyApp } from '@zoram/core';
+import { addService, type Application, createApp, definePlugin, destroyApp } from '@xoram/core';
 import { getActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest';
 import { panoramiquePlugin } from '../../../src';

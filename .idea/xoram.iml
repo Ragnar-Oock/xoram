@@ -2,12 +2,12 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/.tmp" />
-      <excludeFolder url="file://$MODULE_DIR$/apps/docs/src/api-reference" />
-      <excludeFolder url="file://$MODULE_DIR$/apps/docs/.vitepress/cache/deps" />
       <excludeFolder url="file://$MODULE_DIR$/.github" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/.yarn" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/docs/.vitepress/cache/deps" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/docs/src/api-reference" />
       <excludeFolder url="file://$MODULE_DIR$/coverage" />
       <excludePattern pattern=".turbo" />
       <excludePattern pattern="types" />

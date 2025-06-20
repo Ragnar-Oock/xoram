@@ -16,7 +16,7 @@ parameter :
 ::: code-group
 
 ```ts [TypeScript]
-import { defineService } from '@zoram/core';
+import { defineService } from '@xoram/core';
 
 export type MyNotifications = { // [!code focus:6]
 	myEvent: { prop: "I'm an event!" },
@@ -26,7 +26,7 @@ export const myService = defineService<MyNotifications>();
 ```
 
 ```js [JavaScript]
-import {defineService} from '@zoram/core';
+import {defineService} from '@xoram/core';
 
 export const myService = defineService(); // [!code focus]
 ```
@@ -43,7 +43,7 @@ on [their dedicated page](/guide/concepts-in-depth/typing-events).
 You can create a service by passing a factory function to `defineService` :
 
 ```js
-import {defineService} from '@zoram/core';
+import {defineService} from '@xoram/core';
 
 export const myService = defineService((app, emitter) => ({ // [!code focus:3]
 	myProp: 'hello'

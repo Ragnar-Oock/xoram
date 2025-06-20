@@ -1388,7 +1388,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@repo/core-size-check@workspace:packages/core-size-check"
   dependencies:
-    "@zoram/core": "workspace:*"
+    "@xoram/core": "workspace:*"
     terser: "npm:^5.40.0"
   languageName: unknown
   linkType: soft
@@ -2750,27 +2750,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zoram-plugin/panoramique@workspace:plugins/panoramique":
+"@xoram/core@npm:^0.0.0, @xoram/core@workspace:*, @xoram/core@workspace:packages/core":
   version: 0.0.0-use.local
-  resolution: "@zoram-plugin/panoramique@workspace:plugins/panoramique"
-  dependencies:
-    "@vitejs/plugin-vue": "npm:^5.2.4"
-    "@vue/test-utils": "npm:^2.4.6"
-    "@zoram/core": "npm:^0.0.0"
-    pinia: "npm:^3.0.2"
-    sass: "npm:^1.89.0"
-    typescript: "npm:^5.8.3"
-    vite: "npm:^6.3.5"
-    vite-plugin-vue-devtools: "npm:^7.7.6"
-    vitest: "npm:3.2.1"
-    vue: "npm:^3.5.14"
-    vue-component-type-helpers: "npm:^2.2.10"
-  languageName: unknown
-  linkType: soft
-
-"@zoram/core@npm:^0.0.0, @zoram/core@workspace:*, @zoram/core@workspace:packages/core":
-  version: 0.0.0-use.local
-  resolution: "@zoram/core@workspace:packages/core"
+  resolution: "@xoram/core@workspace:packages/core"
   dependencies:
     "@repo/config-api-extractor": "workspace:*"
     "@repo/config-typescript": "workspace:*"
@@ -2779,6 +2761,24 @@ __metadata:
     typescript: "npm:^5.8.3"
     vite: "npm:^6.3.5"
     vitest: "npm:3.2.1"
+  languageName: unknown
+  linkType: soft
+
+"@xoram/plugin-panoramique@workspace:plugins/panoramique":
+  version: 0.0.0-use.local
+  resolution: "@xoram/plugin-panoramique@workspace:plugins/panoramique"
+  dependencies:
+    "@vitejs/plugin-vue": "npm:^5.2.4"
+    "@vue/test-utils": "npm:^2.4.6"
+    "@xoram/core": "npm:^0.0.0"
+    pinia: "npm:^3.0.2"
+    sass: "npm:^1.89.0"
+    typescript: "npm:^5.8.3"
+    vite: "npm:^6.3.5"
+    vite-plugin-vue-devtools: "npm:^7.7.6"
+    vitest: "npm:3.2.1"
+    vue: "npm:^3.5.14"
+    vue-component-type-helpers: "npm:^2.2.10"
   languageName: unknown
   linkType: soft
 
@@ -3336,7 +3336,7 @@ __metadata:
   dependencies:
     "@repo/config-typescript": "npm:*"
     "@repo/core-size-check": "workspace:*"
-    "@zoram/core": "workspace:*"
+    "@xoram/core": "workspace:*"
     typescript: "npm:^5.8.3"
     vite: "npm:^6.3.5"
     vitepress: "npm:^1.6.3"

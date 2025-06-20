@@ -1,6 +1,6 @@
 # Plugins
 
-Plugins are the core of zoram's philosophy, they allow you to split your
+Plugins are the core of xoram's philosophy, they allow you to split your
 application in smaller atomic pieces that you can compose to create complex yet
 easy to maintain applications.
 
@@ -12,7 +12,7 @@ and this is where you will be able to programmatically describe what the plugin
 does and what it needs.
 
 ```js
-import {definePlugin} from '@zoram/core';
+import {definePlugin} from '@xoram/core';
 
 export default definePlugin(/* setup */ () => { // [!code focus:3]
 	console.log("I'm a plugin !");
@@ -37,7 +37,7 @@ you can provide a name that will be used as the description of the `Symbol`
 id.
 
 ```js {4}
-import {definePlugin} from '@zoram/core';
+import {definePlugin} from '@xoram/core';
 
 export default definePlugin( // [!code focus:5]
 	/* name */ 'my-plugin',

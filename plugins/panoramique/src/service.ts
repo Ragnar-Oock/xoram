@@ -1,7 +1,7 @@
 import type { PanoramiqueService } from './service/panoramique.service';
 import type { VueService } from './service/vue.service';
 
-declare module '@zoram/core' {
+declare module '@xoram/core' {
 	interface ServiceCollection {
 		/**
 		 * Expose the Vue App instance.

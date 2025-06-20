@@ -1,6 +1,6 @@
 import { page } from '@vitest/browser/context';
-import type { Application } from '@zoram/core';
-import { addPlugins, createApp, definePlugin, destroyApp, onCreated } from '@zoram/core';
+import type { Application } from '@xoram/core';
+import { addPlugins, createApp, definePlugin, destroyApp, onCreated } from '@xoram/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 import { panoramiquePlugin, rootHarness } from '../../../src';

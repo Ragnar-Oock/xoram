@@ -1,6 +1,6 @@
 # Creating an application
 
-A zoram application is entirely described by the list of plugins you pass to the
+A xoram application is entirely described by the list of plugins you pass to the
 `createApp` function, they will implement all of your applicative and business
 logic.
 
@@ -10,7 +10,7 @@ easy to tailor a specific application to the needs of a product, client, project
 or team.
 
 ```js
-import {createApp} from '@zoram/core';
+import {createApp} from '@xoram/core';
 
 createApp([/* your plugins goes here */]);
 ```
@@ -19,7 +19,7 @@ createApp([/* your plugins goes here */]);
 
 An application provides a self-contained context to the plugins that defines it,
 that allow you to have more than one app per environment or even to use apps
-within apps. You can for example use zoram to configure
+within apps. You can for example use xoram to configure
 a [Tiptap](https://tiptap.dev/) editor, build
 an [Astro dynamic island](https://docs.astro.build/en/concepts/islands/), create
 a complete
@@ -30,7 +30,7 @@ And because plugins are reusable you can use them across multiple applications
 to avoid re-inventing the wheel over and over again.
 
 ```js
-import {createApp} from '@zoram/core';
+import {createApp} from '@xoram/core';
 import {plugins as productPlugins} from 'my-awsome-product';
 import {plugins as headerMenuPlugins} from 'website/header';
 import {plugins as analiticsPlugins} from 'sales/analitics';
@@ -54,7 +54,7 @@ providing an `id` to the `createApp` function that will be shown in the dev
 tools and the logs of the application.
 
 ```js
-import {createApp} from '@zoram/core';
+import {createApp} from '@xoram/core';
 
 const app = createApp( // [!code focus:6]
 	[ /* your plugins goes here */],

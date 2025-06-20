@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: "Zoram"
+  name: "xoram"
   text: "A lightweight plugin framework"
   tagline: A plugin engine that gets out of your way
   actions:
@@ -12,7 +12,7 @@ hero:
       link: /guide/quick-start
     - theme: alt
       text: Explore the sources
-      link: https://github.com/Ragnar-Oock/zoram
+      link: https://github.com/Ragnar-Oock/xoram
 
 features:
   - title: Plugin based
