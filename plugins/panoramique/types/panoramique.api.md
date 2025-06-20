@@ -136,6 +136,9 @@ export type RemoveIndex<T> = {
 export const rootHarness = "root";
 
 // @public
+export type ServiceAsStore<service extends Service> = Omit<service, keyof Service>;
+
+// @public
 export interface VueService extends Service {
     // (undocumented)
     app: App;
@@ -145,7 +148,5 @@ export interface VueService extends Service {
 export type Writable<record> = {
     -readonly [P in keyof record]: record[P];
 };
-
-// (No @packageDocumentation comment for this package)
 
 ```
