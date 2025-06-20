@@ -59,20 +59,7 @@ able to register and mount components has needed.
 
 ::: code-group
 
-```ts [mount.plugin.ts]
-import { panoramiquePlugin } from '@zoram-plugin/panoramique/src';
-import { definePlugin, dependsOn, onCreated } from '@zoram/core';
-
-export const mountingPlugin = definePlugin('mount-vue-app', () => {
-	// declare the dependency on panoramique
-	dependsOn(panoramiquePlugin);
-
-	onCreated(app => {
-		// you can mount to whatever element you want
-		app.services.vue.app.mount('#my-app');
-	})
-})
-```
+<<< ./snippets/mount-app.plugin.ts
 
 <<< ./snippets/my-cool-button.plugin.ts
 
