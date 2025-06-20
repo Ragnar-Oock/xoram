@@ -1,7 +1,7 @@
 {
-  "name": "@zoram-plugin/panoramique",
+  "name": "@xoram/plugin-panoramique",
   "version": "0.0.0",
-  "description": "A dynamic VueJS integration for zoram",
+  "description": "A dynamic VueJS integration for xoram",
   "main": "./dist/index.js",
   "type": "module",
   "scripts": {
@@ -13,11 +13,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ragnar-Oock/zoram.git"
+    "url": "https://github.com/Ragnar-Oock/xoram.git"
   },
   "private": true,
   "dependencies": {
-    "@zoram/core": "^0.0.0",
+    "@xoram/core": "^0.0.0",
     "pinia": "^3.0.2",
     "vue": "^3.5.14",
     "vue-component-type-helpers": "^2.2.10"

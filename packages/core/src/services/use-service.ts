@@ -11,7 +11,7 @@ export function useService<id extends keyof ServiceCollection>(serviceId: id): S
 	const app = getActiveApp();
 
 	if (!app) {
-		throw new Error('useService used without an active zoram application'); // todo do better
+		throw new Error('useService used without an active xoram application'); // todo do better
 	}
 
 	return app.services[serviceId];

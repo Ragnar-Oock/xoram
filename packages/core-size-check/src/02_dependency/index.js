@@ -1,7 +1,8 @@
-import {createApp, definePlugin, dependsOn} from "@zoram/core";
+import {createApp, definePlugin, dependsOn} from '@xoram/core';
 
-const pluginA = definePlugin(()=>{
-    dependsOn(pluginB.id);
+const pluginA = definePlugin(() => {
+	dependsOn(pluginB.id);
 });
-const pluginB = definePlugin(()=>{});
+const pluginB = definePlugin(() => {
+});
 createApp([pluginB, pluginA]);

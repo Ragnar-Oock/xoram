@@ -62,7 +62,7 @@ for (const buildCase of cases) {
 	fullReportText = `${fullReportText}
 -----${prettyName}-----
 
-@zoram/core build size report : ${prettyName}
+@xoram/core build size report : ${prettyName}
 raw    : ${prettySize(raw, 7).join(' | ')}
 gzip   : ${prettySize(gzip, 7).join(' | ')}
 brotli : ${prettySize(brotli, 7).join(' | ')}

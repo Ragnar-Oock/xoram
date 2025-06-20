@@ -8,7 +8,7 @@ application during the plugin's `beforeCreate` phase and automatically removed
 in `beforeDestroy`.
 
 ```js
-import {definePlugin, addService} from '@zoram/core';
+import {definePlugin, addService} from '@xoram/core';
 import MyService from './myService';
 import OtherService from './otherService';
 
@@ -29,7 +29,7 @@ that registers the service you depend on, then you can access the services you
 need from the application instance passed as parameter of the factory.
 
 ```js
-import {definePlugin, addService, dependsOn} from '@zoram/core';
+import {definePlugin, addService, dependsOn} from '@xoram/core';
 import MyService from './myService';
 import OtherService from './otherService';
 import {loggerPluginId} from './logger.plugin';

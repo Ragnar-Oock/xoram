@@ -1,4 +1,4 @@
-import { defineService, onBeforeDestroy, type Service } from '@zoram/core';
+import { defineService, onBeforeDestroy, type Service } from '@xoram/core';
 import type { App } from 'vue';
 import { createApp, h } from 'vue';
 import PanoramiqueRoot from '../component/panoramique-root.vue';

@@ -2,7 +2,7 @@
 
 Because plugins are supposed to be atomic you need a way to combine them to
 create more complex logic in your application. This is made possible via a
-robust dependency system managed by the Zoram instance.
+robust dependency system managed by the xoram instance.
 
 ## Declaring dependencies
 
@@ -10,7 +10,7 @@ Declaring a dependency of a plugin over another is done by passing the id of the
 plugin you depend on to the `dependsOn` function.
 
 ```js {6}
-import {definePlugin, dependsOn} from '@zoram/core';
+import {definePlugin, dependsOn} from '@xoram/core';
 
 export const myPlugin = definePlugin(() => { // [!code focus:9]
 	console.log("I'm a plugin !");
@@ -29,7 +29,7 @@ registered plugins will be invoked respecting that dependency relationship.
 
 ## Using plugin ids
 
-Because zoram uses symbols internally to discriminate plugins you won't be able
+Because xoram uses symbols internally to discriminate plugins you won't be able
 to pass the string you've used in `definePlugin` when calling `dependsOn`. You
 will need to use the plugin definition (returned by `definePlugin`) of your
 dependency.

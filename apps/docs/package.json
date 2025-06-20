@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@repo/core-size-check": "workspace:*",
-    "@zoram/core": "workspace:*"
+    "@xoram/core": "workspace:*"
   },
   "devDependencies": {
     "@repo/config-typescript": "*",

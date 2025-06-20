@@ -46,7 +46,7 @@ do it. At that point the plugin is still is not completely part of the
 application.
 
 ```js
-import {onBeforeCreate} from '@zoram/core';
+import {onBeforeCreate} from '@xoram/core';
 
 onBeforeCreate(app => { // [!code focus:3]
 	/* pre-initialization logic */
@@ -62,7 +62,7 @@ ready to be used, if your plugin needs to invoke a service's method or access
 one of its properties it's the place to do it.
 
 ```js
-import {onCreated} from '@zoram/core';
+import {onCreated} from '@xoram/core';
 
 onCreated(app => { // [!code focus:3]
 	/* startup the plugin logic */
@@ -80,7 +80,7 @@ This hook is useful during development as it will be invoked before a plugin is
 replaced by its updated counterpart.
 
 ```js
-import {onCreated} from '@zoram/core';
+import {onCreated} from '@xoram/core';
 
 onBeforeDestroy(app => { // [!code focus:3]
 	/* teardown logic goes here */

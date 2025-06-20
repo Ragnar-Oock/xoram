@@ -155,7 +155,7 @@ const onEventOutsidePlugin = 'onEvent was invoked outside of a plugin setup func
  *
  * {@label ON_MULTIPLE_EVENT}
  *
- * @see https://zoram.dev/guide/concepts-in-depth/listening-to-events#listening-to-a-set-of-events
+ * @see https://xoram.dev/guide/concepts-in-depth/listening-to-events#listening-to-a-set-of-events
  */
 export function onEvent<
 	notifications extends Notifications,
@@ -191,7 +191,7 @@ export function onEvent<
  *
  * {@label ON_ANY_EVENT}
  *
- * @see https://zoram.dev/guide/concepts-in-depth/listening-to-events#listening-to-all-events
+ * @see https://xoram.dev/guide/concepts-in-depth/listening-to-events#listening-to-all-events
  */
 export function onEvent<
 	notifications extends Notifications,
@@ -223,7 +223,7 @@ export function onEvent<
  *
  * {@label ON_SINGLE_EVENT}
  *
- * @see https://zoram.dev/guide/concepts-in-depth/listening-to-events
+ * @see https://xoram.dev/guide/concepts-in-depth/listening-to-events
  */
 export function onEvent<
 	notifications extends Notifications,

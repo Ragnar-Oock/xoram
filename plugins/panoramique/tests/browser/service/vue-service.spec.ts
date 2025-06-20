@@ -1,5 +1,5 @@
 import { page } from '@vitest/browser/context';
-import { addPlugins, addService, createApp, definePlugin, destroyApp } from '@zoram/core';
+import { addPlugins, addService, createApp, definePlugin, destroyApp } from '@xoram/core';
 import { describe, expect } from 'vitest';
 import { panoramiquePlugin, rootHarness } from '../../../src';
 import { panoramique } from '../../../src/service/panoramique.service';

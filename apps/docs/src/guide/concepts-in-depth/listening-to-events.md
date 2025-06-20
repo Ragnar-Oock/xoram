@@ -70,7 +70,7 @@ If we wanted to listen for the `added` event on the `person` service it would
 look like :
 
 ```ts
-import { definePlugin } from '@zoram/core';
+import { definePlugin } from '@xoram/core';
 
 definePlugin(() => {
 	onEvent( // [!code focus:5]
@@ -101,7 +101,7 @@ For this reason `onEvent` accepts different kinds of target identifier:
   you plugin's code or could have retrieved it in the application.
 
 ```ts
-import { definePlugin } from '@zoram/core';
+import { definePlugin } from '@xoram/core';
 
 definePlugin(() => {
 	const myEmitter = emitter();
@@ -118,7 +118,7 @@ definePlugin(() => {
 
 [//]: # (@formatter:off)
 ```ts
-import { definePlugin, onCreated } from '@zoram/core';
+import { definePlugin, onCreated } from '@xoram/core';
 
 definePlugin(() => {
 	onCreated(app => { // [!code focus:5]
@@ -134,7 +134,7 @@ definePlugin(() => {
   instance and returns an emitter object.
 
 ```ts
-import { definePlugin, onCreated } from '@zoram/core';
+import { definePlugin, onCreated } from '@xoram/core';
 
 definePlugin(() => {
 	onEvent(app => app.services.person.emitter, 'added', event => { // [!code focus:3]
@@ -147,7 +147,7 @@ definePlugin(() => {
   instance and returns an **emitter container**.
 
 ```ts
-import { definePlugin, onCreated } from '@zoram/core';
+import { definePlugin, onCreated } from '@xoram/core';
 
 definePlugin(() => {
 	onEvent(app => app.services.person.get('bob'), 'name_changed', event => { // [!code focus:3]
@@ -159,7 +159,7 @@ definePlugin(() => {
 - **service id** : the id of a service available in the application.
 
 ```ts
-import { definePlugin, onCreated } from '@zoram/core';
+import { definePlugin, onCreated } from '@xoram/core';
 
 definePlugin(() => {
 	onEvent('myService', 'myEvent', event => {
@@ -185,7 +185,7 @@ If you need to listen to all the events of an emitter you can pass the wildcard
 event `'*'`.
 
 ```ts
-import { definePlugin, onCreated } from '@zoram/core';
+import { definePlugin, onCreated } from '@xoram/core';
 
 definePlugin(() => {
 	onEvent('person', '*', (type, event) => { // [!code focus:3]
@@ -204,7 +204,7 @@ If you need to listen to a predefined set of events you can pass them as an
 array.
 
 ```ts
-import { definePlugin, onCreated } from '@zoram/core';
+import { definePlugin, onCreated } from '@xoram/core';
 
 definePlugin(() => {
 	onEvent('person', [ 'added', 'removed' ], event => { // [!code focus:3]
@@ -225,7 +225,7 @@ you need to remove them manually before that you can invoke the cleanup function
 returned by `onEvent`.
 
 ```ts
-import { definePlugin, onCreated } from '@zoram/core';
+import { definePlugin, onCreated } from '@xoram/core';
 
 definePlugin(() => {
 	const cleanup = onEvent(/* ... */); // [!code focus]
@@ -248,7 +248,7 @@ action leading to the dispatching of an event will always succeed, but it also
 means your code might end up in an invalid state.
 
 It is advised that you deal with the error as close as possible to its source to
-avoid it being caught by zoram for you.
+avoid it being caught by xoram for you.
 
 ::: tip In dev mode error caught in that way will be pretty printed in the
 console alongside the application's and plugin's id.

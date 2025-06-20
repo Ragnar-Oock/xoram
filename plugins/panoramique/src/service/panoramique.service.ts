@@ -1,4 +1,4 @@
-import { _warn, defineService, onBeforeDestroy, type Service } from '@zoram/core';
+import { _warn, defineService, onBeforeDestroy, type Service } from '@xoram/core';
 import { createPinia, defineStore, disposePinia, type Pinia } from 'pinia';
 import { type Component, computed, type ComputedRef, markRaw, reactive } from 'vue';
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';

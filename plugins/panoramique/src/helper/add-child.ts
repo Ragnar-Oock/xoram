@@ -1,4 +1,4 @@
-import { dependsOn, onBeforeDestroy, onCreated } from '@zoram/core';
+import { dependsOn, onBeforeDestroy, onCreated } from '@xoram/core';
 import type { Component } from 'vue';
 import type { ComponentSlots } from 'vue-component-type-helpers';
 import { panoramiquePlugin } from '../plugin';

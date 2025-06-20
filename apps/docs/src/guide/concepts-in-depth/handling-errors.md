@@ -8,7 +8,7 @@ loading. Worse, if the error happens during a critical lifecycle hook, it could
 halt the entire app. And if the error bubbles up through a chain of event
 listeners, one bad plugin can end up affecting others in unpredictable ways.
 
-To help avoid all that, the zoram automatically catches errors at the boundaries
+To help avoid all that, the xoram automatically catches errors at the boundaries
 of each hook and event listener registered via `onEvent`. That way, a failure in
 one plugin doesn’t take everything else down with it. However, it means that if
 an error occurred it might have left the plugin it originated from in a bad
@@ -23,7 +23,7 @@ that end you can add to your application config a `onError` function that will
 be called when the application instance catches an error.
 
 ```ts
-import { createApp } from "@zoram/core";
+import { createApp } from "@xoram/core";
 
 createApp([ /* your plugins go here */ ], { // [!code focus:5]
 	onError: error => {

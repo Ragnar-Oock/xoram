@@ -1,4 +1,4 @@
-import { addService, definePlugin } from '@zoram/core';
+import { addService, definePlugin } from '@xoram/core';
 import { panoramique } from './service/panoramique.service';
 import { vueService } from './service/vue.service';
 

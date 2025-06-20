@@ -1,4 +1,4 @@
-import { type Application, createApp, definePlugin, destroyApp } from '@zoram/core';
+import { type Application, createApp, definePlugin, destroyApp } from '@xoram/core';
 import { it } from 'vitest';
 
 export type TestFixture = {

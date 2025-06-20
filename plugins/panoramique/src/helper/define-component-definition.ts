@@ -1,4 +1,4 @@
-import { _warn } from '@zoram/core';
+import { _warn } from '@xoram/core';
 import type { Component, MaybeRefOrGetter } from 'vue';
 import type { ComponentProps, ComponentSlots } from 'vue-component-type-helpers';
 import type {

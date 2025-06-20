@@ -2,7 +2,7 @@
  * @internal
  */
 export const warnParams = [
-	`%c zoram %c warn %c`,
+	`%c xoram %c warn %c`,
 	'background-color: #2cccdd; color: #333; border-radius: 3px 0 0 3px;',
 	'background-color: #ddca2c; color: #333; border-radius: 0 3px 3px 0;',
 	'background-color: unset; color: unset;',

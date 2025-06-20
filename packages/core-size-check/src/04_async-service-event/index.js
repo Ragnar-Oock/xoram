@@ -1,4 +1,4 @@
-import {addService, createApp, defineAsyncPlugin, definePlugin, defineService} from '@zoram/core';
+import {addService, createApp, defineAsyncPlugin, definePlugin, defineService} from '@xoram/core';
 
 
 export const pluginB = definePlugin(() => {

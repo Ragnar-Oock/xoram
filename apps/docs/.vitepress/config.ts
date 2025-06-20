@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-	title: 'Zoram',
-	description: 'Zoram - A lightweight plugin framework',
+	title: 'xoram',
+	description: 'xoram - A lightweight plugin framework',
 	themeConfig: {
 		// https://vitepress.dev/reference/default-theme-config
 		nav: [
@@ -63,7 +63,7 @@ export default defineConfig({
 		},
 
 		socialLinks: [
-			{ icon: 'github', link: 'https://github.com/Ragnar-Oock/zoram', ariaLabel: 'View the sources on github' },
+			{ icon: 'github', link: 'https://github.com/Ragnar-Oock/xoram', ariaLabel: 'View the sources on github' },
 		],
 		outline: 'deep',
 		footer: {

@@ -15,7 +15,7 @@ when [talking about applications](/guide/essentials/application.html#using-multi
 ::: code-group
 
 ```ts [app.ts]
-import { createApp } from "@zoram/core";
+import { createApp } from "@xoram/core";
 import { analyticsPlugins } from '@company/analitics';
 import { analyticsPlugins } from '@company/analitics';
 import { corePlugins } from '@company/framework';
@@ -53,7 +53,7 @@ plugins are left as an exercise of the mind.
 ::: code-group
 
 ```ts [top-bar-menu.plugin.ts] :line-numbers
-import { addPlugin, definePlugin, onCreated } from '@zoram/core';
+import { addPlugin, definePlugin, onCreated } from '@xoram/core';
 import userAccess from './user-access/user-access.plugin';
 import authenticatedUserMenu  // [!code highlight:4]
 	from './authenticated-user-menu/authenticated-user-menu.plugin';
@@ -75,7 +75,7 @@ export default definePlugin('topBarMenu', () => {
 ```
 
 ```ts [authenticated-user-menu.plugin.ts] :line-numbers
-import { definePlugin } from "@zoram/core";
+import { definePlugin } from "@xoram/core";
 
 export default definePlugin('authenticated-user-menu', () => { // [!code focus:3]
 	/* render the menu options for the logged in user */
@@ -83,7 +83,7 @@ export default definePlugin('authenticated-user-menu', () => { // [!code focus:3
 ```
 
 ```ts [header-menu.plugin.ts] :line-numbers
-import { definePlugin } from "@zoram/core";
+import { definePlugin } from "@xoram/core";
 
 export default definePlugin('authenticated-user-menu', () => { // [!code focus:3]
 	/* render the default menu options */
@@ -91,7 +91,7 @@ export default definePlugin('authenticated-user-menu', () => { // [!code focus:3
 ```
 
 ```ts [user.plugin.ts] :line-numbers
-import { definePlugin, addService } from '@zoram/core';
+import { definePlugin, addService } from '@xoram/core';
 import userService from './user.service';
 
 export default definePlugin('user', () => { // [!code focus:3]
@@ -100,7 +100,7 @@ export default definePlugin('user', () => { // [!code focus:3]
 ```
 
 ```ts [user.service.ts] :line-numbers
-import { defineService } from '@zoram/core';
+import { defineService } from '@xoram/core';
 
 export default defineService(() => { // [!code focus:3]
 	/* immagine there's an authentication service here */
@@ -137,7 +137,7 @@ that, maybe.
 ::: code-group
 
 ```ts [top-bar-menu.plugin.ts] :line-numbers
-import { addPlugin, definePlugin, onCreated } from '@zoram/core';
+import { addPlugin, definePlugin, onCreated } from '@xoram/core';
 import userAccess from './user-access/user-access.plugin';
 import authenticatedUserMenu  // [!code --:4]
 	from './authenticated-user-menu/authenticated-user-menu.plugin';
@@ -195,7 +195,7 @@ Refactoring our initial `top-bar-menu.plugin` with it would look like this :
 ::: code-group
 
 ```ts [top-bar-menu.plugin.ts] :line-numbers
-import { addPlugin, definePlugin, onCreated } from '@zoram/core';
+import { addPlugin, definePlugin, onCreated } from '@xoram/core';
 import userAccess from './user-access/user-access.plugin';
 
 export default defineAsyncPlugin(
@@ -222,7 +222,7 @@ easier to add more cases as the needs arises, keeping it as atomic as possible
 ::: code-group
 
 ```ts [authenticated-user-menu.async-plugin.ts] :line-numbers
-import { addPlugin, definePlugin, onCreated } from '@zoram/core';
+import { addPlugin, definePlugin, onCreated } from '@xoram/core';
 import userAccess from '../user-access/user-access.plugin';
 
 export default defineAsyncPlugin(
@@ -237,7 +237,7 @@ export default defineAsyncPlugin(
 ```
 
 ```ts [default-menu.async-plugin.ts] :line-numbers
-import { addPlugin, definePlugin, onCreated } from '@zoram/core';
+import { addPlugin, definePlugin, onCreated } from '@xoram/core';
 import userAccess from '../user-access/user-access.plugin';
 
 export default defineAsyncPlugin(

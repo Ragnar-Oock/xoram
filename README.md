@@ -1,4 +1,4 @@
-# Zoram
+# xoram
 
 A minimalist plugin framework for modular applications.
 
@@ -10,11 +10,13 @@ the [project page](https://github.com/users/Ragnar-Oock/projects/1)
 The packages of this repo are split as follows :
 
 - [`packages`](./packages) contains the libraries you will be able to use
-	- [`@zoram/core`](./packages/core)
+	- [`@xoram/core`](./packages/core)
 	  the core of the framework
-	- `@zoram/panoramique` a Vue 3 and Pinia integration (coming soon)
+- [`plugins`](./plugins) contains first party plugins, documentation for each
+  one available at on [xoram.dev](https://xoram.dev/plugins)
+	- `@xoram/plugin-panoramique` a Vue 3 and Pinia integration
 - [`apps`](./apps)
-	- `docs` documentations for the framework (coming soon)
+	- `docs` the sources of [xoram.dev](https://xoram.dev)
 - [`config`](./config) contains the configurations for the tools used across
   multiple packages
 	- `oxlint`
@@ -34,15 +36,15 @@ load the code of the features you want disabled ? Or what if you wanted to split
 your application into smaller chunks loaded as needed to avoid a long initial
 load ?
 
-Zoram makes all of that trivial and provides you with an intuitive and flexible
+xoram makes all of that trivial and provides you with an intuitive and flexible
 way of splitting up your application. And thanks to its plugin based approach
 you get separation og concern for free.
 
 ## The Roadmap
 
-1. get a first version of `@zoram/core` working
+1. get a first version of `@xoram/core` working
 2. create an interactive and easy to follow documentation
-3. finalize `@zoram/panoramique` to integrate with Vue
+3. finalize `@xoram/plugin-panoramique` to integrate with Vue
 
 Once that is done the plan is to make it easy to work with in a monorepo setup :
 
@@ -54,10 +56,10 @@ Once that is done the plan is to make it easy to work with in a monorepo setup :
 - React integration (unlikely)
 - More helper plugins might drop to fill in the gaps
 
-## What Zoram isn't
+## What xoram isn't
 
-Zoram is not a Nuxt or Nest replacement. While there is nothing preventing a
-Zoram based application from running server side there is no plans for a "full
+xoram is not a Nuxt or Nest replacement. While there is nothing preventing a
+xoram based application from running server side there is no plans for a "full
 stack" suite of tools like those Meta-Framework are providing. This doesn't mean
 that there will never be any client-server facilitators just that they aren't on
 the current roadmap.

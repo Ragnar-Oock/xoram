@@ -1,4 +1,4 @@
-import { createApp, definePlugin, dependsOn, onCreated } from '@zoram/core';
+import { createApp, definePlugin, dependsOn, onCreated } from '@xoram/core';
 import { addChild, defineComponentDefinition, panoramiquePlugin, register, rootHarness } from '../src';
 import ContextMenu from './component/context-menu.vue';
 import ContextOption from './component/context-option.vue';

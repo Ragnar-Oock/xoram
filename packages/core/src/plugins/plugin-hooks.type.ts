@@ -49,7 +49,7 @@ export type ApplicationPluginHooks = {
  * Used internally to manage plugin life cycle.
  * @internal
  *
- * @see https://zoram.dev/guide/concepts-in-depth/life-cycle
+ * @see https://xoram.dev/guide/concepts-in-depth/life-cycle
  */
 export type _PluginHooks = {
 	setup: never;

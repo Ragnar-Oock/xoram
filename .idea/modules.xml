@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/zoram.iml" filepath="$PROJECT_DIR$/.idea/zoram.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/xoram.iml" filepath="$PROJECT_DIR$/.idea/xoram.iml" />
     </modules>
   </component>
 </project>

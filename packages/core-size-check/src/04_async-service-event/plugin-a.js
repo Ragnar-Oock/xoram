@@ -1,7 +1,7 @@
-import {pluginB} from "./index.js";
-import {definePlugin, dependsOn, onEvent} from "@zoram/core";
+import {pluginB} from './index.js';
+import {definePlugin, dependsOn, onEvent} from '@xoram/core';
 
-export default definePlugin(()=>{
-    dependsOn(pluginB.id);
-    onEvent('service', '*', console.log);
+export default definePlugin(() => {
+	dependsOn(pluginB.id);
+	onEvent('service', '*', console.log);
 });

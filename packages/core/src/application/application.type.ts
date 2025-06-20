@@ -5,7 +5,7 @@ import type { Prettify } from '../type-helper';
 
 /**
  * The payload of an event emitted by the application as part of a plugin's life cycle.
- * @see https://zoram.dev/guide/concepts-in-depth/life-cycle
+ * @see https://xoram.dev/guide/concepts-in-depth/life-cycle
  * @public
  */
 export type ApplicationPluginLifeCycleEvent = {
@@ -30,7 +30,7 @@ export type ApplicationHooks = ApplicationServiceHooks & ApplicationPluginHooks;
  *
  * @example
  * ```ts
- * import {ServiceCollection} from '@zoram/core';
+ * import {ServiceCollection} from '@xoram/core';
  *
  * export type MyServiceNotifications = {
  *   // your service events if any
@@ -40,7 +40,7 @@ export type ApplicationHooks = ApplicationServiceHooks & ApplicationPluginHooks;
  *   // your service's public members if any
  * }
  *
- * declare module '@zoram/core' {
+ * declare module '@xoram/core' {
  *   interface ServiceCollection
  *     // a comment here will show up in the intellisence when accessing app.services.myService
  *     myService: MyService;
@@ -77,7 +77,7 @@ export interface ApplicationOptions {
 }
 
 /**
- * An application instance as returned by {@link @zoram/core#createApp | `createApp`}.
+ * An application instance as returned by {@link @xoram/core#createApp | `createApp`}.
  *
  * @public
  */
@@ -107,7 +107,7 @@ export interface Application {
 	[pluginSymbol]: Map<PluginId, DefinedPlugin>;
 
 	/**
-	 * The `options` parameter as passed to {@link @zoram/core#createApp | `createApp`}
+	 * The `options` parameter as passed to {@link @xoram/core#createApp | `createApp`}
 	 */
 	readonly options: Partial<ApplicationOptions>;
 

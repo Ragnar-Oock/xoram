@@ -5,23 +5,23 @@
 ::: code-group
 
 ```shell [npm]
-npm i @zoram/core --save
+npm i @xoram/core --save
 ```
 
 ```shell [yarn]
-yarn add @zoram/core
+yarn add @xoram/core
 ```
 
 :::
 
 ## Creating an application
 
-A zoram application is entirely described by the list of plugins you pass to
-the `createApp` function, they will implement all of your applicative and
-business logic.
+A xoram application is entirely described by the list of plugins you pass to the
+`createApp` function, they will implement all of your applicative and business
+logic.
 
 ```js [src/app.js]
-import {createApp} from '@zoram/core';
+import {createApp} from '@xoram/core';
 
 createApp([ /* your plugins will go here */]);
 ```
@@ -32,7 +32,7 @@ This will create a plugin that logs "I'm a plugin" when it is loaded into an
 application instance.
 
 ```js [src/my-plugin.js]
-import {definePlugin} from '@zoram/core';
+import {definePlugin} from '@xoram/core';
 
 export default definePlugin(() => {
 	console.log("I'm a plugin !");
@@ -44,7 +44,7 @@ export default definePlugin(() => {
 Now simply add your plugin to the list of plugin of the application.
 
 ```js
-import {createApp} from '@zoram/core';
+import {createApp} from '@xoram/core';
 import MyPlugin from './my-plugin.js';
 
 createApp([MyPlugin]);
@@ -52,6 +52,6 @@ createApp([MyPlugin]);
 
 ## Getting in the weeds
 
-Now that you have an idea of how zoram works you might want to know if it can
-do more and it can. Follow along as we get more and more in depth into what
-zoram can do for you.
+Now that you have an idea of how xoram works you might want to know if it can do
+more and it can. Follow along as we get more and more in depth into what xoram
+can do for you.
