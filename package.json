@@ -6,7 +6,8 @@
     "lint": "turbo run lint",
     "test": "vitest run --browser.headless",
     "test:coverage": "vitest run --coverage --browser=chromium --browser.headless",
-    "test:watch": "vitest --browser=firefox --browser.provider=preview"
+    "test:watch": "vitest --browser=firefox --browser.provider=preview",
+    "publish-packages": "yarn build && changeset version"
   },
   "type": "module",
   "devDependencies": {
@@ -33,6 +34,7 @@
     "plugins/*"
   ],
   "dependencies": {
+    "@changesets/cli": "^2.29.5",
     "vue-tsc": "^2.2.10"
   }
 }
