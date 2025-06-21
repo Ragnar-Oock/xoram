@@ -1683,6 +1683,7 @@ __metadata:
   resolution: "@repo/core-size-check@workspace:packages/core-size-check"
   dependencies:
     "@xoram/core": "workspace:*"
+    "@xoram/plugin-panoramique": "workspace:*"
     terser: "npm:^5.40.0"
   languageName: unknown
   linkType: soft
@@ -3065,7 +3066,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@xoram/plugin-panoramique@workspace:plugins/panoramique":
+"@xoram/plugin-panoramique@workspace:*, @xoram/plugin-panoramique@workspace:plugins/panoramique":
   version: 0.0.0-use.local
   resolution: "@xoram/plugin-panoramique@workspace:plugins/panoramique"
   dependencies:
