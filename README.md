@@ -75,6 +75,17 @@ an issue if you have any suggestions.
 All tests are using Vitest for both unit and e2e test, you can run either or
 both with the following commands.
 
+#### Setup
+
+E2E tests are run using Vitest's Browser Mode with Playwright, to run those
+tests locally you will need to install playwright and it's dependencies on your
+machine by running the following command, depending on your setup you might need
+to run it as admin/sudo or install some packages manually.
+
+```shell
+yarn dlx playwright install-deps
+```
+
 #### All tests
 
 ```shell
@@ -95,4 +106,4 @@ yarn exec vitest dev [package/folder]
 ```
 
 If you want to run unit tests only from that package you can use `--project 
-unit`.
+node:*`.
