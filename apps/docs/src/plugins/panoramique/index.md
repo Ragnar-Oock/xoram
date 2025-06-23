@@ -13,12 +13,6 @@ A minimalist [Vue.js](https://vuejs.org/) integration
 
 ## Install
 
-::: info
-
-This package have not yet been realised
-
-:::
-
 ::: code-group
 
 ```shell:no-line-numbers [npm]
