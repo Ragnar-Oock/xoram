@@ -47,6 +47,9 @@
       "outputs": [
         "coverage"
       ]
+    },
+    "//#test": {
+      "cache": false
     }
   }
 }
