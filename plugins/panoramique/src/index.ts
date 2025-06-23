@@ -1,8 +1,8 @@
 /**
  * @packageDocumentation
- * Vue and Pinia integration for zoram.
+ * Vue and Pinia integration for xoram.
  *
- * View doc at {@link https://zoram.dev/plugins/panoramique/}.
+ * View doc at {@link https://xoram.dev/plugins/panoramique/}.
  */
 
 

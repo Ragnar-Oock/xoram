@@ -29,23 +29,23 @@ While using those stores in components is no different from using them in a
 classic Vue application, using them in plugins is a bit more challenging; if you
 simply try to invoke `useMyStore()` in plugin code you might get unreliable
 results depending on how the code you wrote is invoked. This is caused by the
-way pinia, like vue and zoram, maintain an application state without you needing
+way pinia, like vue and xoram, maintain an application state without you needing
 to pass an application instance around. In fact the way pinia implemented this
-behavior strongly influenced how zoram works.
+behavior strongly influenced how xoram works.
 
 To make sure your stores are always available and usable no matter how your code
-is invoked you will need to register them as services in the zoram application
+is invoked you will need to register them as services in the xoram application
 by passing them through `defineService()` :
 
 ::: code-group
 
 ```ts [blog.plugin.ts]
-import { addService, definePlugin, defineService } from '@zoram/core';
+import { addService, definePlugin, defineService } from '@xoram/core';
 import type { BlogStore } from './blog.store';
 import { useBlogStore } from './blog.store';
 
 // remember to augment the ServiceCollection  // [!code focus:100]
-declare module '@zoram/core' {
+declare module '@xoram/core' {
 	interface ServiceCollection {
 		/* Manage Blog posts */
 		blog: BlogStore;
@@ -65,8 +65,8 @@ export const panoramiquePlugin = definePlugin(() => {
 ```
 
 ```ts [blog.store.ts]
-import type { Service } from '@zoram/core';
-import type { ServiceAsStore } from '@zoram-plugin/panoramique';
+import type { Service } from '@xoram/core';
+import type { ServiceAsStore } from '@xoram/plugin-panoramique';
 import { defineStore } from 'pinia';
 import type { ComputedGetter } from 'vue';
 import { computed } from 'vue';

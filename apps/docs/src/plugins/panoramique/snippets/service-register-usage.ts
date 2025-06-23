@@ -1,6 +1,6 @@
 import { userPlugin } from '@acme/user-managment';
-import { panoramiquePlugin } from '@zoram-plugin/panoramique/src';
-import { definePlugin, dependsOn, onCreated, onEvent } from '@zoram/core';
+import { definePlugin, dependsOn, onCreated, onEvent } from '@xoram/core';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique/src';
 import { emailPromptDefinition } from './definitions';
 
 export default definePlugin(() => { // [!code focus:100]

@@ -1,5 +1,5 @@
-import { addChild, defineComponentDefinition, register, rootHarness } from '@zoram-plugin/panoramique';
-import { definePlugin } from '@zoram/core';
+import { definePlugin } from '@xoram/core';
+import { addChild, defineComponentDefinition, register, rootHarness } from '@xoram/plugin-panoramique';
 import MyButton from './my-button.vue';
 
 export const myCoolButtonPlugin = definePlugin('my-cool-button', () => {

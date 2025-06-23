@@ -14,13 +14,13 @@ For example if you wanted to provide `vue-router` via a plugin it could look
 like this&nbsp;:
 
 ```ts [router.plugin.ts]
-import { panoramiquePlugin } from '@zoram-plugin/panoramique';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique';
 import {
 	addService,
 	definePlugin,
 	dependsOn,
 	onBeforeCreate
-} from '@zoram/core';
+} from '@xoram/core';
 import { createRouter } from 'vue-router'
 
 export const vueRouterPlugin = definePlugin(() => {
@@ -55,9 +55,9 @@ unmounted automatically.
 
 ## Multiple Vue applications
 
-Panoramique doesn't support using more than one Vue application per zoram
+Panoramique doesn't support using more than one Vue application per xoram
 instance, if you need multiple Vue apps on the same page you should create
-multiple zoram instances.
+multiple xoram instances.
 
 If you need to have your application present in multiple places on the page, if
 your app is a modal ui that can be opened from multiple interactive elements on

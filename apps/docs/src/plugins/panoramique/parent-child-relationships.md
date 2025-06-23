@@ -45,8 +45,8 @@ dependency to panoramique for you (but you can add it yourself too if you prefer
 being explicit).
 
 ```ts
-import { addChild } from '@zoram-plugin/panoramique';
-import { definePlugin } from '@zoram/core';
+import { addChild } from '@xoram/plugin-panoramique';
+import { definePlugin } from '@xoram/core';
 import { emailPromptDefinition } from './definitions';
 
 // [!code focus:200]
@@ -76,8 +76,8 @@ In that case you can interact with the service directly, in an `onEvent`
 listener or anywhere else where you have access to the application.
 
 ```ts
-import { panoramiquePlugin } from '@zoram-plugin/panoramique';
-import { definePlugin, dependsOn, onCreated } from '@zoram/core';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique';
+import { definePlugin, dependsOn, onCreated } from '@xoram/core';
 import { emailPromptDefinition } from './definitions';
 
 // [!code focus:200]
@@ -105,8 +105,8 @@ both the method or the helper.
 ::: code-group
 
 ```ts [helper]
-import { addChild } from '@zoram-plugin/panoramique';
-import { definePlugin } from '@zoram/core';
+import { addChild } from '@xoram/plugin-panoramique';
+import { definePlugin } from '@xoram/core';
 import { emailPromptDefinition } from './definitions';
 
 // [!code focus:200]
@@ -121,8 +121,8 @@ export default definePlugin(() => {
 ```
 
 ```ts [method]
-import { panoramiquePlugin } from '@zoram-plugin/panoramique';
-import { definePlugin, dependsOn, onCreated } from '@zoram/core';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique';
+import { definePlugin, dependsOn, onCreated } from '@xoram/core';
 import { emailPromptDefinition } from './definitions';
 
 // [!code focus:200]
@@ -161,8 +161,8 @@ the index you pass in can be negative to denote an index counting from the end
 ::: code-group
 
 ```ts [helper]
-import { addChild } from '@zoram-plugin/panoramique';
-import { definePlugin } from '@zoram/core';
+import { addChild } from '@xoram/plugin-panoramique';
+import { definePlugin } from '@xoram/core';
 import { emailPromptDefinition } from './definitions';
 
 // [!code focus:200]
@@ -192,8 +192,8 @@ export default definePlugin(() => {
 ```
 
 ```ts [method]
-import { panoramiquePlugin } from '@zoram-plugin/panoramique';
-import { definePlugin, dependsOn, onCreated } from '@zoram/core';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique';
+import { definePlugin, dependsOn, onCreated } from '@xoram/core';
 import { emailPromptDefinition } from './definitions';
 
 // [!code focus:200]
@@ -244,8 +244,8 @@ component is mounted—you need to call the `removeChild` method directly on the
 store&nbsp;:
 
 ```ts
-import { panoramiquePlugin } from '@zoram-plugin/panoramique';
-import { definePlugin, dependsOn, onCreated } from '@zoram/core';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique';
+import { definePlugin, dependsOn, onCreated } from '@xoram/core';
 import { emailPromptDefinition } from './definitions';
 // [!code focus:200]
 export default definePlugin(() => {
@@ -290,8 +290,8 @@ the index of your component when adding it you can omit the slot name :
 ::: code-group
 
 ```ts [helper]
-import { addChild, rootHarness } from '@zoram-plugin/panoramique';
-import { definePlugin } from '@zoram/core';
+import { addChild, rootHarness } from '@xoram/plugin-panoramique';
+import { definePlugin } from '@xoram/core';
 import { emailPromptDefinition } from './definitions';
 
 // [!code focus:200]
@@ -305,8 +305,8 @@ export default definePlugin(() => {
 ```
 
 ```ts [method]
-import { panoramiquePlugin, rootHarness } from '@zoram-plugin/panoramique';
-import { definePlugin, dependsOn, onCreated } from '@zoram/core';
+import { panoramiquePlugin, rootHarness } from '@xoram/plugin-panoramique';
+import { definePlugin, dependsOn, onCreated } from '@xoram/core';
 import { emailPromptDefinition } from './definitions';
 
 // [!code focus:200]

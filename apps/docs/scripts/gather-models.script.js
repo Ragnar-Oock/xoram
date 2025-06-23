@@ -1,23 +1,29 @@
-import { copyFile, readFile } from 'node:fs/promises';
-import { existsSync, mkdirSync, rmSync } from 'node:fs';
+import {copyFile, readFile} from 'node:fs/promises';
+import {existsSync, mkdirSync, rmSync} from 'node:fs';
 
-const list = await readFile('./scripts/documented-packages.txt', { encoding: 'utf-8' });
+
+const list = await readFile('./scripts/documented-packages.txt', {encoding: 'utf-8'});
 
 const packageDirs = list
 	.split('\n')
 	.map(line => line.trim())
 	.filter(line => !line.startsWith('#'))
 	.map(line => {
-		if (line.startsWith('@zoram/')) {
+		const name = line.replace('@xoram/', '');
+		const dest = `${name}.api.json`;
+
+		if (line.startsWith('@xoram/plugin-')) {
 			return {
-				dir: 'packages',
-				name: line.replace('@zoram/', ''),
+				path: `../../plugins/${name.replace('plugin-', '')}/types/${dest}`,
+				name,
+				dest,
 			};
 		}
-		if (line.startsWith('@zoram-plugin/')) {
+		if (line.startsWith('@xoram/')) {
 			return {
-				dir: 'plugins',
-				name: line.replace('@zoram-plugin/', ''),
+				path: `../../packages/${name}/types/${dest}`,
+				name,
+				dest,
 			};
 		}
 
@@ -28,21 +34,18 @@ const packageDirs = list
 
 // clear dist folder
 if (existsSync('./models')) {
-	rmSync('./models', { recursive: true });
+	rmSync('./models', {recursive: true});
 	mkdirSync('./models');
 }
 
 
 for (const packageDir of packageDirs) {
-	const src = `../../${packageDir.dir}/${packageDir.name}/types/${packageDir.name}.api.json`;
-	const dest = `./models/${packageDir.name}.api.json`;
-
-	if (!existsSync(src)) {
-		console.warn(`tried to gather API Model file for ${packageDir.name} but none found`);
+	if (!existsSync(packageDir.path)) {
+		console.warn(`tried to gather API Model file for ${packageDir.name} but none found (dir: ${packageDir.path})`);
 		continue;
 	}
 	// eslint-disable-next-line no-await-in-loop
-	await copyFile(src, dest);
+	await copyFile(packageDir.path, `./models/${packageDir.dest}`);
 }
 
 

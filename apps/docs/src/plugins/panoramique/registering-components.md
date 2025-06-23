@@ -23,8 +23,8 @@ have to declare the dependency, it's done automatically for you so you don't
 have to clutter your plugin setup function with it.
 
 ```ts
-import { definePlugin } from '@zoram/core';
-import { defineComponentDefinition, register } from '@zoram-plugin/panoramique';
+import { definePlugin } from '@xoram/core';
+import { defineComponentDefinition, register } from '@xoram/plugin-panoramique';
 import { emailPromptDefinition } from './definitions';
 import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
 

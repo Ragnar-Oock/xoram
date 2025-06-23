@@ -68,7 +68,7 @@ export interface PanoramiqueService extends Service {
 }
 
 /**
- * Convert a {@link @zoram/core#Service| Service} into the corresponding Pinia store interface.
+ * Convert a {@link @xoram/core#Service| Service} into the corresponding Pinia store interface.
  *
  * @example
  * ```ts

@@ -1,4 +1,4 @@
-import type { ComponentDefinition } from '@zoram-plugin/panoramique';
+import type { ComponentDefinition } from '@xoram/plugin-panoramique';
 import { ref } from 'vue';
 import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
 

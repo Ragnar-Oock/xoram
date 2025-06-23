@@ -22,15 +22,15 @@ This package have not yet been realised
 ::: code-group
 
 ```shell:no-line-numbers [npm]
-npm i @zoram-plugin/panoramique
+npm i @xoram/plugin-panoramique
 ```
 
 ```shell:no-line-numbers [yarn]
-yarn add @zoram-plugin/panoramique
+yarn add @xoram/plugin-panoramique
 ```
 
 ```shell:no-line-numbers [pnpm]
-pnpm add @zoram-plugin/panoramique
+pnpm add @xoram/plugin-panoramique
 ```
 
 :::
@@ -40,8 +40,8 @@ Then simply add the plugin to your app :
 ::: code-group
 
 ```ts [my-app.ts]
-import { createApp } from '@zoram/core';
-import { panoramiquePlugin } from "@zoram-plugin/panoramique"; // [!code highlight]
+import { createApp } from '@xoram/core';
+import { panoramiquePlugin } from "@xoram/plugin-panoramique"; // [!code highlight]
 
 createApp([
 	panoramique, // [!code highlight]
@@ -64,8 +64,8 @@ able to register and mount components has needed.
 <<< ./snippets/my-cool-button.plugin.ts
 
 ```ts [my-app.ts]
-import { createApp } from '@zoram/core';
-import { panoramiquePlugin } from "@zoram-plugin/panoramique";
+import { createApp } from '@xoram/core';
+import { panoramiquePlugin } from "@xoram/plugin-panoramique";
 import { myCoolButtonPlugin } from "./my-cool-button.plugin.ts";
 import { mountingPlugin } from "./mount.plugin.ts";
 
@@ -88,4 +88,4 @@ definitions, harnesses, the helpers provided and how you can use reactivity to
 your advantage.
 
 You can also check the API reference for the
-[`@zoram-plugin/panoramique`](/api-reference/panoramique) package.
+[`@xoram/plugin-panoramique`](/api-reference/panoramique) package.

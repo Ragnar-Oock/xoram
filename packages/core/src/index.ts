@@ -1,8 +1,8 @@
 /**
  * @packageDocumentation
- * The heart of zoram.
+ * The heart of xoram.
  *
- * View doc at {@link https://zoram.dev}.
+ * View doc at {@link https://xoram.dev}.
  */
 
 export * from './plugins';

@@ -1,5 +1,5 @@
-import { panoramiquePlugin } from '@zoram-plugin/panoramique';
-import { definePlugin, dependsOn, onCreated } from '@zoram/core';
+import { definePlugin, dependsOn, onCreated } from '@xoram/core';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique';
 
 export const mountingPlugin = definePlugin('mount-vue-app', () => {
 	// declare the dependency on panoramique
