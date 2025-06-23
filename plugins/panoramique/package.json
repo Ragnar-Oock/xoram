@@ -10,15 +10,18 @@
     "build:code": "node ../../script/build-code.script.mjs",
     "build:types": "node ../../script/build-types.script.mjs"
   },
+  "homepage": "https://xoram.dev/plugins/panoramique",
+  "bugs": "https://github.com/Ragnar-Oock/xoram/issues",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ragnar-Oock/xoram.git"
+    "url": "https://github.com/Ragnar-Oock/xoram.git",
+    "directory": "plugins/panoramique"
   },
   "files": [
     "./dist",
     "./types/*.d.ts",
-    "tsdoc-metadata.json",
-    "README.md"
+    "tsdoc-metadata.json"
   ],
   "exports": {
     ".": {
