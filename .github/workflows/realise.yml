@@ -34,7 +34,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install Dependencies
-        run: yarn install --immutable
+        run: yarn install
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
