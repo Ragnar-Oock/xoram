@@ -11,6 +11,19 @@
     "build:types": "node ../../script/build-types.script.mjs",
     "build:doc": "api-documenter markdown --input-folder ./types --output-folder ../../apps/docs/src/api-reference"
   },
+  "homepage": "https://xoram.dev",
+  "bugs": "https://github.com/Ragnar-Oock/xoram/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ragnar-Oock/xoram.git",
+    "directory": "packages/core"
+  },
+  "files": [
+    "./dist",
+    "./types/*.d.ts",
+    "tsdoc-metadata.json"
+  ],
   "exports": {
     ".": {
       "import": {

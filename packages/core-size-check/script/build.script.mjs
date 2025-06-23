@@ -2,6 +2,7 @@ import {existsSync, mkdirSync, readdirSync, rmSync, writeFileSync} from 'node:fs
 import {brotliCompressSync, deflateSync, gzipSync} from 'node:zlib';
 import {normalize, parse} from 'node:path';
 import {build} from 'vite';
+import vuePlugin from '@vitejs/plugin-vue';
 
 // clear dist folder
 if (existsSync('./dist')) {
@@ -32,13 +33,28 @@ for (const buildCase of cases) {
 			// write: false, // don't write the artefact to disk as we don't need it to persist
 			terserOptions: {
 				mangle: {
-					properties: true,
 					module: true,
 					toplevel: true,
 				},
 			},
-			modulePreload: false, // let pretend we don't need modulepreload polyfilling
+			modulePreload: false, // let pretend we don't need modulepreload polyfilling,
 		},
+		plugins: [
+			vuePlugin({
+				isProduction: true,
+				features: {
+					propsDestructure: false,
+					customElement: false,
+					prodDevtools: false,
+					optionsAPI: false,
+					prodHydrationMismatchDetails: false,
+				},
+			}),
+		],
+		define: {
+			__VUE_OPTION_API__: false,
+		},
+		mode: 'production',
 	});
 
 	const {raw, gzip, zstd, brotli} = artifact.output
@@ -73,7 +89,7 @@ zstd   : ${prettySize(zstd, 7).join(' | ')}
 
 console.log(fullReportText);
 
-writeFileSync('./dist/report.json', JSON.stringify(fullReportJSON, null, 2));
+writeFileSync('./dist/report.json', JSON.stringify(fullReportJSON, undefined, 2));
 writeFileSync('./dist/report.txt', fullReportText);
 
 function prettySize(size, length = 0) {

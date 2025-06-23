@@ -2,7 +2,6 @@
   "name": "@xoram/plugin-panoramique",
   "version": "0.0.0",
   "description": "A dynamic VueJS integration for xoram",
-  "main": "./dist/index.js",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -11,11 +10,30 @@
     "build:code": "node ../../script/build-code.script.mjs",
     "build:types": "node ../../script/build-types.script.mjs"
   },
+  "homepage": "https://xoram.dev/plugins/panoramique",
+  "bugs": "https://github.com/Ragnar-Oock/xoram/issues",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ragnar-Oock/xoram.git"
+    "url": "https://github.com/Ragnar-Oock/xoram.git",
+    "directory": "plugins/panoramique"
   },
-  "private": true,
+  "files": [
+    "./dist",
+    "./types/*.d.ts",
+    "tsdoc-metadata.json"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./types/plugin-panoramique.public.d.ts",
+        "default": {
+          "development": "./dist/plugin-panoramique.development.js",
+          "default": "./dist/plugin-panoramique.production.js"
+        }
+      }
+    }
+  },
   "dependencies": {
     "@xoram/core": "^0.0.0",
     "pinia": "^3.0.2",
