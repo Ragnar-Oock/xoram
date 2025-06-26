@@ -1,15 +1,13 @@
 <script lang="ts" setup>
+	import { useStorage } from '@vueuse/core';
 	import VPSwitch from 'vitepress/dist/client/theme-default/components/VPSwitch.vue';
-	import { useData } from 'vitepress/dist/client/theme-default/composables/data';
 	import { ref, watchPostEffect } from 'vue';
 
-	const data = useData();
-	data.showInlayHint ??= ref(true);
-	const { theme, showInlayHint } = data;
+	const showInlayHint = useStorage('vitepress-show-inlay-hint', true);
 
-	const toggleAppearance = () => {
+	function toggleAppearance(): void {
 		showInlayHint.value = !showInlayHint.value;
-	};
+	}
 
 	const switchTitle = ref('');
 

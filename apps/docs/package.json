@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@repo/core-size-check": "workspace:*",
+    "@vueuse/core": "^13.4.0",
     "@xoram/core": "workspace:*",
     "@xoram/plugin-panoramique": "workspace:*",
     "markdown-it": "^14.1.0",
