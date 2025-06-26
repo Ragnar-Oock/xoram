@@ -21,11 +21,14 @@
 <template>
 	<form class="modal" popover="manual" ref="modal" @submit="onsubmit">
 		<h3>Subscribe to our awesome newsletter !</h3>
-		<slot name="default"></slot>
+
+		<slot name="default"/>
+
 		<label :for="id">{{ label }}</label>
 		<input type="email" v-model="email">
+
 		<footer v-if="$slots.footer">
-			<slot name="footer"></slot>
+			<slot name="footer"/>
 		</footer>
 	</form>
 </template>

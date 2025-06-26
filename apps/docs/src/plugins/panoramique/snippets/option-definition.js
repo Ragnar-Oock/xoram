@@ -1,5 +1,4 @@
-import type { ComponentDefinition } from '@xoram/plugin-panoramique';
-import { ref } from 'vue';
+import {ref} from 'vue';
 import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
 
 const email = ref('');
@@ -26,19 +25,20 @@ export const emailPromptDefinition = { // [!code focus:100]
 		],
 		// listening for component events
 		'before-submit': [
-			() => { /* very important stuff to do before submitting */ },
+			() => { /* very important stuff to do before submitting */
+			},
 		],
 	},
 	children: {
-		default: [ 'child-in-default-slot' ],
-		footer: [ 'child-in-named-slot' ],
+		default: ['child-in-default-slot'],
+		footer: ['child-in-named-slot'],
 	},
-} satisfies ComponentDefinition<typeof NewsletterSubscriptionModal>;
+};
 
 
 /** if you only use the default slot you can pass the child list directly :*/
 export const emailPromptDefinition2 = {
 	id: 'email-prompt',
 	type: NewsletterSubscriptionModal,
-	children: [ 'child-in-default-slot' ],
+	children: ['child-in-default-slot'],
 };

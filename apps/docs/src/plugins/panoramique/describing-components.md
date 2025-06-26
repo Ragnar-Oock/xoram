@@ -5,24 +5,19 @@ by mounting and unmounting components at runtime, similar to manipulating DOM
 elements. Instead of hardcoding component trees, you define them dynamically as
 your application runs. But in order to do mount a component as the child of
 another one, Panoramique needs to be made aware of both of them, this is done
-using objects called *harnesses* that describe the props, event listeners and
+using objects called **harnesses** that describe the props, event listeners and
 children a component should be mounted with.
 
 To register a harness in panoramique you will need to describe it by creating a
 `ComponentDefinition`, which holds the same information but is easier to
 manipulate and read. The main difference between harnesses and definitions is
-that harnesses are reactive and will update the component they correspond to if
-modified while definitions are static.
+that definitions are static while harnesses are reactive and will update the
+corresponding component when modified.
 
 There is two ways of writing definitions, the object way that looks a lot like
 [Vue's Option API](https://vuejs.org/guide/introduction.html#options-api)
 and the functional way that looks more like
 the [Composition API](https://vuejs.org/guide/introduction.html#composition-api)
-
-A `ComponentDefinition` can be pretty simple if you don't need to pass anything
-to the component you want to mount as all you would need to provide is an id and
-the Vue component itself, the id is used to define parent-child relationships
-like you would use the component name in another's template.
 
 ::: details Component used in the examples
 
@@ -35,74 +30,235 @@ component is used.
 
 ## Option style
 
+### Minimal form
+
 Component definitions are simple objects that look a lot like how component
-themselves are written in Vue's Option API. The full type look like this
-(the actual type is much more detailed to give you a better experience) :
+themselves are written in Vue's Option API. In its simplest form a [
+`ComponentDefinition`](/api-reference/plugin-panoramique.componentdefinition) is
+an object that associates a Vue component as the `type` with an `id` used to
+reference it in other definitions:
 
 ```ts
-export type ComponentDefinition = {
-	id: string;
-	type: Component;
-	props?: Record<string, any>;
-	events?: Record<string, ((...args: unknown[]) => void)[]>;
-	children?: string[] | Record<string, string[]>;
-}
+import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+
+// [!code focus:100]
+export const emailPromptDefinition = {
+	id: 'email-prompt',
+	type: NewsletterSubscriptionModal,
+};
 ```
 
-::: info
+Using an `id` that id not the component's `name` allows us to use a Vue
+component in more than one definition. Making it possible to reuse UI elements
+in multiple plugins, for example to make a menu with standardised buttons each
+added by their own plugin without needing to create a wrapper component for each
+one.
 
-Only the `id` and `type` properties of a definition is required, if it is all
-you need you don't have to provide the other ones.
+The above definition is equivalent to using our component in a Vue template
+without passing any prop, event or content :
+
+```vue
+// [!code focus]
+<script>
+	import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+	// [!code focus:100]
+</script>
+
+<template>
+	<NewsletterSubscriptionModal/>
+</template>
+```
+
+### Passing `props`
+
+Vue components really shine when you interact with them by passing them data
+through props. You can do the same with definitions :
+
+```ts
+import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+
+// [!code focus:100]
+const email = ref(''); // [!code highlight]
+
+export const emailPromptDefinition = {
+	id: 'email-prompt',
+	type: NewsletterSubscriptionModal,
+	props: { // [!code highlight:11]
+		// giving a direct value
+		label: 'The email address to subscribe with',
+		// using a ref
+		email: email,
+		// passing model modifiers
+		emailModifiers: {
+			lazy: true,
+			trim: true,
+		},
+	},
+};
+```
+
+Like when passing props in a Vue template you can provide a direct value, a
+`ref`, `computed` or `reactive`, or a reactive getter.
+
+When binding to a [`v-model`](
+https://vuejs.org/guide/components/v-model.html#component-v-model) any update
+sent by the component will be caught and applied to the harness created by the
+definition. On top of that you can also provide model modifiers by adding a
+property following the pattern `${propName}Modifier` where `propName` is the
+name of the model property.
+
+The above definition is the equivalent of the below Vue template :
+
+```vue {5,11-12}
+// [!code focus]
+<script>
+	import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+
+	// [!code focus:100]
+	const email = ref('');
+</script>
+
+<template>
+	<NewsletterSubscriptionModal
+		label="The email address to subscribe with"
+		:email.lazy.trim="email"
+	/>
+</template>
+```
+
+### Listening to `events`
+
+Vue components and the underlying HTMLElements that make them up can emit events
+you can listen and react to. You can do the same with the `events`
+property on your definitions :
+
+```ts
+import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+
+// [!code focus:100]
+export const emailPromptDefinition = {
+	id: 'email-prompt',
+	type: NewsletterSubscriptionModal,
+	props: { /* props as explained above */ },
+	events: { // [!code highlight:11]
+		// listening for native events
+		focusin: [
+			// let's assume we have to send an analytics event via a service
+			() => analyticsService.send('newsletter-interacted'),
+		],
+		// listening for component events
+		'before-submit': [
+			(event: SubmitEvent) => { /* very important stuff to do before submitting */ },
+		],
+	}
+};
+```
+
+While you can listen to both component and native events at once, that only
+works as long as they don't share the same name, in which case the listener will
+be attached to the component event and the native event will be silenced. This
+is driven by how Vue handles events.
+
+Unlike in Vue templates you can register more than one listener per event, this
+makes it easier to register listeners from other plugins once the definition is
+registered and turned into a harness. Do note that the order in which listeners
+are invoked for a given event is not guarantied as listeners can be added or
+removed at any time.
+
+The above definition is the equivalent of the below Vue template :
+
+```vue {5-8,10-12,17-18}
+// [!code focus]
+<script>
+	import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+
+	// [!code focus:100]
+	const analyticsService = {
+		/* implementation left as an exercise to the reader */
+	}
+
+	const onBeforeSubmit = event => {
+		/* very important stuff to do before submitting */
+	}
+</script>
+
+<template>
+	<NewsletterSubscriptionModal
+		@focusin="analyticsService.send('newsletter-interacted')"
+		@before-submit="onBeforeSubmit"
+	/>
+</template>
+```
+
+### Filling slots with `children`
+
+Vue allows you to define slots for your components to inject elements and other
+components in their children. Panoramique allows you to do that dynamically when
+the component is mounted instead of statistically in the template, we will cover
+this in more detail
+in [Parent-Child relationships](./parent-child-relationships).
+
+Similarly to how slot works in vue template you can omit the slot name if you
+only want to target the `default` slot but can also use multiple one by passing
+an object.
+
+```ts
+import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+
+// [!code focus:100]
+export const emailPromptDefinition = {
+	id: 'email-prompt',
+	type: NewsletterSubscriptionModal,
+	props: { /* props as explained above */ },
+	events: { /* events as explained above */ },
+	// Using named slots // [!code highlight:5]
+	children: {
+		default: [ 'child-in-default-slot' ],
+		footer: [ 'child-in-named-slot' ],
+	},
+};
+
+// OR
+
+export const emailPromptDefinitionNoFooter = {
+	id: 'email-prompt',
+	type: NewsletterSubscriptionModal,
+	props: { /* props as explained above */ },
+	events: { /* events as explained above */ },
+	// Using the default slot only // [!code highlight:2]
+	children: [ 'child-in-default-slot' ],
+};
+```
+
+The above `emailPromptDefinition` definition is the equivalent of the below Vue
+template :
+
+```vue
+// [!code focus]
+<script>
+	import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+	import ChildInDefaultSlot from './ChildInDefaultSlot.vue';
+	import ChildInNamedSlot from './ChildInNamedSlot.vue';
+	// [!code focus:100]
+</script>
+
+<template>
+	<NewsletterSubscriptionModal>
+		<template> <!--[!code highlight:6]-->
+			<ChildInDefaultSlot/>
+		</template>
+		<template #footer>
+			<ChildInNamedSlot/>
+		</template>
+	</NewsletterSubscriptionModal>
+</template>
+```
+
+::: details Example of an option style definition using all of the above
+
+<<< ./snippets/option-definition.js
 
 :::
-
-### `id`
-
-The unique string identifying the harness in the pinia store, unlike plugins
-it's not using a `symbol` because the pinia dev tools don't show properties
-registered with a `symbol` and it's nice to be able to see the harness you
-registered.
-
-Makes sure you use a unique string value for this field as duplicated entries
-will be ignored and a warning will be printed to the console for any subsequent
-registration attempt with a pre-existing id.
-
-### `type`
-
-The vue component that needs to be mounted, you can use any Vue component
-(Setup API, Option API, Functional, yours or from a library).
-
-### `props`
-
-An object whose keys are the props declared by the component or attributes to
-bind on the root of the component and the values are the values to assign them.
-
-::: info
-
-You can learn more about attribute binding on component on
-the [VueJS doc](https://vuejs.org/guide/components/attrs.html)
-
-:::
-
-### `events`
-
-An object whose keys are component emitted events or native events and the
-values are the handlers that should be called when each event happens.
-
-You can have more than one listener per event to make it easier to register
-event handlers from another plugin without requiring the use of a decorator
-pattern. Do note that the order in which listeners are invoked for a given event
-is not guarantied as listeners can be added or removed at any time.
-
-### `children`
-
-A list of `id` pointing to other harnesses registered in Panoramique to be
-mounted in the component's `default` slot or an object whole keys are slot names
-and values are a list of `id` of other harnesses.
-
-### Example of an option style definition
-
-<<< ./snippets/option-definition.ts
 
 ## Setup style
 
@@ -186,4 +342,50 @@ asynchronous code in the setup function of `defineComponentDefinition`
 or save a helper to a local variable to modify the definition after the face.
 
 Updating a component is done through the harness once it is registered, we will
-cover this on the next page. 
+cover this on the next page.
+
+## Using Typescript
+
+When using the `setup` style you don't have anything to do as it will
+automatically infer props, events and slots from the component's type if you
+have configured your environment correctly,
+see [Using Vue With TypeScript](https://vuejs.org/guide/typescript/overview.html#using-vue-with-typescript)
+for explanations on how to do so.
+
+For the `option` style you can use the `satisfies` keywords like so :
+
+```ts
+import type { ComponentDefinition } from '@xoram/plugin-panoramique';
+
+export const emailPromptDefinition = { // [!code focus:100]
+	id: 'email-prompt',
+	type: NewsletterSubscriptionModal,
+	props: { /* typed props */ },
+	events: { /* typed events */ },
+	children: { /* typed children */ },
+	// [!code highlight]
+} satisfies ComponentDefinition<typeof NewsletterSubscriptionModal>;
+```
+
+Make sure to pass the component you are using prefixed with `typeof`, not doing
+so will result in a type error.
+
+Additionally, if you don't need an intermediary `const` to hold your definition
+you can write it inline as you call the `register` helper or method (more about
+them on the next page) :
+
+```ts
+import { definePlugin } from '@xoram/core';
+import { register } from '@xoram/plugin-panoramique';
+import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+
+export default definePlugin(() => {
+	register({ // [!code focus:7]
+		id: 'email-prompt',
+		type: NewsletterSubscriptionModal,
+		props: { /* typed props */ },
+		events: { /* typed events */ },
+		children: { /* typed children */ },
+	});
+})
+```
