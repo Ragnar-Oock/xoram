@@ -27,38 +27,38 @@ export type AfterFirst<tuple> = tuple extends [unknown, ...infer rest] ? rest : 
 export type ChildrenIds = string[];
 
 // @public
-export type ComponentDefinition<component extends Component, id extends string = string> = {
-	id: id;
-	type: component;
-	props?: ComponentPropAndModels<component>;
-	events?: Multiplex<HarnessListenableEvents<component>>;
-	children?: ChildrenIds | HarnessChildren<component>;
-};
+export interface ComponentDefinition<component extends Component, identifier extends string = string> {
+    children?: ChildrenIds | HarnessChildren<component>;
+    events?: Multiplex<HarnessListenableEvents<component>>;
+    id: identifier;
+    props?: ComponentPropAndModels<component>;
+    type: component;
+}
 
 // @public
 export interface ComponentDefinitionHelpers<component extends Component> {
-	bind: <prop extends keyof ComponentProps<component>>(this: void, prop: prop, value: MaybeRefOrGetter<NonNullable<ComponentProps<component>[prop]>>, ...modifiers: string[]) => void;
-	on: <event extends keyof HarnessListenableEvents<component>>(this: void, event: event, handler: NonNullable<HarnessListenableEvents<component>[event]>) => void;
-	slot: (this: void, childId: string, slotName?: keyof RemoveIndex<ComponentSlots<component>> & string, index?: number) => void;
+    bind: <prop extends keyof ComponentProps<component>>(this: void, prop: prop, value: MaybeRefOrGetter<NonNullable<ComponentProps<component>[prop]>>, ...modifiers: string[]) => void;
+    on: <event extends keyof HarnessListenableEvents<component>>(this: void, event: event, handler: NonNullable<HarnessListenableEvents<component>[event]>) => void;
+    slot: (this: void, childId: string, slotName?: keyof RemoveIndex<ComponentSlots<component>> & string, index?: number) => void;
 }
 
 // @public
 export type ComponentEvents<component extends Component, params = OverloadParameters<ComponentEmit<component> & ((...args: unknown[]) => unknown)>> = {
-	[event in First<params> & string]?: ((...args: AfterFirst<Extract<params, [event, ...unknown[]]>>) => void);
+    [event in First<params> & string]?: ((...args: AfterFirst<Extract<params, [event, ...unknown[]]>>) => void);
 };
 
 // @public
-export type ComponentHarness<component extends Component = Component, id extends string = string> = {
-	id: id;
-	type: component;
-	props: ComponentPropAndModels<component>;
-	events: Multiplex<ComponentEvents<component>>;
-	children: HarnessChildren<component>;
-};
+export interface ComponentHarness<component extends Component = Component, identifier extends string = string> {
+    children: HarnessChildren<component>;
+    events: Multiplex<ComponentEvents<component>>;
+    id: identifier;
+    props: ComponentPropAndModels<component>;
+    type: component;
+}
 
 // @public
 export type ComponentPropAndModels<component extends Component, props = ExposedComponentProps<component>> = Prettify<props & Partial<NonNever<{
-	[prop in keyof props & string as `${prop}Modifiers`]: `onUpdate:${prop}` extends keyof props ? Record<string, true | undefined> : never;
+    [prop in keyof props & string as `${prop}Modifiers`]: `onUpdate:${prop}` extends keyof props ? Record<string, true | undefined> : never;
 }>>>;
 
 // @public
@@ -66,7 +66,7 @@ export function defineComponentDefinition<id extends string, component extends C
 
 // @public (undocumented)
 export type DefinedComponentDefinition<component extends Component, id extends string> = Omit<Required<ComponentDefinition<component, id>>, 'children'> & {
-	children: HarnessChildren<component>;
+    children: HarnessChildren<component>;
 };
 
 // @public
@@ -77,9 +77,9 @@ export type First<tuple> = tuple extends [infer first, ...unknown[]] ? first : n
 
 // @public
 export type HarnessChildren<component extends Component> = component extends (new (...args: unknown[]) => ComponentPublicInstance) ? {
-	[key in keyof InstanceType<component>['$slots']]?: ChildrenIds;
+    [key in keyof InstanceType<component>['$slots']]?: ChildrenIds;
 } : {
-	[slot: string]: ChildrenIds;
+    [slot: string]: ChildrenIds;
 };
 
 // @public
@@ -87,17 +87,17 @@ export type HarnessListenableEvents<component extends Component> = Prettify<Comp
 
 // @public
 export type Multiplex<record> = {
-	[key in keyof record]: Array<record[key]>;
+    [key in keyof record]: Array<record[key]>;
 };
 
 // @public
 export type NativeEvents = {
-	[event in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[event]) => void;
+    [event in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[event]) => void;
 };
 
 // @public
 export type NonNever<record> = {
-	[K in keyof record as record[K] extends never ? never : K]: record[K];
+    [K in keyof record as record[K] extends never ? never : K]: record[K];
 };
 
 // @public
@@ -117,11 +117,11 @@ export const panoramiquePlugin: PluginDefinition;
 
 // @public
 export interface PanoramiqueService extends Service {
-	addChild: (parent: string, child: string, slotName?: string, index?: number) => void;
-	get: <component extends Component = Component, id extends string = string>(id: id) => ComputedRef<ComponentHarness<component, id> | undefined>;
-	register<component extends Component, id extends string = string>(definition: ComponentDefinition<component, id>): ComponentHarness<component, id>;
-	remove: (id: string) => void;
-	removeChild: (parent: string, child: string, slotName?: string) => void;
+    addChild: (parent: string, child: string, slotName?: string, index?: number) => void;
+    get: <component extends Component = Component, id extends string = string>(id: id) => ComputedRef<ComponentHarness<component, id> | undefined>;
+    register<component extends Component, id extends string = string>(definition: ComponentDefinition<component, id>): ComponentHarness<component, id>;
+    remove: (id: string) => void;
+    removeChild: (parent: string, child: string, slotName?: string) => void;
 }
 
 // @public
@@ -129,7 +129,7 @@ export function register<component extends Component>(definition: ComponentDefin
 
 // @public
 export type RemoveIndex<T> = {
-	[K in keyof T as string extends K ? never : number extends K ? never : symbol extends K ? never : K]: T[K];
+    [K in keyof T as string extends K ? never : number extends K ? never : symbol extends K ? never : K]: T[K];
 };
 
 // @public
@@ -140,13 +140,13 @@ export type ServiceAsStore<service extends Service> = Omit<service, keyof Servic
 
 // @public
 export interface VueService extends Service {
-	// (undocumented)
-	app: App;
+    // (undocumented)
+    app: App;
 }
 
 // @public
 export type Writable<record> = {
-	-readonly [P in keyof record]: record[P];
+    -readonly [P in keyof record]: record[P];
 };
 
 ```
