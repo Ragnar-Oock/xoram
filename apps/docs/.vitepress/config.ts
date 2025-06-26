@@ -139,5 +139,12 @@ export default defineConfig({
 				cachedChecks: false,
 			},
 		},
+		css: {
+			preprocessorOptions: {
+				scss: {
+					api: 'modern',
+				},
+			},
+		},
 	},
 });
