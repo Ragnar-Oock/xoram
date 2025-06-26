@@ -1,4 +1,12 @@
-export type { PanoramiqueService } from './service/panoramique.service';
+/**
+ * @packageDocumentation
+ * Vue and Pinia integration for xoram.
+ *
+ * View doc at {@link https://xoram.dev/plugins/panoramique/}.
+ */
+
+
+export type { PanoramiqueService, ServiceAsStore } from './service/panoramique.service';
 export type { VueService } from './service/vue.service';
 
 export { panoramiquePlugin } from './plugin';

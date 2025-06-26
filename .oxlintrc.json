@@ -225,5 +225,12 @@
         "no-await-in-loop": "off"
       }
     }
-  ]
+  ],
+  "settings": {
+    "jsdoc": {
+      "tagNamePreference": {
+        "packageDocumentation": "packageDocumentation"
+      }
+    }
+  }
 }

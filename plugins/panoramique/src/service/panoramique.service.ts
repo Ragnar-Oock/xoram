@@ -68,6 +68,20 @@ export interface PanoramiqueService extends Service {
 }
 
 /**
+ * Convert a {@link @xoram/core#Service| Service} into the corresponding Pinia store interface.
+ *
+ * @example
+ * ```ts
+ * defineStore<'panoramique', ServiceAsStore<PanoramiqueService>>('panoramique', () => {
+ *   // panoramique service implementation
+ * }
+ * ```
+ *
+ * @public
+ */
+export type ServiceAsStore<service extends Service> = Omit<service, keyof Service>;
+
+/**
  * Use the `default` slot when inserting children implicitly.
  */
 export const defaultSlotName = 'default';
@@ -79,7 +93,7 @@ export const defaultInsertionIndex = -1;
  * Pinia store composable of the panoramique service. Can be used in Vue components or composable to interact with
  * harnesses.
  */
-export const usePanoramiqueStore = defineStore<'panoramique', Omit<PanoramiqueService, keyof Service>>(
+export const usePanoramiqueStore = defineStore<'panoramique', ServiceAsStore<PanoramiqueService>>(
 	'panoramique',
 	() => {
 		const _harnesses = reactive<Record<string, ComponentHarness>>({});

@@ -25,5 +25,9 @@ features:
   - title: Lightweight
     details: As little as ~1Kb
     icon: 🪶
+  - title: First party plugins
+    details: A growing collection of first party plugins to use in your apps
+    link: /plugins/index
+    icon: 📦
 ---
 

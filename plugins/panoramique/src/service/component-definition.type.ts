@@ -50,18 +50,25 @@ export type ComponentPropAndModels<component extends Component, props = ExposedC
 		? Record<string, true | undefined>
 		: never
 }>>>
+
 /**
  * A precursor for a {@link ComponentHarness} used to register a component into `panoramique`.
  *
  * @public
  */
-export type ComponentDefinition<component extends Component, id extends string = string> = {
+export interface ComponentDefinition<component extends Component, identifier extends string = string> {
 	/**
-	 * Identifies the harness in the store so it can be used as another one's child.
+	 * The unique string identifying the harness in the pinia store, unlike plugins it's not using a `symbol` because the
+	 * pinia dev tools don't show properties registered with a `symbol`, and it's nice to be able to see the harness you
+	 * registered.
+	 *
+	 * Makes sure you use a unique string value for this field as duplicated entries will be ignored and a warning will
+	 * be printed to the console for any subsequent registration attempt with a pre-existing id.
 	 */
-	id: id;
+	id: identifier;
 	/**
-	 * The Vue component to use when mounting the harness
+	 * The Vue component to use when mounting the harness, you can use any Vue component (Setup API, Option API,
+	 * Functional, one of yours or from a library).
 	 */
 	type: component;
 	/**
@@ -101,6 +108,7 @@ export type ComponentDefinition<component extends Component, id extends string =
 	 */
 	children?: ChildrenIds | HarnessChildren<component>;
 }
+
 /**
  * An ordered array of harness ids meant to be mounted as the children of another harness.
  *
@@ -142,11 +150,11 @@ export type HarnessChildren<component extends Component> = component extends (ne
  *
  * @public
  */
-export type ComponentHarness<component extends Component = Component, id extends string = string> = {
+export interface ComponentHarness<component extends Component = Component, identifier extends string = string> {
 	/**
 	 * Identifies the harness in the store so it can be used as another one's child.
 	 */
-	id: id;
+	id: identifier;
 	/**
 	 * The Vue component to use when mounting the harness
 	 */
@@ -163,4 +171,4 @@ export type ComponentHarness<component extends Component = Component, id extends
 	 * The id of the other harnesses to mount as the component's children in its slots
 	 */
 	children: HarnessChildren<component>;
-};
+}
