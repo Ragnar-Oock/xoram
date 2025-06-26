@@ -1,7 +1,7 @@
 import type { ShikiTransformer, ThemedToken } from '@shikijs/types';
 import type { Element } from 'hast';
 
-const inlineDecoratorMatcher = /(?<content>(\/\*|<!--)\s*\[!hint:\s*(?<text>.*?)]\s*(\*\/|-->))/gm;
+const inlineDecoratorMatcher = /(?<content>(\/\*|<!--)\s*\[!(?<kind>hint|annotation):\s*(?<text>.*?)]\s*(\*\/|-->))/gm;
 const tokenMatcher = /(?<indent>[\s\t]*)(?<content>.*)/;
 
 export const inlineDecorator = {
@@ -21,6 +21,10 @@ export const inlineDecorator = {
 		this.addClassToHast(hast, 'inline-hint');
 		// hide the hint from the copy button
 		this.addClassToHast(hast, 'vp-copy-ignore');
+
+		if (match.groups.kind === 'annotation') {
+			this.addClassToHast(hast, 'annotation');
+		}
 	},
 
 	tokens(lines: ThemedToken[][]): ThemedToken[][] {

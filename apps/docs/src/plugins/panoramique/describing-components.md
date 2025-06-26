@@ -301,13 +301,13 @@ template :
 <template>
 	<NewsletterSubscriptionModal>
 		<template> <!--[!code highlight:9]-->
-			<ChildAtTheStart/> <!-- [!hint: (c)] -->
-			<ChildAtIndex/> <!-- [!hint: (d)] -->
-			<ChildInDefaultSlot/> <!-- [!hint: (a)] -->
+			<ChildAtTheStart/> <!-- [!annotation: (c)] -->
+			<ChildAtIndex/> <!-- [!annotation: (d)] -->
+			<ChildInDefaultSlot/> <!-- [!annotation: (a)] -->
 		</template>
 		<template #footer>
-			<ChildAtIndexFromTheEnd/> <!-- [!hint: (e)] -->
-			<ChildInNamedSlot/> <!-- [!hint: (b)] -->
+			<ChildAtIndexFromTheEnd/> <!-- [!annotation: (e)] -->
+			<ChildInNamedSlot/> <!-- [!annotation: (b)] -->
 		</template>
 	</NewsletterSubscriptionModal>
 </template>

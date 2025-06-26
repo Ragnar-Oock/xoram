@@ -176,9 +176,13 @@
 :root {
 	--inline-hint-color: hsl(223, 6%, 40%);
 	--inline-hint-bgc: hsl(220, 7%, 91.8%);
+	--annotation-color: hsla(220, 65%, 35%);
+	--annotation-bgc: hsl(211.2, 73.9%, 83%);
 }
 
 .dark {
+	--annotation-bgc: hsl(208, 22%, 23%);
+	--annotation-color: hsla(220, 95%, 75%);
 	--inline-hint-color: hsl(220, 7%, 55%);
 	--inline-hint-bgc: hsl(223, 6%, 15%);
 }
@@ -197,6 +201,13 @@ pre.shiki .line .inline-hint {
 
 	.show-inlay-hint & {
 		display: initial;
+	}
+
+	&.annotation {
+
+		display: initial;
+		color: var(--annotation-color);
+		background-color: var(--annotation-bgc);
 	}
 }
 
