@@ -1377,9 +1377,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/api-documenter@npm:^7.26.28":
-  version: 7.26.28
-  resolution: "@microsoft/api-documenter@npm:7.26.28"
+"@microsoft/api-documenter@npm:^7.26.29":
+  version: 7.26.29
+  resolution: "@microsoft/api-documenter@npm:7.26.29"
   dependencies:
     "@microsoft/api-extractor-model": "npm:7.30.6"
     "@microsoft/tsdoc": "npm:~0.15.1"
@@ -1390,7 +1390,7 @@ __metadata:
     resolve: "npm:~1.22.1"
   bin:
     api-documenter: bin/api-documenter
-  checksum: 10c0/29c7551801acefc6b47905abee75c5812e114be69560bd384913254995f5cfb635d0a3b1d6005d7d980296025f04d0b1ddec4ae5f64f93bffbd3c6acae451e57
+  checksum: 10c0/b256235ecfdd9fb03e5f19872272ba814efcfd70075e89c5ac96ee12afea62b401a9caf8272cce002f08fd9d1b677786eb44a2c1720055aef69901dcaf51de22
   languageName: node
   linkType: hard
 
@@ -3761,7 +3761,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "docs@workspace:apps/docs"
   dependencies:
-    "@microsoft/api-documenter": "npm:^7.26.28"
+    "@microsoft/api-documenter": "npm:^7.26.29"
     "@repo/config-typescript": "npm:*"
     "@repo/core-size-check": "workspace:*"
     "@xoram/core": "workspace:*"
@@ -7395,7 +7395,7 @@ __metadata:
   resolution: "with-vite@workspace:."
   dependencies:
     "@changesets/cli": "npm:^2.29.5"
-    "@microsoft/api-documenter": "npm:^7.26.28"
+    "@microsoft/api-documenter": "npm:^7.26.29"
     "@microsoft/api-extractor": "npm:^7.52.8"
     "@vitejs/plugin-vue": "npm:^5.2.4"
     "@vitest/browser": "npm:3.2.1"

@@ -19,7 +19,7 @@
     "vue": "^3.5.16"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.26.28",
+    "@microsoft/api-documenter": "^7.26.29",
     "@repo/config-typescript": "*",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
