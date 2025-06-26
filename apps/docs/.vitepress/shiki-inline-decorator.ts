@@ -1,7 +1,7 @@
 import type { ShikiTransformer, ThemedToken } from '@shikijs/types';
 import type { Element } from 'hast';
 
-const inlineDecoratorMatcher = /(?<content>\/\*\s*\[!hint:\s*(?<text>.*?)]\s*\*\/)/gm;
+const inlineDecoratorMatcher = /(?<content>(\/\*|<!--)\s*\[!hint:\s*(?<text>.*?)]\s*(\*\/|-->))/gm;
 const tokenMatcher = /(?<indent>[\s\t]*)(?<content>.*)/;
 
 export const inlineDecorator = {
