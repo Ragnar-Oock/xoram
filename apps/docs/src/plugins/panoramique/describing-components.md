@@ -54,20 +54,7 @@ in multiple plugins, for example to make a menu with standardised buttons each
 added by their own plugin without needing to create a wrapper component for each
 one.
 
-The above definition is equivalent to using our component in a Vue template
-without passing any prop, event or content :
-
-```vue
-// [!code focus]
-<script>
-	import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
-	// [!code focus:100]
-</script>
-
-<template>
-	<NewsletterSubscriptionModal/>
-</template>
-```
+<!--@include: ./__bare-vue-template.md-->
 
 ### Passing `props`
 
@@ -107,24 +94,7 @@ definition. On top of that you can also provide model modifiers by adding a
 property following the pattern `${propName}Modifier` where `propName` is the
 name of the model property.
 
-The above definition is the equivalent of the below Vue template :
-
-```vue {5,11-12}
-// [!code focus]
-<script>
-	import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
-
-	// [!code focus:100]
-	const email = ref('');
-</script>
-
-<template>
-	<NewsletterSubscriptionModal
-		label="The email address to subscribe with"
-		:email.lazy.trim="email"
-	/>
-</template>
-```
+<!--@include: ./__props-vue-template.md-->
 
 ### Listening to `events`
 
@@ -165,30 +135,7 @@ registered and turned into a harness. Do note that the order in which listeners
 are invoked for a given event is not guarantied as listeners can be added or
 removed at any time.
 
-The above definition is the equivalent of the below Vue template :
-
-```vue {5-8,10-12,17-18}
-// [!code focus]
-<script>
-	import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
-
-	// [!code focus:100]
-	const analyticsService = {
-		/* implementation left as an exercise to the reader */
-	}
-
-	const onBeforeSubmit = event => {
-		/* very important stuff to do before submitting */
-	}
-</script>
-
-<template>
-	<NewsletterSubscriptionModal
-		@focusin="analyticsService.send('newsletter-interacted')"
-		@before-submit="onBeforeSubmit"
-	/>
-</template>
-```
+<!--@include: ./__events-vue-template.md-->
 
 ### Filling slots with `children`
 
@@ -263,8 +210,9 @@ template :
 ## Setup style
 
 To avoid confusion with Vue's Composition API, and because it doesn't fit its
-definition, the functional way of writing component definition is called setup.
-To write definitions that way you will use the `defineComponentDefinition`
+definition, the functional way of writing component definition is called
+`setup`. To write definitions that way you will use the
+`defineComponentDefinition`
 helper (yes the name is stupid, feel free to suggest a better one).
 
 `defineComponentDefinition` takes an id, a vue component and an optional setup
@@ -273,9 +221,27 @@ easier to group property, event listeners and children binding by context
 instead of by type.
 
 Because of technical limitations composable helpers used to add props, event
-listeners and children are not exposed at the plugin level like it is the case
+listeners and children are not exposed at the module level like it is the case
 of, for example, plugin life cycle helper, but they are provided to the setup
-function as a context object passed as the one and only argument.
+function as a context object passed as the one and only argument. This can mean
+a small increase of dead code in your final bundle size if you never use one of
+them, but it is unlikely in a large enough application.
+
+### Minimal form
+
+A minimal definition providing only the `id` and `type` would look like this :
+
+```ts
+import { defineComponentDefinition } from '@xoram/plugin-panoramique';
+import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+
+defineComponentDefinition( // [!code focus:14]
+	/* [!hint: id:] */'email-prompt',
+	/* [!hint: component:] */NewsletterSubscriptionModal
+);
+```
+
+<!--@include: ./__bare-vue-template.md-->
 
 ### Setting props with `bind`
 
@@ -287,6 +253,8 @@ directive you would use in a Vue component template. You can also specify
 you are targeting is a model.
 
 <<< ./snippets/bind-example.ts
+
+<!--@include: ./__props-vue-template.md-->
 
 ### Listening for events with `on`
 
@@ -317,6 +285,33 @@ works. Note that you can also pass negative indexes to count from the end of the
 child list of a given slot.
 
 <<< ./snippets/slot-example.ts
+
+The above `emailPromptDefinition` definition is the equivalent of the below Vue
+template :
+
+```vue
+// [!code focus]
+<script>
+	import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
+	import ChildInDefaultSlot from './ChildInDefaultSlot.vue';
+	import ChildInNamedSlot from './ChildInNamedSlot.vue';
+	// [!code focus:100]
+</script>
+
+<template>
+	<NewsletterSubscriptionModal>
+		<template> <!--[!code highlight:9]-->
+			<ChildAtTheStart/> <!-- [!hint: (c)] -->
+			<ChildAtIndex/> <!-- [!hint: (d)] -->
+			<ChildInDefaultSlot/> <!-- [!hint: (a)] -->
+		</template>
+		<template #footer>
+			<ChildAtIndexFromTheEnd/> <!-- [!hint: (e)] -->
+			<ChildInNamedSlot/> <!-- [!hint: (b)] -->
+		</template>
+	</NewsletterSubscriptionModal>
+</template>
+```
 
 ## Which style to choose ?
 
@@ -379,8 +374,8 @@ import { definePlugin } from '@xoram/core';
 import { register } from '@xoram/plugin-panoramique';
 import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
 
-export default definePlugin(() => {
-	register({ // [!code focus:7]
+export default definePlugin(() => { // [!code focus:9]
+	register({ // [!code highlight:7]
 		id: 'email-prompt',
 		type: NewsletterSubscriptionModal,
 		props: { /* typed props */ },
