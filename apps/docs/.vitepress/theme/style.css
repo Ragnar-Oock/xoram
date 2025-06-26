@@ -192,6 +192,7 @@ pre.shiki .line .inline-hint {
 	user-select: none;
 	margin-inline: .8ch;
 	pointer-events: none;
+	mix-blend-mode: exclusion;
 }
 
 /**
