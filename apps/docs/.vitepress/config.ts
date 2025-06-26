@@ -1,3 +1,5 @@
+import { fileURLToPath, URL } from 'node:url';
+
 import { defineConfig } from 'vitepress';
 import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons';
 import { inlineDecorator } from './shiki-inline-decorator';
@@ -123,5 +125,19 @@ export default defineConfig({
 		plugins: [
 			groupIconVitePlugin(),
 		],
+
+		resolve: {
+			alias: [
+				{
+					find: /^\.\/VPNavBarExtra.vue$/,
+					replacement: fileURLToPath(new URL('./theme/components/VPNavBarExtra.vue', import.meta.url)),
+				},
+			],
+		},
+		server: {
+			fs: {
+				cachedChecks: false,
+			},
+		},
 	},
 });
