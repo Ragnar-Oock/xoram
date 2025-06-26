@@ -129,8 +129,12 @@ export default defineConfig({
 		resolve: {
 			alias: [
 				{
-					find: /^\.\/VPNavBarExtra.vue$/,
+					find: /^\.\/VPNavBarExtra\.vue$/,
 					replacement: fileURLToPath(new URL('./theme/components/VPNavBarExtra.vue', import.meta.url)),
+				},
+				{
+					find: /^\.\/VPNavBarAppearance\.vue$/,
+					replacement: fileURLToPath(new URL('./theme/components/VPNavBarAppearance.vue', import.meta.url)),
 				},
 			],
 		},

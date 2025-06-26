@@ -9,12 +9,6 @@
 
 	const { site, theme } = useData<DefaultTheme.Config>();
 
-	const hasExtraContent = computed(
-		() =>
-			site.value.appearance ||
-			theme.value.socialLinks,
-	);
-
 	const showThemeSwitch = computed(() =>
 		site.value.appearance &&
 		site.value.appearance !== 'force-dark' &&
@@ -24,7 +18,6 @@
 
 <template>
 	<VPFlyout
-		v-if="hasExtraContent"
 		class="VPNavBarExtra"
 		label="extra navigation"
 	>
@@ -43,7 +36,7 @@
 			</div>
 			<div class="item appearance">
 				<p class="label">
-					{{ theme.inlayHintSwitcher || 'Inlay Hints' }}
+					{{ 'Inlay Hints' }}
 				</p>
 				<div class="appearance-action">
 					<SwitchInlayHints/>
@@ -75,14 +68,6 @@
 		.VPNavBarExtra {
 			display: none;
 		}
-	}
-
-	.trans-title {
-		padding: 0 24px 0 12px;
-		line-height: 32px;
-		font-size: 14px;
-		font-weight: 700;
-		color: var(--vp-c-text-1);
 	}
 
 	.item.appearance,
