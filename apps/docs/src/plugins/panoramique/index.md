@@ -9,7 +9,16 @@ next:
 
 # Panoramique
 
-A minimalist [Vue.js](https://vuejs.org/) integration
+Use [Vue.js](https://vuejs.org/) and [Pinia](https://pinia.vuejs.org/) to build
+dynamic User Interfaces.
+
+::: info
+
+The following documentation assumes you know at least the basics
+of [Vue.js](https://vuejs.org/), you should get comfortable with how it works
+before trying to integrate panoramique into your app.
+
+:::
 
 ## Install
 
@@ -29,7 +38,7 @@ pnpm add @xoram/plugin-panoramique
 
 :::
 
-Then simply add the plugin to your app :
+Add the plugin to your app :
 
 ::: code-group
 

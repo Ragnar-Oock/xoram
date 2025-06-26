@@ -4,11 +4,9 @@ next: false
 
 # First party plugins
 
-xoram comes with a set of first party plugins that you can add to your
-application as you need them. The ecosystem is still burgeoning so there's not
-many yet (understand only one for now) but the aim is to have plugins for most
-common patterns or integrations for well known libraries or frameworks when such
-a thing makes sense.
+Most application are built following common patterns, xoram provides you with
+off the shelf plugins that implement such common patterns so you don't have to
+and can focus on what actually matters for your product.
 
 ## Contribute
 
