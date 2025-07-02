@@ -2,9 +2,9 @@ import { defineComponentDefinition } from '@xoram/plugin-panoramique';
 import { ref } from 'vue';
 import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
 
-const email = ref('');
+const email = ref(''); // [!code focus:100]
 
-defineComponentDefinition( // [!code focus:100]
+defineComponentDefinition(
 	/* [!hint: id:] */'email-prompt', /* [!hint: component:] */NewsletterSubscriptionModal,
 	/* [!hint: setup:] */({ bind }) => {
 		// [!code highlight:4]

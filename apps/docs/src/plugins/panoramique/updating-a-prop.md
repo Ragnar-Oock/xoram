@@ -15,10 +15,7 @@ We saw previously that definitions are static, modifying them after the fact
 will not update the resulting harness or mounted component. We also saw in
 [Describing components: Passing props](./describing-components#passing-props)
 that we can bind reactive values in props like we would do in a normal Vue
-component.
-
-We might want to pre-fill the email field with the email address registered on
-the user's account when they log in :
+component, so we can update this reactive value instead:
 
 ::: code-group
 
@@ -30,13 +27,14 @@ import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
 
 // [!code focus:100]
 export default definePlugin(/*[!hint:setup:]*/() => {
+	// [!code highlight]
 	const email = ref(/*[!hint:value:]*/'');
 
 	register(/*[!hint:definition:]*/defineComponentDefinition(
 		/*[!hint:id:]*/'email-prompt',
 		/*[!hint:type:]*/NewsletterSubscriptionModal,
 		/*[!hint:setup:]*/({ bind }) => {
-			bind('email', email);
+			bind('email', email);// [!code highlight]
 		},
 	));
 
@@ -44,6 +42,7 @@ export default definePlugin(/*[!hint:setup:]*/() => {
 	onEvent(
 		/*[!hint:target:]*/'user',
 		/*[!hint:on:]*/'loggedIn',
+		// [!code highlight]
 		/*[!hint:handler:]*/({ user }) => { email.value = user.email;}
 	);
 });
@@ -97,7 +96,7 @@ the given id :
 
 If you provide an id that doesn't correspond to an existing harness `get`
 will return a computed holding undefined. This computed will be updated with the
-corresponding harness if one is registered later.
+corresponding harness if one is registered later on.
 
 Harnesses are reactive object, an update to their properties will be applied to
 any corresponding mounted component. If we have a simple popup component that
@@ -105,6 +104,6 @@ becomes visible when a `isVisible` prop is set to `true` :
 
 <<< ./snippets/popup.vue
 
-We can toggle it on by simply binding a new value is the corresponding prop :
+We can toggle it on by simply binding a new value in the corresponding prop :
 
 <<< ./snippets/set-harness-prop.ts

@@ -3,26 +3,28 @@
 Panoramique lets you dynamically control the structure of your Vue application
 by mounting and unmounting components at runtime, similar to manipulating DOM
 elements. Instead of hardcoding component trees, you define them dynamically as
-your application runs. But in order to do mount a component as the child of
-another one, Panoramique needs to be made aware of both of them, this is done
-using objects called **harnesses** that describe the props, event listeners and
-children a component should be mounted with.
+your application runs.
+
+In order to mount a component as the child of another one, Panoramique needs to
+be made aware of both of them, this is done using objects called **harnesses**
+that describe the props, event listeners and children a component should be
+mounted with.
 
 To register a harness in panoramique you will need to describe it by creating a
-`ComponentDefinition`, which holds the same information but is easier to
-manipulate and read. The main difference between harnesses and definitions is
-that definitions are static while harnesses are reactive and will update the
+`ComponentDefinition`, which will be converted to a harness when you pass it to
+panoramique. The main difference between harnesses and definitions is that
+definitions are static while harnesses are reactive and will update the
 corresponding component when modified.
 
-There is two ways of writing definitions, the object way that looks a lot like
+There is two ways of writing definitions, the option style that looks a lot like
 [Vue's Option API](https://vuejs.org/guide/introduction.html#options-api)
-and the functional way that looks more like
+and the setup style that looks more like
 the [Composition API](https://vuejs.org/guide/introduction.html#composition-api)
 
 ::: details Component used in the examples
 
-For all examples on this page the following `NewsletterSubscriptionModal.vue`
-component is used.
+Most examples in the following pages use this `NewsletterSubscriptionModal.vue`
+component:
 
 <<< ./snippets/NewsletterSubscriptionModal.vue [NewsletterSubscriptionModal.vue]
 
@@ -32,10 +34,9 @@ component is used.
 
 ### Minimal form
 
-Component definitions are simple objects that look a lot like how component
-themselves are written in Vue's Option API. In its simplest form a [
-`ComponentDefinition`](/api-reference/plugin-panoramique.componentdefinition) is
-an object that associates a Vue component as the `type` with an `id` used to
+In its simplest form a [
+`ComponentDefinition`](/api-reference/plugin-panoramique.componentdefinition)
+is an object that associates a Vue component as the `type` with an `id` used to
 reference it in other definitions:
 
 ```ts
@@ -90,9 +91,10 @@ Like when passing props in a Vue template you can provide a direct value, a
 When binding to a [`v-model`](
 https://vuejs.org/guide/components/v-model.html#component-v-model) any update
 sent by the component will be caught and applied to the harness created by the
-definition. On top of that you can also provide model modifiers by adding a
-property following the pattern `${propName}Modifier` where `propName` is the
-name of the model property.
+definition and any reactive value you might have bound on the prop (like
+`email` in the above example). On top of that you can also provide model
+modifiers by adding a property following the pattern `${propName}Modifier` where
+`propName` is the name of the model property.
 
 <!--@include: ./__props-vue-template.md-->
 
@@ -140,10 +142,8 @@ removed at any time.
 ### Filling slots with `children`
 
 Vue allows you to define slots for your components to inject elements and other
-components in their children. Panoramique allows you to do that dynamically when
-the component is mounted instead of statistically in the template, we will cover
-this in more detail
-in [Parent-Child relationships](./parent-child-relationships).
+components as their children. Panoramique allows you to do that dynamically when
+the component is mounted instead of statistically in the template.
 
 Similarly to how slot works in vue template you can omit the slot name if you
 only want to target the `default` slot but can also use multiple one by passing
@@ -160,8 +160,8 @@ export const emailPromptDefinition = {
 	events: { /* events as explained above */ },
 	// Using named slots // [!code highlight:5]
 	children: {
-		default: [ 'child-in-default-slot' ],
-		footer: [ 'child-in-named-slot' ],
+		default: [ 'child-in-default-slot' ],  /* [!annotation: (a)] */
+		footer: [ 'child-in-named-slot' ], /* [!annotation: (b)] */
 	},
 };
 
@@ -192,10 +192,10 @@ template :
 <template>
 	<NewsletterSubscriptionModal>
 		<template> <!--[!code highlight:6]-->
-			<ChildInDefaultSlot/>
+			<ChildInDefaultSlot/> <!-- [!annotation: (a)] -->
 		</template>
 		<template #footer>
-			<ChildInNamedSlot/>
+			<ChildInNamedSlot/> <!-- [!annotation: (b)] -->
 		</template>
 	</NewsletterSubscriptionModal>
 </template>
@@ -258,6 +258,8 @@ events emitted by children DOM elements, it is the equivalent of the
 
 <<< ./snippets/on-example.ts
 
+<!--@include: ./__events-vue-template.md-->
+
 ### Registering children with `slot`
 
 Panoramique being inherently dynamic doesn't mean you can't statically declare
@@ -272,7 +274,7 @@ immediately picked up when the definition is registered into panoramique.
 In case your component has more than one slot or no default slot you can
 indicate the slot to add the child to as the second parameter.
 
-And because the setup API is meant to allow you to order your code as you want
+And because the setup style is meant to allow you to order your code as you want
 with minimal impact on its execution you can specify the index to insert the
 child at, that way you don't have to choose between readable code and code that
 works. Note that you can also pass negative indexes to count from the end of the
@@ -319,8 +321,8 @@ to Vue's Composition API by design.
 
 Both styles offer the same features and are fully capable, all that you can do
 with one is possible in the other. You can even use both versions in the same
-codebase if you want. There is as of writing no technical limitation to one or
-the other.
+codebase if you want. There is no technical limitation in using one or the
+other.
 
 ## Modifying definitions
 
@@ -328,20 +330,20 @@ No matter which way you prefer to write your definitions remember that
 definitions are not harnesses, modifying their values after registering them
 will not update the component they are describing. It also means you can't use
 asynchronous code in the setup function of `defineComponentDefinition`
-or save a helper to a local variable to modify the definition after the face.
+or save a helper to a local variable to modify the definition after the fact.
 
 Updating a component is done through the harness once it is registered, we will
 cover this on the next page.
 
 ## Using Typescript
 
-When using the `setup` style you don't have anything to do as it will
+When using the setup style you don't have anything to do as it will
 automatically infer props, events and slots from the component's type if you
 have configured your environment correctly,
 see [Using Vue With TypeScript](https://vuejs.org/guide/typescript/overview.html#using-vue-with-typescript)
 for explanations on how to do so.
 
-For the `option` style you can use the `satisfies` keywords like so :
+For the option style you can use the `satisfies` keywords like so :
 
 ```ts
 import type { ComponentDefinition } from '@xoram/plugin-panoramique';

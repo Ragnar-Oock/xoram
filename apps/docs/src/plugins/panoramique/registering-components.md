@@ -26,7 +26,7 @@ import { defineComponentDefinition, register } from '@xoram/plugin-panoramique';
 import { emailPromptDefinition } from './definitions';
 import NewsletterSubscriptionModal from './NewsletterSubscriptionModal.vue';
 
-export default definePlugin(() => { // [!code focus:100]
+export default definePlugin(/* [!hint:setup:] */() => { // [!code focus:100]
 
 	// import the definition from elsewhere
 	register(/* [!hint: definition:] */emailPromptDefinition);
@@ -60,7 +60,7 @@ import { definePlugin, dependsOn, onCreated, onEvent } from '@xoram/core';
 import { panoramiquePlugin } from '@xoram/plugin-panoramique/src';
 import { emailPromptDefinition as emailPrompt } from './definitions';
 
-export default definePlugin(() => { // [!code focus:100]
+export default definePlugin(/* [!hint:setup:] */() => { // [!code focus:100]
 	dependsOn(userPlugin);
 	// remember to add panoramique as a dependency of your plugin
 	dependsOn(panoramiquePlugin); // [!code highlight]
@@ -83,3 +83,42 @@ export default definePlugin(() => { // [!code focus:100]
 	});
 });
 ```
+
+When manually register a component you are also in charge of disposing of it
+when you don't need it anymore, this done via the `remove` method:
+
+```ts
+import { userPlugin } from '@acme/user-managment';
+import {
+	definePlugin,
+	dependsOn,
+	onBeforeDestroy,
+	onCreated,
+	onEvent,
+} from '@xoram/core';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique/src';
+import { emailPromptDefinition as emailPrompt } from './definitions';
+
+export default definePlugin(/* [!hint:setup:] */() => { // [!code focus:100]
+	dependsOn(userPlugin);
+	dependsOn(panoramiquePlugin);
+
+	onCreated(app => {
+		onEvent(/*[!hint:target:]*/'user', /*[!hint:on:]*/'loggedIn',
+			/*[!hint:handler:]*/({ user }) => {
+				if (app.services.userService.isLoggedIn(user)) {
+					return;
+				}
+				services.panoramique.register(/*[!hint:definition:]*/emailPrompt);
+			},
+		);
+	});
+
+	onBeforeDestroy(app => { // [!code highlight:3]
+		app.services.panoramique.remove(/*[!hint:id:]*/emailPrompt.id);
+	})
+});
+```
+
+You don't need to check if the harness you try to remove exists or not, if it
+doesn't panoramique will just ignore it. 

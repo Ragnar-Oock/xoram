@@ -6,7 +6,8 @@ Being able to register components in panoramique allows you to add them when you
 want directly from your plugins, but what if you want to move them or to not
 have the same set of children at all time ?
 
-If you remember when we went over `ComponentDefinition` we said that the
+If you remember when we [went over `ComponentDefinition`
+](./describing-components.html#describing-components) we said that the
 difference between a definition and a harness is that a modification on a
 harness will update the corresponding component when it is mounted. This means
 that if we have a reference to that harness we can modify its props and event
@@ -17,9 +18,9 @@ advantage of making plugins easier to re-use across contexts. For example if you
 make a text editor you might want to have a menu bar were available actions are
 listed (bold, italic, underline, inserting images...) To do that you might want
 to have a plugin define the menu and each plugin would register its button and
-where to add it in the menu. That way if you want to add or remove a feature,
-like bolding text, both the underlying functionality and the UI element that
-triggers it are added and removed as one.
+specify where to add it in the menu. That way if you want to add or remove a
+feature, like bolding text, both the underlying functionality and the UI element
+that triggers it are handled by the same plugin you can add or remove as needed.
 
 ## Adding children
 
@@ -41,7 +42,7 @@ when the plugin is removed if that ever happens.
 
 The `addChild` helper do just that, it adds the relationship on `created`
 and removes it on `beforeDestroy`, and just like `register` it adds the
-dependency to panoramique for you (but you can add it yourself too if you prefer
+dependency on panoramique for you (but you can add it yourself too if you prefer
 being explicit).
 
 ```ts
@@ -77,19 +78,26 @@ listener or anywhere else where you have access to the application.
 
 ```ts
 import { panoramiquePlugin } from '@xoram/plugin-panoramique';
-import { definePlugin, dependsOn, onCreated } from '@xoram/core';
-import { emailPromptDefinition } from './definitions';
+import { definePlugin, dependsOn, onCreated, onEvent } from '@xoram/core';
+import { userPlugin } from '@acme/user-managment';
 
 // [!code focus:200]
 export default definePlugin(() => {
+	dependsOn(userPlugin)
 	// remember to declare the dependency
 	dependsOn(panoramiquePlugin.id);
 
 	onCreated(app => {
-		// add the child at the end of the default slot
-		app.services.panoramique.addChild(
-			/*[!hint: parent:]*/'modal-container',
-			/*[!hint: child:]*/emailPromptDefinition.id,
+		onEvent(/*[!hint:target:]*/'user', /*[!hint:event:]*/'loggedIn',
+			/*[!hint:handler:]*/({ user }) => {
+				// assign pannels in the ui depending on user preferences
+				user.preferences.UI.panels.forEach(panel => {
+					app.services.panoramique.addChild(
+						/*[!hint: parent:]*/panel.parent,
+						/*[!hint: child:]*/panel.id,
+					);
+				});
+			}
 		);
 	});
 });
@@ -156,7 +164,7 @@ slot name even if you insert in the default slot.
 
 Just like [
 `Array.prototype.at()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/at)
-the index you pass in can be negative to denote an index counting from the end
+the index you pass in can be negative to denote an index counting from the end:
 
 ::: code-group
 
@@ -233,7 +241,7 @@ export default definePlugin(() => {
 
 The child index is assigned when you call the `addChild` method or helper, but
 it's not guaranteed that your component will stay at that index as other
-components might be added later at a lower position.
+components might be added later on at a lower position.
 
 :::
 
@@ -243,31 +251,7 @@ To break a parent-child relationship—for example, when changing where a
 component is mounted—you need to call the `removeChild` method directly on the
 store&nbsp;:
 
-```ts
-import { panoramiquePlugin } from '@xoram/plugin-panoramique';
-import { definePlugin, dependsOn, onCreated } from '@xoram/core';
-import { emailPromptDefinition } from './definitions';
-// [!code focus:200]
-export default definePlugin(() => {
-	// remember to declare the dependency
-	dependsOn(panoramiquePlugin.id);
-
-	onCreated(app => {
-		onEvent(app.services.button, 'clicked', () => {
-			app.services.panoramique.removeChild(
-				/*[!hint: parent:]*/'modal-container',
-				/*[!hint: child:]*/emailPromptDefinition.id
-			)
-		});
-		onEvent(app.services.button, 'clicked', () => {
-			app.services.panoramique.removeChild(
-				/*[!hint: parent:]*/'modal-container',
-				/*[!hint: child:]*/emailPromptDefinition.id
-			)
-		});
-	});
-});
-```
+<<< ./snippets/remove-child-method.ts
 
 Panoramique does not provide a `removeChild` helper because helpers require a
 reference to the application and plugin that registered them. This reference is
@@ -301,6 +285,13 @@ export default definePlugin(() => {
 		/*[!hint: parent:]*/rootHarness,
 		/*[!hint: child:]*/emailPromptDefinition.id
 	);
+	// add a component at start of the root child list
+	addChild(
+		/*[!hint: parent:]*/rootHarness,
+		/*[!hint: child:]*/emailPromptDefinition.id,
+		/*[!hint: slot:]*/'default',
+		/*[!hint: index:]*/0,
+	);
 });
 ```
 
@@ -318,7 +309,15 @@ export default definePlugin(() => {
 		// add the child in a named slot
 		app.services.panoramique.addChild(
 			/*[!hint: parent:]*/rootHarness,
-			/*[!hint: child:]*/emailPromptDefinition.id
+			/*[!hint: child:]*/emailPromptDefinition.id,
+		);
+
+		// add a component at start of the root child list
+		app.services.panoramique.addChild(
+			/*[!hint: parent:]*/rootHarness,
+			/*[!hint: child:]*/emailPromptDefinition.id,
+			/*[!hint: slot:]*/'default',
+			/*[!hint: index:]*/0,
 		);
 	});
 });
