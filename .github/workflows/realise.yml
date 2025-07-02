@@ -5,7 +5,16 @@ on:
     branches:
       - main
 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
 concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  pull-requests: write
+  contents: write
+
 
 jobs:
   release:
@@ -15,13 +24,17 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Setup Node.js 20.x
-        uses: actions/setup-node@v3
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 22
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: yarn
+        run: yarn install
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
