@@ -35,8 +35,8 @@ const packageDirs = list
 // clear dist folder
 if (existsSync('./models')) {
 	rmSync('./models', {recursive: true});
-	mkdirSync('./models');
 }
+mkdirSync('./models');
 
 
 for (const packageDir of packageDirs) {
