@@ -201,12 +201,6 @@ template :
 </template>
 ```
 
-::: details Example of an option style definition using all of the above
-
-<<< ./snippets/option-definition.js
-
-:::
-
 ## Setup style
 
 To avoid confusion with Vue's Composition API, and because it doesn't fit its
