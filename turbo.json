@@ -24,20 +24,6 @@
       ],
       "cache": true
     },
-    "build:doc": {
-      "dependsOn": [
-        "build:types",
-        "^build:types",
-        "^build:doc"
-      ],
-      "outputs": [
-        "$TURBO_ROOT$/apps/docs/src/api-reference/**"
-      ],
-      "inputs": [
-        "types/*.api.json"
-      ],
-      "cache": true
-    },
     "lint": {},
     "dev": {
       "cache": false,

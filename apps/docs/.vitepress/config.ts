@@ -1,4 +1,8 @@
+import { fileURLToPath, URL } from 'node:url';
+
 import { defineConfig } from 'vitepress';
+import { groupIconMdPlugin, groupIconVitePlugin } from 'vitepress-plugin-group-icons';
+import { inlineDecorator } from './shiki-inline-decorator';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -15,6 +19,7 @@ export default defineConfig({
 					{ text: 'Tutorial', link: '/tutorial/index' },
 				],
 			},
+			{ text: 'Plugins', link: '/plugins/', activeMatch: '/plugins(/.*)*/' },
 			{ text: 'API', link: '/api-reference' },
 		],
 
@@ -60,6 +65,27 @@ export default defineConfig({
 					],
 				},
 			],
+			plugins: [
+				{
+					text: 'Collection',
+					link: 'plugins/index',
+					items: [
+						{
+							text: 'Panoramique',
+							link: '/plugins/panoramique',
+							collapsed: true,
+							items: [
+								{ text: 'Describing components', link: '/plugins/panoramique/describing-components' },
+								{ text: 'Registering components', link: '/plugins/panoramique/registering-components' },
+								{ text: 'Parent-Child relationships', link: '/plugins/panoramique/parent-child-relationships' },
+								{ text: 'Updating a prop', link: '/plugins/panoramique/updating-a-prop' },
+								{ text: 'Configuring Vue', link: '/plugins/panoramique/configuring-vue' },
+								{ text: 'Using Pinia', link: '/plugins/panoramique/using-pinia' },
+							],
+						},
+					],
+				},
+			],
 		},
 
 		socialLinks: [
@@ -73,11 +99,57 @@ export default defineConfig({
 		search: {
 			provider: 'local',
 		},
+		externalLinkIcon: true,
 	},
+	head: [
+		[
+			'link',
+			{
+				rel: 'icon',
+				href: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥔</text></svg>',
+			},
+		],
+	],
 	srcDir: 'src',
 	outDir: 'dist',
 	base: '/',
 	markdown: {
 		lineNumbers: true,
+		config(md) {
+			md.use(groupIconMdPlugin);
+		},
+		codeTransformers: [
+			inlineDecorator,
+		],
+	},
+	vite: {
+		plugins: [
+			groupIconVitePlugin(),
+		],
+
+		resolve: {
+			alias: [
+				{
+					find: /^\.\/VPNavBarExtra\.vue$/,
+					replacement: fileURLToPath(new URL('./theme/components/VPNavBarExtra.vue', import.meta.url)),
+				},
+				{
+					find: /^\.\/VPNavBarAppearance\.vue$/,
+					replacement: fileURLToPath(new URL('./theme/components/VPNavBarAppearance.vue', import.meta.url)),
+				},
+			],
+		},
+		server: {
+			fs: {
+				cachedChecks: false,
+			},
+		},
+		css: {
+			preprocessorOptions: {
+				scss: {
+					api: 'modern',
+				},
+			},
+		},
 	},
 });

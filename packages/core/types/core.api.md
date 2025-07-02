@@ -249,6 +249,4 @@ export function useService<id extends keyof ServiceCollection>(serviceId: id): S
 // @internal
 export function _warn(msgOrError: string | Error, ...args: unknown[]): void;
 
-// (No @packageDocumentation comment for this package)
-
 ```

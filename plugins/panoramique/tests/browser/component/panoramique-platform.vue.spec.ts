@@ -3,7 +3,7 @@ import type { Application } from '@xoram/core';
 import { addPlugins, createApp, definePlugin, destroyApp, onCreated } from '@xoram/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
-import { panoramiquePlugin, rootHarness } from '../../../src';
+import { addChild, defineComponentDefinition, panoramiquePlugin, register, rootHarness } from '../../../src';
 import ContextMenu from '../../component/context-menu.vue';
 import ContextOption from '../../component/context-option.vue';
 import TestComponent from '../../component/test-component.vue';
@@ -202,6 +202,66 @@ describe('PanoramiquePlatform', () => {
 				await expect.element(page.getByRole('menu'), { timeout: 100 }).not.toBeInTheDocument();
 			},
 		);
+	});
+
+	describe('model updates', () => {
+		it('should propagate model updates to the definition when the component changes the value', async ({ task }) => {
+			const isOpen = ref(true);
+			addPlugins([
+				definePlugin(() => {
+					const id = 'opened-menu';
+
+					register(defineComponentDefinition(id, ContextMenu, ({ bind }) => {
+						bind('open', isOpen);
+						bind('testid', task.id);
+					}));
+					addChild(rootHarness, id);
+
+					onCreated(({ services }) => services.vue.app.mount(document.body));
+				}),
+			], app);
+
+			await expect.element(page.getByRole('menu'), { timeout: 100 }).toBeVisible();
+
+			document.body.click();
+
+			// make sure the menu is closed
+			await expect.element(page.getByRole('menu'), { timeout: 100 }).not.toBeInTheDocument();
+
+			expect(isOpen.value).toBeFalsy();
+		});
+
+		it('should propagate model updates to the definition when another plugin changes the value', async ({ task }) => {
+			const isOpen = ref(true);
+			const id = 'opened-menu';
+
+			addPlugins([
+				definePlugin(() => {
+					register(defineComponentDefinition(id, ContextMenu, ({ bind }) => {
+						bind('open', isOpen);
+						bind('testid', task.id);
+					}));
+					addChild(rootHarness, id);
+
+					onCreated(({ services }) => services.vue.app.mount(document.body));
+				}),
+			], app);
+
+			await expect.element(page.getByRole('menu'), { timeout: 100 }).toBeVisible();
+
+			addPlugins([
+				definePlugin(() => {
+
+					onCreated(({ services }) => { services.panoramique.get(id).value!.props.open = false; });
+				}),
+			], app);
+
+			// make sure the menu is closed
+			await expect.element(page.getByRole('menu'), { timeout: 100 }).not.toBeInTheDocument();
+
+			expect(isOpen.value).toBeFalsy();
+		});
+
 	});
 	describe('event listener binding', () => {
 		// all listener listed for an even are called
