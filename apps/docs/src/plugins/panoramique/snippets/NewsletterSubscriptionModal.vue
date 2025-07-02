@@ -1,7 +1,6 @@
 <script setup lang="ts">
-	import { useId, useTemplateRef } from 'vue';
+	import { useId } from 'vue';
 
-	const modal = useTemplateRef('modal');
 	const id = useId();
 
 	const { label = 'Email address :' } = defineProps<{
@@ -19,13 +18,13 @@
 </script>
 
 <template>
-	<form class="modal" popover="manual" ref="modal" @submit="onsubmit">
+	<form class="modal" popover="manual" @submit="onsubmit">
 		<h3>Subscribe to our awesome newsletter !</h3>
 
 		<slot name="default"/>
 
 		<label :for="id">{{ label }}</label>
-		<input type="email" v-model="email">
+		<input type="email" v-model="email" :id>
 
 		<footer v-if="$slots.footer">
 			<slot name="footer"/>
