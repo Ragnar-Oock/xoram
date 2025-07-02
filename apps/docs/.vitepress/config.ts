@@ -116,7 +116,7 @@ export default defineConfig({
 	markdown: {
 		lineNumbers: true,
 		config(md) {
-			groupIconMdPlugin(md, { titleBar: { includeSnippet: true } });
+			md.use(groupIconMdPlugin);
 		},
 		codeTransformers: [
 			inlineDecorator,
