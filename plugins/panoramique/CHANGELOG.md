@@ -1,5 +1,11 @@
 # @xoram/plugin-panoramique
 
+## 0.1.1
+
+### Patch Changes
+
+- 810b534: expose ServiceAsStore type
+
 ## 0.1.0
 
 ### Minor Changes
