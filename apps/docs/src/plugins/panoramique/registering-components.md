@@ -2,25 +2,23 @@
 
 <!--@include: ./__start-at-beginning.md -->
 
-Once you have your component definitions ready all you have to do to is to
-register them in panoramique, you can do so in 2 ways depending on when you want
-your component to be registered :
+Once your provided all the necessary information to you component definition you
+can register it in panoramique so it can be converted into a harness, ready to
+be mounted in the DOM. There is two ways of registering a definition :
 
-- the `register` helper : for when you want the component available as soon as
-  possible. It will register the definition when the plugin is created and
-  remove it automatically when the plugin is disposed of.
-- the service's `register` method : for when you want to control when the
-  definition is registered.
+- using the `register` helper : for when you don't need to control when the
+  component is registered. It will register the definition when the plugin is
+  created and remove it automatically when the plugin is disposed of.
+- using the service's `register` method : for when you want to control when the
+  definition is registered and removed.
 
 ## The `register` helper
 
-In most cases you won't care about when the component is registered in
-panoramique, you just want it to be available for other plugins to use, or you
-want it registered as soon as possible so you can use it in the same plugin.
-
-If all you do in your component is use helpers provided by panoramique you don't
-have to declare the dependency, it's done automatically for you so you don't
-have to clutter your plugin setup function with it.
+Ideally you won't need to control when a component definition is registered, the
+mounting of the component being controlled separately as we will see later on.
+In this case the easiest is to register the component in the
+`onCreated` hook and to remove it in the `onBeforeDestroy` hook, this is exactly
+what the `register` helper do for you :
 
 ```ts
 import { definePlugin } from '@xoram/core';
@@ -44,12 +42,44 @@ export default definePlugin(() => { // [!code focus:100]
 })
 ```
 
+Note that when using the helper you don't need to use `dependsOn` to declare the
+dependency on panoramique, it is done for you automatically, you can however do
+it anyway for clarity or completeness if you want to.
+
 ## The service's `register` method
 
 If you want to control when your definition is registered, for example if you
 know some other harness reference the one you have to declare, but you don't
-want it to always be loaded. You can register that definition when you want by
+want it to always be loaded. You can register that definition manually by
 interacting with the panoramique service directly, for example in an
 `onEvent` listener :
 
-<<< ./snippets/service-register-usage.ts
+```ts
+import { userPlugin } from '@acme/user-managment';
+import { definePlugin, dependsOn, onCreated, onEvent } from '@xoram/core';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique/src';
+import { emailPromptDefinition as emailPrompt } from './definitions';
+
+export default definePlugin(() => { // [!code focus:100]
+	dependsOn(userPlugin);
+	// remember to add panoramique as a dependency of your plugin
+	dependsOn(panoramiquePlugin); // [!code highlight]
+
+	onCreated(app => {
+		onEvent(/*[!hint:target:]*/'user', /*[!hint:on:]*/'loggedIn',
+			/*[!hint:handler:]*/({ user }) => {
+				// if the user is logged in we already know if they want our
+				// newsletter or not
+				if (app.services.userService.isLoggedIn(user)) {
+					return;
+				}
+
+				// register the email prompt popup so it shows in any component that
+				// has it declared as a child
+				// [!code highlight]
+				services.panoramique.register(/*[!hint:definition:]*/emailPrompt);
+			},
+		);
+	});
+});
+```
