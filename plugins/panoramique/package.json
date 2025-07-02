@@ -1,6 +1,6 @@
 {
   "name": "@xoram/plugin-panoramique",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A dynamic VueJS integration for xoram",
   "type": "module",
   "scripts": {
