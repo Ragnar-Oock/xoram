@@ -199,9 +199,6 @@ pre.shiki .line .inline-hint {
 	mix-blend-mode: exclusion;
 	display: none;
 
-	.show-inlay-hint & {
-		display: initial;
-	}
 
 	&.annotation {
 
@@ -209,6 +206,10 @@ pre.shiki .line .inline-hint {
 		color: var(--annotation-color);
 		background-color: var(--annotation-bgc);
 	}
+}
+
+.show-inlay-hint pre.shiki .line .inline-hint {
+	display: initial;
 }
 
 /**
