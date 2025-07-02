@@ -5,13 +5,14 @@ configuration of the Vue instance, for registering a Vue plugin for example. You
 can do so via the `app` property available on the `vue` service registered by
 panoramique.
 
-Become most plugins are used in components it's important they are added before
-those components are mounted, this means you should only modify the vue
-configuration in a `onBeforeCreate` hook. That way the Vue app has already been
-registered but no component has been registered into panoramique yet.
+Because most plugins are used in components or in code invoked by components
+it's important they are added before those components are mounted, this means
+you should only modify the vue configuration in a `onBeforeCreate` hook. That
+way the Vue app has already been registered but no component has been registered
+into panoramique yet.
 
 For example if you wanted to provide `vue-router` via a plugin it could look
-like this&nbsp;:
+like this:
 
 ```ts [router.plugin.ts]
 import { panoramiquePlugin } from '@xoram/plugin-panoramique';
@@ -48,10 +49,13 @@ loaded.
 
 ## Unmounting the app
 
-Just like for mounting you are also in charge of unmounting your app. Note that
-if the Vue app is still mounted when panoramique is torn down (either when
-destroying the app or when removing the plugin from it), it will automatically
-be unmounted.
+Unlike for mounting, you don't have to unmount your Vue app when you are done
+with it, you can destroy the xoram instance and panoramique will automatically
+unmount the Vue app if it is still mounted.
+
+You can however unmount the app manually just like you mounted it :
+
+<<< ./snippets/unmount-app.plugin.ts
 
 ## Multiple Vue applications
 
