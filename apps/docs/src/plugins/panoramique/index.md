@@ -91,4 +91,4 @@ definitions, harnesses, the helpers provided and how you can use reactivity to
 your advantage.
 
 You can also check the API reference for the
-[`@xoram/plugin-panoramique`](/api-reference/panoramique) package.
+[`@xoram/plugin-panoramique`](/api-reference/plugin-panoramique) package.
