@@ -85,12 +85,12 @@ export interface BlogStore extends Service {
 export const useBlogStore = defineStore<'awesome', ServiceAsStore<BlogStore>>(
 	/*[!hint:id:]*/'awesome',
 	/*[!hint:setup:]*/() => ({
-		posts: computed(() => { /* aquire the posts */ })
+		posts: computed<Post[]>(() => { /* aquire the posts */ })
 	})
 );
 ```
 
 :::
 
-And now you can use your store in Vue components like usual by importing and
+And now you can use the blog store in Vue components like usual by importing and
 invoking `useBlogStore()` and in plugins via `app.services.blog`.

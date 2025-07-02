@@ -2,9 +2,9 @@
 
 <!--@include: ./__start-at-beginning.md -->
 
-Being able to register components in panoramique allows us to add them when we
-want directly from our plugins, but what if we want to move them or to not have
-the same set of children at all time ?
+Being able to register components in panoramique allows you to add them when you
+want directly from your plugins, but what if you want to move them or to not
+have the same set of children at all time ?
 
 If you remember when we went over `ComponentDefinition` we said that the
 difference between a definition and a harness is that a modification on a

@@ -48,7 +48,7 @@ export const emailPromptDefinition = {
 };
 ```
 
-Using an `id` that id not the component's `name` allows us to use a Vue
+Using an `id` that id not the component's `name` allows you to use a Vue
 component in more than one definition. Making it possible to reuse UI elements
 in multiple plugins, for example to make a menu with standardised buttons each
 added by their own plugin without needing to create a wrapper component for each

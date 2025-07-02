@@ -50,8 +50,8 @@ loaded.
 
 Just like for mounting you are also in charge of unmounting your app. Note that
 if the Vue app is still mounted when panoramique is torn down (either when
-destroying the app or when removing the plugin from it) the Vue app will be
-unmounted automatically.
+destroying the app or when removing the plugin from it), it will automatically
+be unmounted.
 
 ## Multiple Vue applications
 
@@ -59,7 +59,7 @@ Panoramique doesn't support using more than one Vue application per xoram
 instance, if you need multiple Vue apps on the same page you should create
 multiple xoram instances.
 
-If you need to have your application present in multiple places on the page, if
-your app is a modal ui that can be opened from multiple interactive elements on
-the page, you can use the [`<Teleport/>`](
+If you need to have your application present in multiple places on the page, for
+example a modal ui that can be opened from multiple interactive elements on the
+page, you can use the [`<Teleport/>`](
 https://vuejs.org/guide/built-ins/teleport.html) component provided by Vue.
