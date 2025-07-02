@@ -78,6 +78,7 @@ export default defineConfig({
 								{ text: 'Describing components', link: '/plugins/panoramique/describing-components' },
 								{ text: 'Registering components', link: '/plugins/panoramique/registering-components' },
 								{ text: 'Parent-Child relationships', link: '/plugins/panoramique/parent-child-relationships' },
+								{ text: 'Updating a prop', link: '/plugins/panoramique/updating-a-prop' },
 								{ text: 'Configuring Vue', link: '/plugins/panoramique/configuring-vue' },
 								{ text: 'Using Pinia', link: '/plugins/panoramique/using-pinia' },
 							],
