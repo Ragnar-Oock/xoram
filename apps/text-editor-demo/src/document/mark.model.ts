@@ -1,9 +1,15 @@
-import type { Attributes, Mark, MarkType } from './types';
+import type { Attributes, InlineNode, MarkType, TextNode } from './types';
 
-export class MarkModel implements Mark {
-	constructor(
-		public readonly type: MarkType,
-		public readonly attributes: Attributes = {},
-	) {}
-
+export function mark({
+	type, attributes = {}, content,
+}: {
+	type: MarkType,
+	attributes?: Attributes,
+	content: TextNode,
+}): InlineNode {
+	return {
+		type,
+		attributes,
+		content,
+	};
 }
