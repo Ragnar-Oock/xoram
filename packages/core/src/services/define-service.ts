@@ -64,9 +64,10 @@ export function defineService<
 ): (app: Application) => Service<notification> & service {
 	return (app): Service<notification> & service => {
 		const emitter = createEmitter<notification & ServiceNotifications>();
-		return {
-			...(setup?.(app, emitter) ?? {} as service),
-			emitter,
-		};
+		const service = (setup?.(app, emitter) ?? {} as service);
+
+		// @ts-expect-error emitter doesn't exist on service
+		service.emiter = emitter;
+		return service as Service<notification> & service;
 	};
 }
