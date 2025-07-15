@@ -6646,6 +6646,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tiptap-demo@workspace:apps/tiptap":
+  version: 0.0.0-use.local
+  resolution: "tiptap-demo@workspace:apps/tiptap"
+  dependencies:
+    "@repo/config-api-extractor": "workspace:*"
+    "@repo/config-typescript": "workspace:*"
+    oxlint: "npm:^0.17.0"
+    typescript: "npm:^5.8.3"
+    vite: "npm:^6.3.5"
+    vitest: "npm:3.2.1"
+  languageName: unknown
+  linkType: soft
+
 "tmp@npm:^0.0.33":
   version: 0.0.33
   resolution: "tmp@npm:0.0.33"

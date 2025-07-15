@@ -1,0 +1,23 @@
+{
+  "name": "tiptap-demo",
+  "version": "0.1.0",
+  "description": "xoram x tiptap demo",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "oxlint",
+    "build:code:prod": "vite build --mode production",
+    "build:code:dev": "NODE_ENV=development vite build --mode development",
+    "build:code": "node ../../script/build-code.script.mjs",
+    "build:types": "node ../../script/build-types.script.mjs"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@repo/config-api-extractor": "workspace:*",
+    "@repo/config-typescript": "workspace:*",
+    "oxlint": "^0.17.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "3.2.1"
+  }
+}
