@@ -1,5 +1,6 @@
 export type AnyNode = BlockNode | InlineNode | TextNode;
-export type Fragment<nodes extends AnyNode | never> = nodes[]; // allows mixed content, not sure if it's good or bad
+export type Fragment<nodes extends DocumentNode | never> = nodes[]; // allows mixed content, not sure if it's good or
+                                                                    // bad
 
 export interface Mark {
 	kind: string;
@@ -13,26 +14,25 @@ export interface NodeKind {
 	isText: boolean;
 }
 
-interface DocumentNode {
-	readonly kind: NodeKind;
+export interface DocumentNode<nodeKind extends NodeKind = NodeKind> {
+	readonly kind: nodeKind;
 	readonly index: number;
 	readonly length: number;
+	readonly content: Fragment<DocumentNode | never>;
 }
 
 export interface BlockNode extends DocumentNode {
-	content: Fragment<BlockNode | InlineNode>;
-	attr: Record<string, unknown>;
+	readonly attr: Record<string, unknown>;
 }
 
 export interface InlineNode extends DocumentNode {
-	content: Fragment<TextNode>;
-	attr: Record<string, unknown>;
-	marks: Mark[];
+	readonly attr: Record<string, unknown>;
+	readonly marks: Mark[];
 }
 
 export interface TextNode extends DocumentNode {
-	content: Fragment<never>;
-	text: string;
+	readonly content: Fragment<never>;
+	readonly text: string;
 }
 
 //

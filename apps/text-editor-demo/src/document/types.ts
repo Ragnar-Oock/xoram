@@ -1,6 +1,7 @@
 import type { AnyNode, Fragment } from './fragment.model';
 
-export type Attributes = Record<string, unknown>;
+export type Attribute = string | { toString(): string };
+export type Attributes = Record<string, Attribute>;
 
 export type ContentExpression = string;
 
@@ -19,10 +20,17 @@ export interface AttributeSpec {
 export type RenderResult = unknown;
 
 export interface ParseRule {
-	priority?: number;
 	selectors: string[];
 
 	getAttributes(node: Element): Attributes;
+}
+
+
+export type SerializeRule = {
+	type: 1;
+	name: string;
+} | {
+	type: 3;
 }
 
 export interface NodeParseRule extends ParseRule {
@@ -50,6 +58,7 @@ export interface NodeSpec {
 	attributes: Record<string, AttributeSpec>;
 	render: (node: BlockNode) => RenderResult;
 	parse: ParseRule[];
+	serialize: SerializeRule;
 	/**
 	 * @default AllMarks
 	 */
@@ -82,6 +91,7 @@ export interface Schema {
 	readonly nodes: ReadonlyMap<NodeType['name'], NodeType>;
 	readonly marks: ReadonlyMap<MarkType['name'], MarkType>;
 
+	whitespace?: 'normal' | 'pre' | 'pre-line';
 
 	node(
 		type: NodeType | NodeType['name'],

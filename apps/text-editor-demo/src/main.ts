@@ -2,6 +2,8 @@ import { createApp, definePlugin, dependsOn, onCreated } from '@xoram/core';
 import type { AnyNode } from './document/fragment.model';
 import { ParserModel } from './document/parser';
 import { SchemaModel } from './document/schema.model';
+import { Serializer } from './document/serializer';
+import type { BlockNode } from './document/types';
 import { parserPlugin } from './dom-parser.plugin';
 import { domRendererPlugin } from './dom-renderer.plugin';
 import { htmlRendererPlugin } from './html-renderer.plugin';
@@ -19,6 +21,9 @@ createApp([
 		dependsOn(htmlRendererPlugin.id);
 
 		const textarea = document.getElementById('editor') as HTMLElement;
+		const output = document.getElementById('output') as HTMLElement;
+
+		const serializer = new Serializer();
 
 		onCreated(app => {
 
@@ -27,7 +32,8 @@ createApp([
 			schema
 				.registerNodeType('doc', {
 					content: '*',
-				}).registerNodeType('p', {
+				})
+				.registerNodeType('p', {
 					content: 'text',
 					parse: [
 						{
@@ -36,13 +42,30 @@ createApp([
 						},
 					],
 				})
-				.registerNodeType('text', {});
+				.registerNodeType('text', {})
+				.registerNodeType('i', {
+					content: 'text',
+					parse: [
+						{
+							selectors: [ 'i', 'em' ],
+							getAttributes: () => ({}),
+						},
+					],
+				});
 
-			const doc = new ParserModel(schema, new DOMParser())
-				.parse(textarea.childNodes);
-			console.log(doc);
-			console.log(render(doc));
+			let doc: BlockNode;
 
+			function update(): void {
+				doc = new ParserModel(schema, new DOMParser())
+					.parse(textarea.childNodes);
+
+				output.replaceChildren(serializer.render(doc));
+				console.log(render(doc));
+			}
+
+			textarea.addEventListener('change', update);
+			textarea.addEventListener('input', update);
+			update();
 		});
 	}),
 ]);

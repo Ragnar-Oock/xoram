@@ -18,6 +18,8 @@ export interface NodeBuilder {
 export interface NodeBuilderService extends Service {
 	parse(elements: Node[]): Fragment<AnyNode>;
 
+	parseNode(element: Node, context: ParsingContext): AnyNode | undefined;
+
 	addBuilder(nodeName: string, builder: NodeBuilder): undefined;
 }
 
@@ -62,6 +64,7 @@ const nodeBuilderService = defineService<NodeBuilderService>(() => {
 	return {
 		addBuilder,
 		parse,
+		parseNode,
 	};
 });
 

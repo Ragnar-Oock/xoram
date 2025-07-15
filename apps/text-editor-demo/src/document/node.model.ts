@@ -51,8 +51,6 @@ export function isNodeType(candidate: unknown): candidate is NodeType {
 		candidate !== null
 		&& typeof candidate === 'object'
 		&& typeof candidate.name === 'string'
-		&& candidate.schema !== null
-		&& typeof candidate.schema === 'object'
 		&& candidate.spec !== null
 		&& typeof candidate.spec === 'object'
 	);
