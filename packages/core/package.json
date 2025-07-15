@@ -41,10 +41,10 @@
   "devDependencies": {
     "@repo/config-api-extractor": "workspace:*",
     "@repo/config-typescript": "workspace:*",
-    "oxlint": "^0.17.0",
+    "oxlint": "^1.6.0",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vitest": "3.2.1"
+    "vite": "^7.0.4",
+    "vitest": "3.2.4"
   },
   "dependencies": {
     "mitt": "^3.0.1"
