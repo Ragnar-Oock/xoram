@@ -27,8 +27,10 @@
 	// eslint-disable-next-line func-style
 	const updateEvent = <prop extends string>(prop: prop): `update:${ prop }` => `update:${ prop }`;
 
-	const events = computed(() => Object.entries<EventHandler[]>(harness.value?.events ?? {}));
-	const models = computed<[ string, EventHandler[] ][]>(() => {
+	const events = computed<EventListeners[]>(() => Object
+		.entries(harness.value?.events as Record<string, EventHandler[]> | undefined ?? {}),
+	);
+	const models = computed<EventListeners[]>(() => {
 		const _harness = harness.value;
 		if (_harness === undefined) {
 			return [];
@@ -36,13 +38,13 @@
 		return Object
 			.keys(_harness.props)
 			.filter(prop => (_harness.type as ConcreteComponent).emits.includes(updateEvent(prop)))
-			.map<EventListeners>(prop => [
+			.map(prop => [
 				updateEvent(prop),
 				[
-					(update: unknown): void => {_harness.props[prop] = update;},
-					...(_harness.events[updateEvent(prop) as keyof Multiplex<ComponentEvents<Component>>] ?? []),
+					(update: unknown): void => { _harness.props[prop] = update; },
+					...(_harness.events[updateEvent(prop) as keyof Multiplex<ComponentEvents<Component>>] as EventHandler [] ?? []),
 				],
-			] as const);
+			]);
 	});
 
 	const listeners = computed(() => {
