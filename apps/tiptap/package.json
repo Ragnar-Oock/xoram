@@ -1,23 +1,31 @@
 {
   "name": "tiptap-demo",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "xoram x tiptap demo",
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "oxlint",
-    "build:code:prod": "vite build --mode production",
-    "build:code:dev": "NODE_ENV=development vite build --mode development",
-    "build:code": "node ../../script/build-code.script.mjs",
-    "build:types": "node ../../script/build-types.script.mjs"
+    "lint": "oxlint"
   },
   "license": "MIT",
   "devDependencies": {
     "@repo/config-api-extractor": "workspace:*",
     "@repo/config-typescript": "workspace:*",
-    "oxlint": "^0.17.0",
+    "oxlint": "^1.6.0",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vitest": "3.2.1"
+    "vite": "^7.0.4",
+    "vitest": "3.2.4"
+  },
+  "dependencies": {
+    "@floating-ui/dom": "^1.7.2",
+    "@tiptap/core": "^3.0.3",
+    "@tiptap/pm": "^3.0.3",
+    "@tiptap/starter-kit": "^3.0.3",
+    "@tiptap/vue-3": "^3.0.3",
+    "@xoram/core": "workspace:*",
+    "@xoram/plugin-panoramique": "workspace:*",
+    "vite-plugin-vue-devtools": "^7.7.7",
+    "vue": "^3.5.17",
+    "vue-tsc": "^3.0.1"
   }
 }
