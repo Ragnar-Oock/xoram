@@ -13,17 +13,17 @@
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.29",
     "@microsoft/api-extractor": "^7.52.8",
-    "@vitejs/plugin-vue": "^5.2.4",
-    "@vitest/browser": "3.2.1",
-    "@vitest/coverage-v8": "3.2.1",
-    "@vitest/ui": "3.2.1",
-    "oxlint": "^0.17.0",
-    "playwright": "^1.52.0",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vitest/browser": "3.2.4",
+    "@vitest/coverage-v8": "3.2.4",
+    "@vitest/ui": "3.2.4",
+    "oxlint": "^1.6.0",
+    "playwright": "^1.54.1",
     "turbo": "^2.5.4",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vitest": "3.2.1",
-    "vue": "^3.5.16"
+    "vite": "^7.0.4",
+    "vitest": "3.2.4",
+    "vue": "^3.5.17"
   },
   "name": "with-vite",
   "packageManager": "yarn@4.9.1+sha512.f95ce356460e05be48d66401c1ae64ef84d163dd689964962c6888a9810865e39097a5e9de748876c2e0bf89b232d583c33982773e9903ae7a76257270986538",
@@ -38,6 +38,6 @@
   ],
   "dependencies": {
     "@changesets/cli": "^2.29.5",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^3.0.1"
   }
 }

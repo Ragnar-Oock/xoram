@@ -12,6 +12,6 @@
     "@xoram/plugin-panoramique": "workspace:*"
   },
   "devDependencies": {
-    "terser": "^5.40.0"
+    "terser": "^5.43.1"
   }
 }
