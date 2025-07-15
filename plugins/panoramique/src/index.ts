@@ -6,7 +6,19 @@
  */
 
 
-export type { PanoramiqueService, ServiceAsStore } from './service/panoramique.service';
+export type { PanoramiqueService } from './service/panoramique.service';
+export type {
+	ServiceAsStore,
+	StoreAsService,
+	_ExtractActionsFromSetupStore,
+	_ExtractActionsFromSetupStore_Keys,
+	_ExtractGettersFromSetupStore,
+	_ExtractGettersFromSetupStore_Keys,
+	_ExtractStateFromSetupStore,
+	_ExtractStateFromSetupStore_Keys,
+	_Method,
+} from './service/pinia-compat';
+
 export type { VueService } from './service/vue.service';
 
 export { panoramiquePlugin } from './plugin';

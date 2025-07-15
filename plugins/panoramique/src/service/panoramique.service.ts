@@ -2,6 +2,7 @@ import { _warn, defineService, onBeforeDestroy, type Service } from '@xoram/core
 import { createPinia, defineStore, disposePinia, type Pinia } from 'pinia';
 import { type Component, computed, type ComputedRef, markRaw, reactive } from 'vue';
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
+import type { ServiceAsStore } from './pinia-compat';
 
 /**
  * The identifier of the harness mounted as the application root.
@@ -66,20 +67,6 @@ export interface PanoramiqueService extends Service {
 	 */
 	removeChild: (parent: string, child: string, slotName?: string) => void;
 }
-
-/**
- * Convert a {@link @xoram/core#Service| Service} into the corresponding Pinia store interface.
- *
- * @example
- * ```ts
- * defineStore<'panoramique', ServiceAsStore<PanoramiqueService>>('panoramique', () => {
- *   // panoramique service implementation
- * }
- * ```
- *
- * @public
- */
-export type ServiceAsStore<service extends Service> = Omit<service, keyof Service>;
 
 /**
  * Use the `default` slot when inserting children implicitly.

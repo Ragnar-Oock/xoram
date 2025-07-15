@@ -15,6 +15,7 @@ import type { MaybeRefOrGetter } from 'vue';
 import { PluginDefinition } from '@xoram/core';
 import type { Prettify } from '@xoram/core';
 import { Service } from '@xoram/core';
+import type { Store } from 'pinia';
 import type { VNodeProps } from 'vue';
 
 // @public
@@ -73,6 +74,30 @@ export type DefinedComponentDefinition<component extends Component, id extends s
 export type ExposedComponentProps<component extends Component> = Writable<Omit<ComponentProps<component>, keyof VNodeProps>>;
 
 // @public
+export type _ExtractActionsFromSetupStore<SS> = SS extends undefined | void ? Record<string, never> : Pick<SS, _ExtractActionsFromSetupStore_Keys<SS>>;
+
+// @public
+export type _ExtractActionsFromSetupStore_Keys<SS> = keyof {
+    [K in keyof SS as SS[K] extends _Method ? K : never]: unknown;
+};
+
+// @public
+export type _ExtractGettersFromSetupStore<SS> = SS extends undefined | void ? Record<string, never> : Pick<SS, _ExtractGettersFromSetupStore_Keys<SS>>;
+
+// @public
+export type _ExtractGettersFromSetupStore_Keys<SS> = keyof {
+    [K in keyof SS as SS[K] extends ComputedRef ? K : never]: unknown;
+};
+
+// @public
+export type _ExtractStateFromSetupStore<SS> = SS extends undefined | void ? Record<string, never> : Pick<SS, _ExtractStateFromSetupStore_Keys<SS>>;
+
+// @public
+export type _ExtractStateFromSetupStore_Keys<SS> = keyof {
+    [K in keyof SS as SS[K] extends _Method | ComputedRef ? never : K]: unknown;
+};
+
+// @public
 export type First<tuple> = tuple extends [infer first, ...unknown[]] ? first : never;
 
 // @public
@@ -84,6 +109,9 @@ export type HarnessChildren<component extends Component> = component extends (ne
 
 // @public
 export type HarnessListenableEvents<component extends Component> = Prettify<ComponentEvents<component>> & Omit<NativeEvents, keyof ComponentEvents<component>>;
+
+// @public
+export type _Method = (...args: unknown[]) => unknown;
 
 // @public
 export type Multiplex<record> = {
@@ -135,8 +163,11 @@ export type RemoveIndex<T> = {
 // @public
 export const rootHarness = "root";
 
-// @public
+// @public @deprecated
 export type ServiceAsStore<service extends Service> = Omit<service, keyof Service>;
+
+// @public
+export type StoreAsService<store, notifications extends Record<string, unknown> = Record<string, unknown>, storeId extends string = string> = (store extends Store ? store : Store<storeId, _ExtractStateFromSetupStore<store>, _ExtractGettersFromSetupStore<store>, _ExtractActionsFromSetupStore<store>>) & Service<notifications>;
 
 // @public
 export interface VueService extends Service {
