@@ -1,7 +1,6 @@
 import type { Emitter } from 'mitt';
 import type { Application } from '../application';
 import { emitter as createEmitter } from '../emitter';
-import type { Prettify } from '../type-helper';
 import type { Service, ServiceNotifications } from './services.type';
 
 /**
@@ -28,27 +27,10 @@ export function defineService<notification extends Record<string, unknown> = Rec
  */
 export function defineService<
 	notification extends Record<string, unknown> = Record<string, never>,
-	service extends Record<string, unknown> = Record<string, unknown>
+	service = object
 >(
-	setup: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => service,
-): (app: Application) => Prettify<Service<notification> & service>;
-/**
- * Define a stateful service.
- * @param setup - a service setup function, the object returned by this function will be used as the base for the
- *   derived service instances
- *
- * {@label STATEFUL_PRE_TYPED}
- *
- * @public
- */
-export function defineService<
-	service extends Service
->(
-	setup: (
-		app: Application,
-		emitter: Emitter<NotificationsFromService<service> & ServiceNotifications>,
-	) => Omit<service, keyof Service>,
-): (app: Application) => service;
+	setup: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => Omit<service, keyof Service>,
+): (app: Application) => Service<notification> & service;
 /**
  * Use one of the overloads.
  *
