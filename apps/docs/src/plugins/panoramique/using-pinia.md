@@ -66,7 +66,6 @@ export const blogPlugin = definePlugin(() => {
 ```
 
 ```ts [blog.store.ts]
-import type { Service } from '@xoram/core';
 import { defineStore } from 'pinia';
 import type { ComputedGetter } from 'vue';
 import { computed } from 'vue';
@@ -77,7 +76,7 @@ export interface Post { // [!code focus:100]
 	banner?: URL,
 }
 
-export interface BlogStore extends Service {
+export interface BlogStore {
 	posts: ComputedGetter<Post[]>;
 }
 
