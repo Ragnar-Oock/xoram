@@ -78,7 +78,7 @@ export type _ExtractActionsFromSetupStore<SS> = SS extends undefined | void ? Re
 
 // @public
 export type _ExtractActionsFromSetupStore_Keys<SS> = keyof {
-    [K in keyof SS as SS[K] extends _Method ? K : never]: unknown;
+    [K in keyof SS as SS[K] extends _Method ? K : never]: any;
 };
 
 // @public
@@ -86,7 +86,7 @@ export type _ExtractGettersFromSetupStore<SS> = SS extends undefined | void ? Re
 
 // @public
 export type _ExtractGettersFromSetupStore_Keys<SS> = keyof {
-    [K in keyof SS as SS[K] extends ComputedRef ? K : never]: unknown;
+    [K in keyof SS as SS[K] extends ComputedRef ? K : never]: any;
 };
 
 // @public
@@ -94,7 +94,7 @@ export type _ExtractStateFromSetupStore<SS> = SS extends undefined | void ? Reco
 
 // @public
 export type _ExtractStateFromSetupStore_Keys<SS> = keyof {
-    [K in keyof SS as SS[K] extends _Method | ComputedRef ? never : K]: unknown;
+    [K in keyof SS as SS[K] extends _Method | ComputedRef ? never : K]: any;
 };
 
 // @public
@@ -111,7 +111,7 @@ export type HarnessChildren<component extends Component> = component extends (ne
 export type HarnessListenableEvents<component extends Component> = Prettify<ComponentEvents<component>> & Omit<NativeEvents, keyof ComponentEvents<component>>;
 
 // @public
-export type _Method = (...args: unknown[]) => unknown;
+export type _Method = (...args: any[]) => any;
 
 // @public
 export type Multiplex<record> = {
@@ -144,7 +144,7 @@ export type OverloadUnionRecursive<TOverload, TPartialOverload = unknown> = TOve
 export const panoramiquePlugin: PluginDefinition;
 
 // @public
-export interface PanoramiqueService extends Service {
+export interface PanoramiqueStore {
     addChild: (parent: string, child: string, slotName?: string, index?: number) => void;
     get: <component extends Component = Component, id extends string = string>(id: id) => ComputedRef<ComponentHarness<component, id> | undefined>;
     register<component extends Component, id extends string = string>(definition: ComponentDefinition<component, id>): ComponentHarness<component, id>;
@@ -172,7 +172,7 @@ export type StoreAsService<store, notifications extends Record<string, unknown> 
 // @public
 export interface VueService extends Service {
     // (undocumented)
-    app: App;
+    readonly app: App;
 }
 
 // @public
