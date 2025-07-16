@@ -1,6 +1,12 @@
-import type { Service } from '@xoram/core';
+import type { Service, ServiceNotifications } from '@xoram/core';
+import type { Emitter } from 'mitt';
 import type { Store } from 'pinia';
 import type { ComputedRef } from 'vue';
+
+// we can't use `unknown` in the following types as nothing can be assigned to it, that would narrow down the filters
+// to `never` every time
+
+// oxlint-disable no-explicit-any
 
 /**
  * Generic type for a function that can infer arguments and return type
@@ -9,7 +15,7 @@ import type { ComputedRef } from 'vue';
  *
  * @public
  */
-export declare type _Method = (...args: unknown[]) => unknown;
+export declare type _Method = (...args: any[]) => any;
 
 /**
  * List all action-like members of an object.
@@ -30,7 +36,7 @@ export declare type _ExtractActionsFromSetupStore<SS> = SS extends undefined | v
  * @public
  */
 export declare type _ExtractActionsFromSetupStore_Keys<SS> = keyof {
-	[K in keyof SS as SS[K] extends _Method ? K : never]: unknown;
+	[K in keyof SS as SS[K] extends _Method ? K : never]: any;
 };
 
 /**
@@ -52,7 +58,7 @@ export declare type _ExtractGettersFromSetupStore<SS> = SS extends undefined | v
  * @public
  */
 export declare type _ExtractGettersFromSetupStore_Keys<SS> = keyof {
-	[K in keyof SS as SS[K] extends ComputedRef ? K : never]: unknown;
+	[K in keyof SS as SS[K] extends ComputedRef ? K : never]: any;
 };
 
 /**
@@ -75,8 +81,10 @@ export declare type _ExtractStateFromSetupStore<SS> = SS extends undefined | voi
  * @public
  */
 export declare type _ExtractStateFromSetupStore_Keys<SS> = keyof {
-	[K in keyof SS as SS[K] extends _Method | ComputedRef ? never : K]: unknown;
+	[K in keyof SS as SS[K] extends _Method | ComputedRef ? never : K]: any;
 };
+
+// oxlint-enable no-explicit-any
 
 
 /**
