@@ -177,7 +177,13 @@ export const usePanoramiqueStore = defineStore<'panoramique', PanoramiqueStore>(
 );
 
 export const panoramique = defineService<Record<string, unknown>, StoreAsService<PanoramiqueStore>>(({ services }) => {
-	const pinia: Pinia = createPinia();
+	const pinia: Pinia = createPinia()
+		.use(({ store }) => {
+			// Add the emitter key to pinia stores to allow defineService to inject the emitter when registering the store as
+			// a service
+			// don't use the return syntax to avoid having the emitter in the devtools
+			store.emitter = {};
+		});
 	services.vue.app.use(pinia);
 
 	onBeforeDestroy(() => {
