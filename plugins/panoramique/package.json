@@ -1,6 +1,6 @@
 {
   "name": "@xoram/plugin-panoramique",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A dynamic VueJS integration for xoram",
   "type": "module",
   "scripts": {
@@ -35,7 +35,7 @@
     }
   },
   "dependencies": {
-    "@xoram/core": "^0.1.0",
+    "@xoram/core": "^0.1.1",
     "pinia": "^3.0.3",
     "vue": "^3.5.17",
     "vue-component-type-helpers": "^3.0.1"
