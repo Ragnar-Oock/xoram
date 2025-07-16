@@ -2,6 +2,7 @@ import type { EditorOptions } from '@tiptap/core';
 import { StarterKit } from '@tiptap/starter-kit';
 import { Editor } from '@tiptap/vue-3';
 import { defineService } from '@xoram/core';
+import type { StoreAsService } from '@xoram/plugin-panoramique';
 import { defineStore } from 'pinia';
 import { computed, type Ref, ref, type ShallowRef, shallowRef } from 'vue';
 
@@ -34,7 +35,6 @@ export const useTiptapStore = defineStore<'tiptap', TiptapStore>('tiptap', () =>
 		editor: computed(() => editor.value),
 		ready: (): void => {
 			editor.value = new Editor(config.value);
-			console.log(editor.value);
 		},
 		destroy: (): void => {
 			editor.value?.destroy();
@@ -42,4 +42,4 @@ export const useTiptapStore = defineStore<'tiptap', TiptapStore>('tiptap', () =>
 	};
 });
 
-export const tiptapService = defineService(() => useTiptapStore());
+export const tiptapService = defineService<Record<string, unknown>, StoreAsService<TiptapStore>>(() => useTiptapStore());

@@ -25,7 +25,6 @@ export const tiptapPlugin = definePlugin('tiptap', () => {
 
 	onCreated(({ services }) => {
 		services.tiptap.ready();
-		console.log(services.tiptap.editor);
 		services.tiptap.editor?.commands?.setContent(document.body.innerHTML);
 		services.vue.app.mount('body');
 	});
