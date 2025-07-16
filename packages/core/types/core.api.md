@@ -118,10 +118,7 @@ export function definePlugin(name: string, setup: PluginSetup): PluginDefinition
 export function defineService<notification extends Record<string, unknown> = Record<string, never>>(): () => Service<notification>;
 
 // @public
-export function defineService<notification extends Record<string, unknown> = Record<string, never>, service extends Record<string, unknown> = Record<string, unknown>>(setup: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => service): (app: Application) => Prettify<Service<notification> & service>;
-
-// @public
-export function defineService<service extends Service>(setup: (app: Application, emitter: Emitter<NotificationsFromService<service> & ServiceNotifications>) => Omit<service, keyof Service>): (app: Application) => service;
+export function defineService<notification extends Record<string, unknown> = Record<string, never>, service = object>(setup: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => Omit<service, keyof Service>): (app: Application) => Service<notification> & service;
 
 // @public
 export function dependsOn(dependency: PluginId): void;

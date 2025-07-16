@@ -4,9 +4,9 @@
     "build": "turbo run build:code build:types build:doc --output-logs=new-only",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "test": "vitest run --browser.headless",
-    "test:coverage": "vitest run --coverage --browser=chromium --browser.headless",
-    "test:watch": "vitest --browser=firefox --browser.provider=preview",
+    "test": "turbo run build:code && vitest run --browser.headless",
+    "test:coverage": "turbo run build:code && vitest run --coverage --browser=chromium --browser.headless",
+    "test:watch": "turbo run build:code && vitest --browser=firefox --browser.provider=preview",
     "packages:publish": "turbo run build:code build:types && changeset version && changeset publish && yarn --mode=update-lockfile"
   },
   "type": "module",

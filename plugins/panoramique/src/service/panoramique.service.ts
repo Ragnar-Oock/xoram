@@ -1,7 +1,8 @@
-import { _warn, defineService, onBeforeDestroy, type Service } from '@xoram/core';
+import { _warn, defineService, onBeforeDestroy } from '@xoram/core';
 import { createPinia, defineStore, disposePinia, type Pinia } from 'pinia';
 import { type Component, computed, type ComputedRef, markRaw, reactive } from 'vue';
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
+import type { StoreAsService } from './pinia-compat';
 
 /**
  * The identifier of the harness mounted as the application root.
@@ -16,7 +17,7 @@ export const rootHarness = 'root';
  *
  * @public
  */
-export interface PanoramiqueService extends Service {
+export interface PanoramiqueStore {
 	/**
 	 * Register a new harness in the store for use somewhere else in the application.
 	 *
@@ -68,20 +69,6 @@ export interface PanoramiqueService extends Service {
 }
 
 /**
- * Convert a {@link @xoram/core#Service| Service} into the corresponding Pinia store interface.
- *
- * @example
- * ```ts
- * defineStore<'panoramique', ServiceAsStore<PanoramiqueService>>('panoramique', () => {
- *   // panoramique service implementation
- * }
- * ```
- *
- * @public
- */
-export type ServiceAsStore<service extends Service> = Omit<service, keyof Service>;
-
-/**
  * Use the `default` slot when inserting children implicitly.
  */
 export const defaultSlotName = 'default';
@@ -93,7 +80,7 @@ export const defaultInsertionIndex = -1;
  * Pinia store composable of the panoramique service. Can be used in Vue components or composable to interact with
  * harnesses.
  */
-export const usePanoramiqueStore = defineStore<'panoramique', ServiceAsStore<PanoramiqueService>>(
+export const usePanoramiqueStore = defineStore<'panoramique', PanoramiqueStore>(
 	'panoramique',
 	() => {
 		const _harnesses = reactive<Record<string, ComponentHarness>>({});
@@ -189,9 +176,14 @@ export const usePanoramiqueStore = defineStore<'panoramique', ServiceAsStore<Pan
 	},
 );
 
-export const panoramique = defineService<PanoramiqueService>(({ services }) => {
-
-	const pinia: Pinia = createPinia();
+export const panoramique = defineService<Record<string, unknown>, StoreAsService<PanoramiqueStore>>(({ services }) => {
+	const pinia: Pinia = createPinia()
+		.use(({ store }) => {
+			// Add the emitter key to pinia stores to allow defineService to inject the emitter when registering the store as
+			// a service
+			// don't use the return syntax to avoid having the emitter in the devtools
+			store.emitter = {};
+		});
 	services.vue.app.use(pinia);
 
 	onBeforeDestroy(() => {

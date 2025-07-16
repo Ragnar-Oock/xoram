@@ -9,12 +9,12 @@ import PanoramiqueRoot from '../component/panoramique-root.vue';
  * @public
  */
 export interface VueService extends Service {
-	app: App,
+	readonly app: App,
 }
 
 // todo : check how the unmount check impact bundle size
 // todo : think of a way to pass custom app config
-export const vueService = defineService<VueService>(() => {
+export const vueService = defineService<Record<string, never>, VueService>(() => {
 	// prevent unmounting a vue app that is not currently mounted
 	let mounted = false;
 
@@ -24,7 +24,7 @@ export const vueService = defineService<VueService>(() => {
 		beforeUnmount: () => {mounted = false;},
 	});
 
-	const service: Omit<VueService, keyof Service> = { app };
+	const service = { app } as const;
 
 	onBeforeDestroy(() => {
 		if (mounted) {
