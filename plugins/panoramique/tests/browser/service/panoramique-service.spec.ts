@@ -12,7 +12,7 @@ import { it } from '../../fixture/test.fixture';
 
 
 declare module '../../../src/service/panoramique.service' {
-	interface PanoramiqueService {
+	interface PanoramiqueStore {
 		_harnesses: Record<string, ComponentHarness>;
 	}
 }

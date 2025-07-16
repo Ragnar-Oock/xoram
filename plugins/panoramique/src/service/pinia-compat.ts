@@ -1,5 +1,4 @@
-import type { Service, ServiceNotifications } from '@xoram/core';
-import type { Emitter } from 'mitt';
+import type { Service } from '@xoram/core';
 import type { Store } from 'pinia';
 import type { ComputedRef } from 'vue';
 

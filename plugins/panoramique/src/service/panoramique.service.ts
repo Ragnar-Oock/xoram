@@ -1,8 +1,8 @@
-import { _warn, defineService, onBeforeDestroy, type Service } from '@xoram/core';
+import { _warn, defineService, onBeforeDestroy } from '@xoram/core';
 import { createPinia, defineStore, disposePinia, type Pinia } from 'pinia';
 import { type Component, computed, type ComputedRef, markRaw, reactive } from 'vue';
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
-import type { ServiceAsStore } from './pinia-compat';
+import type { StoreAsService } from './pinia-compat';
 
 /**
  * The identifier of the harness mounted as the application root.
@@ -17,7 +17,7 @@ export const rootHarness = 'root';
  *
  * @public
  */
-export interface PanoramiqueService extends Service {
+export interface PanoramiqueStore {
 	/**
 	 * Register a new harness in the store for use somewhere else in the application.
 	 *
@@ -80,7 +80,7 @@ export const defaultInsertionIndex = -1;
  * Pinia store composable of the panoramique service. Can be used in Vue components or composable to interact with
  * harnesses.
  */
-export const usePanoramiqueStore = defineStore<'panoramique', ServiceAsStore<PanoramiqueService>>(
+export const usePanoramiqueStore = defineStore<'panoramique', PanoramiqueStore>(
 	'panoramique',
 	() => {
 		const _harnesses = reactive<Record<string, ComponentHarness>>({});
@@ -176,8 +176,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', ServiceAsStore<Pan
 	},
 );
 
-export const panoramique = defineService<PanoramiqueService>(({ services }) => {
-
+export const panoramique = defineService<Record<string, unknown>, StoreAsService<PanoramiqueStore>>(({ services }) => {
 	const pinia: Pinia = createPinia();
 	services.vue.app.use(pinia);
 

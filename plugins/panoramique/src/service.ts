@@ -1,4 +1,5 @@
-import type { PanoramiqueService } from './service/panoramique.service';
+import type { PanoramiqueStore } from './service/panoramique.service';
+import type { StoreAsService } from './service/pinia-compat';
 import type { VueService } from './service/vue.service';
 
 declare module '@xoram/core' {
@@ -11,6 +12,6 @@ declare module '@xoram/core' {
 		/**
 		 * Register components and compose them to build your UI.
 		 */
-		panoramique: PanoramiqueService;
+		panoramique: StoreAsService<PanoramiqueStore>;
 	}
 }

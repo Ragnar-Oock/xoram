@@ -6,7 +6,7 @@
  */
 
 
-export type { PanoramiqueService } from './service/panoramique.service';
+export type { PanoramiqueStore } from './service/panoramique.service';
 export type {
 	ServiceAsStore,
 	StoreAsService,
