@@ -41,6 +41,7 @@ by passing them through `defineService()` :
 
 ```ts [blog.plugin.ts]
 import { addService, definePlugin, defineService } from '@xoram/core';
+import type { StoreAsService } from '@xoram/plugin-panoramique';
 import type { BlogStore } from './blog.store';
 import { useBlogStore } from './blog.store';
 
@@ -48,15 +49,15 @@ import { useBlogStore } from './blog.store';
 declare module '@xoram/core' {
 	interface ServiceCollection {
 		/* Manage Blog posts */
-		blog: BlogStore;
+		blog: StoreAsService<BlogStore>;
 	}
 }
 
 // register the service
-export const panoramiquePlugin = definePlugin(() => {
+export const blogPlugin = definePlugin(() => {
 	addService(
 		/*[!hint:id:]*/'blog',
-		/*[!hint:serviceFactory:]*/defineService<BlogStore>(
+		/*[!hint:serviceFactory:]*/defineService(
 			/*[!hint:setup:]*/() => useBlogStore()
 		)
 	)
@@ -66,7 +67,6 @@ export const panoramiquePlugin = definePlugin(() => {
 
 ```ts [blog.store.ts]
 import type { Service } from '@xoram/core';
-import type { ServiceAsStore } from '@xoram/plugin-panoramique';
 import { defineStore } from 'pinia';
 import type { ComputedGetter } from 'vue';
 import { computed } from 'vue';
@@ -82,8 +82,8 @@ export interface BlogStore extends Service {
 }
 
 // create the store as usual
-export const useBlogStore = defineStore<'awesome', ServiceAsStore<BlogStore>>(
-	/*[!hint:id:]*/'awesome',
+export const useBlogStore = defineStore<'blog', BlogStore>(
+	/*[!hint:id:]*/'blog',
 	/*[!hint:setup:]*/() => ({
 		posts: computed<Post[]>(() => { /* aquire the posts */ })
 	})
