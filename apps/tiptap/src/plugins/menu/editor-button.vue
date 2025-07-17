@@ -28,10 +28,10 @@
 		const chain = tiptap.editor?.chain().focus();
 
 		if (mark) {
-			chain?.setMark(mark);
+			chain?.toggleMark(mark);
 		}
 		if (node) {
-			chain?.setNode(node);
+			chain?.toggleNode(node, 'paragraph');
 		}
 
 		chain?.run();
