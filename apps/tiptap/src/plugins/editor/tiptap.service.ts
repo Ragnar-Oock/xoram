@@ -1,10 +1,13 @@
 import type { EditorOptions } from '@tiptap/core';
-import { StarterKit } from '@tiptap/starter-kit';
+import DocumentExtension from '@tiptap/extension-document';
+import ParagraphExtension from '@tiptap/extension-paragraph';
+import TextExtension from '@tiptap/extension-text';
 import { Editor } from '@tiptap/vue-3';
 import { defineService } from '@xoram/core';
 import type { StoreAsService } from '@xoram/plugin-panoramique';
 import { defineStore } from 'pinia';
 import { computed, type Ref, ref, type ShallowRef, shallowRef } from 'vue';
+
 
 export interface TiptapStore {
 	config: Ref<Partial<EditorOptions>>;
@@ -18,7 +21,9 @@ export interface TiptapStore {
 export const useTiptapStore = defineStore<'tiptap', TiptapStore>('tiptap', () => {
 	const config = ref<Partial<EditorOptions>>({
 		extensions: [
-			StarterKit,
+			DocumentExtension,
+			TextExtension,
+			ParagraphExtension,
 		],
 		editorProps: {
 			attributes: {
