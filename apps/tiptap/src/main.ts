@@ -1,21 +1,17 @@
-import { createApp, definePlugin } from '@xoram/core';
-import { addChild, defineComponentDefinition, panoramiquePlugin, register } from '@xoram/plugin-panoramique';
+import { createApp } from '@xoram/core';
+import { panoramiquePlugin } from '@xoram/plugin-panoramique';
 import { tiptapPlugin } from './plugins/editor/tiptap.plugin';
-import EditorButton from './plugins/menu/editor-button.vue';
 import { menuPlugin } from './plugins/menu/menu.plugin';
+import boldPlugin from './plugins/styles/bold.plugin';
+import headingPlugin from './plugins/styles/heading.plugin';
+import italicPlugin from './plugins/styles/italic.plugin';
 
 const app = createApp([
+	boldPlugin,
+	italicPlugin,
 	panoramiquePlugin,
 	tiptapPlugin,
 	menuPlugin,
-
-	definePlugin('addButtons', () => {
-		register(defineComponentDefinition('bold', EditorButton, ({ bind }) => {
-			bind('mark', 'bold');
-		}));
-
-		addChild('menu', 'bold');
-	}),
 ], {
 	id: 'tiptap-demo',
 });
