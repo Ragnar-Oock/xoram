@@ -5,6 +5,7 @@ import { menuPlugin } from './plugins/menu/menu.plugin';
 import boldPlugin from './plugins/styles/bold.plugin';
 import headingPlugin from './plugins/styles/heading.plugin';
 import italicPlugin from './plugins/styles/italic.plugin';
+import linkPlugin from './plugins/styles/link/link.plugin';
 
 const app = createApp([
 	boldPlugin,
@@ -13,6 +14,7 @@ const app = createApp([
 	panoramiquePlugin,
 	tiptapPlugin,
 	menuPlugin,
+	linkPlugin,
 ], {
 	id: 'tiptap-demo',
 });
