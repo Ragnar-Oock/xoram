@@ -24,6 +24,7 @@
     "@tiptap/extension-italic": "^3.0.3",
     "@tiptap/extension-paragraph": "^3.0.3",
     "@tiptap/extension-text": "^3.0.3",
+    "@tiptap/extension-heading": "^3.0.3",
     "@tiptap/pm": "^3.0.3",
     "@tiptap/vue-3": "^3.0.3",
     "@xoram/core": "workspace:*",

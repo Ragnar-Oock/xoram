@@ -9,6 +9,7 @@ import italicPlugin from './plugins/styles/italic.plugin';
 const app = createApp([
 	boldPlugin,
 	italicPlugin,
+	headingPlugin,
 	panoramiquePlugin,
 	tiptapPlugin,
 	menuPlugin,
