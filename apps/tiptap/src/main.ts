@@ -8,6 +8,9 @@ import italicPlugin from './plugins/styles/italic.plugin';
 import linkPlugin from './plugins/styles/link/link.plugin';
 import styleGroupPlugin from './plugins/styles/style-group.plugin';
 
+// oxlint-disable-next-line no-unassigned-import
+import './theme.css';
+
 const app = createApp([
 	boldPlugin,
 	italicPlugin,

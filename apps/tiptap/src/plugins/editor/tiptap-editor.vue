@@ -11,8 +11,8 @@
 </script>
 
 <template>
-	<slot></slot>
 	<label :for="id" :id="label">editor 👇</label>
+	<slot></slot>
 	<editor-content
 		class="editor"
 		v-if="tiptap.editor"
@@ -24,6 +24,7 @@
         display: contents;
 
         &:deep([contenteditable="true"]) {
+            margin-top: .5em;
 
             --accent: hsl(154, 30%, 38%);
             border: 1px solid var(--accent);

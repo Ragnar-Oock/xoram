@@ -11,5 +11,6 @@
 <style scoped>
     [role=menubar] {
         display: flex;
+        gap: .5em;
     }
 </style>
