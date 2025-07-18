@@ -11,7 +11,8 @@
 
 }
 
-[role="menuitem"] {
+[role="menuitem"],
+select {
 
     --border-color: var(--secondary-0);
     --text-color: var(--secondary-1);
@@ -51,5 +52,8 @@
 
     & + & {
         border-radius: 0 var(--b-radius) var(--b-radius) 0;
+
+    option {
+        background-color: var(--secondary-3);
     }
 }
