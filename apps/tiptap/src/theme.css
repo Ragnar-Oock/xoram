@@ -8,20 +8,26 @@
     --secondary-2: hsl(154, 10%, 38%);
     --secondary-3: hsl(154, 28%, 89%);
     --secondary-4: hsl(154, 40%, 80%);
+    --secondary-5: hsl(154, 10%, 95%);
 
+    --b-radius: 4px;
 }
 
+*, *::before, *::after {
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+
+.btn,
 [role="menuitem"],
 select {
 
     --border-color: var(--secondary-0);
     --text-color: var(--secondary-1);
     --background-color: var(--secondary-3);
-    --b-radius: 4px;
 
     padding: .25em .5em;
     border: 2px solid var(--border-color);
-    border-radius: var(--b-radius);
     color: var(--text-color);
     background-color: var(--background-color);
 
@@ -34,7 +40,7 @@ select {
 
     &[aria-disabled="true"] {
         --border-color: transparent;
-        --text-color: var(--secondary-2);
+        --text-color: var(--secondary-3);
     }
 
     &:focus-visible {
@@ -46,6 +52,49 @@ select {
         --background-color: var(--secondary-4);
     }
 
+    option {
+        background-color: var(--secondary-3);
+    }
+}
+
+input:not(
+    [type=checkbox],
+    [type=radiobutton]
+) {
+
+    --border-color: var(--secondary-0);
+    --text-color: var(--secondary-1);
+    --background-color: var(--secondary-5);
+
+    padding: .25em .5em;
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    background-color: var(--background-color);
+
+    transition: border-color 150ms ease-in-out;
+
+    &:focus {
+        --border-color: var(--primary-0);
+        outline: none;
+    }
+
+
+    &:disabled {
+        --border-color: transparent;
+        --text-color: var(--secondary-3);
+    }
+
+    label:has(+ &) {
+        padding: .25em .5em;
+        border: 2px solid var(--secondary-0);
+        display: flex;
+        align-items: center;
+    }
+}
+
+.rounded {
+    border-radius: var(--b-radius);
+
     &:has(+ &) {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
@@ -54,9 +103,5 @@ select {
     & + & {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
-    }
-
-    option {
-        background-color: var(--secondary-3);
     }
 }

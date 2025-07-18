@@ -45,6 +45,7 @@
 
 <template>
 	<button
+		class="rounded"
 		type="button"
 		role="menuitem"
 		@click="handleClick"

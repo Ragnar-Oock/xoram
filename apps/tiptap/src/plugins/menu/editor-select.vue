@@ -13,7 +13,7 @@
 </script>
 
 <template>
-	<select v-model="active">
+	<select v-model="active" class="rounded">
 		<option
 			v-for="option in options"
 			:value="option.value"

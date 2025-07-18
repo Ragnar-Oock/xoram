@@ -62,6 +62,7 @@
 			ref="setLink"
 			:popovertarget="popoverId"
 			popovertargetaction="show"
+			class="rounded"
 		>{{ buttonFace }}
 		</button>
 		<button
@@ -69,6 +70,7 @@
 			type="button"
 			v-if="isLink"
 			@click="removeLink"
+			class="rounded"
 		>Remove link
 		</button>
 		<!--		<button-->
@@ -86,22 +88,42 @@
 		@submit.prevent="applyLink"
 		:id="popoverId"
 	>
-		<label :for="urlInputId">URL :</label>
-		<input
-			type="url"
-			name="url"
-			:id="urlInputId"
-			autofocus
-			placeholder="https://xoram.dev/"
-			v-model="url">
-		<button
-			type="submit"
-		>{{ buttonFace }}
-		</button>
+		<fieldset>
+			<label :for="urlInputId"
+			       class="rounded"><span>URL :</span></label>
+			<input
+				type="url"
+				name="url"
+				:id="urlInputId"
+				autofocus
+				placeholder="https://xoram.dev/"
+				v-model="url"
+				class="rounded"
+			>
+			<button
+				type="submit"
+				class="btn rounded"
+			>{{ buttonFace }}
+			</button>
+		</fieldset>
 	</form>
 
 </template>
 
 <style scoped>
+    [popover] {
+        border: none;
+        padding: 1em;
+        border-radius: var(--b-radius);
 
+        box-shadow: 0 0 15px var(--primary-0);
+    }
+
+    fieldset {
+        display: flex;
+        padding: .5em;
+        align-items: center;
+        border: 1px solid var(--secondary-4);
+        border-radius: var(--b-radius);
+    }
 </style>
