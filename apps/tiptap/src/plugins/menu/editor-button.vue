@@ -20,6 +20,10 @@
 		return true;
 	});
 
+	const isActive = computed(() => {
+		return tiptap.editor?.isActive(mark ?? node ?? '');
+	});
+
 	function handleClick(): void {
 		if (isDisabled.value) {
 			return;
@@ -40,7 +44,12 @@
 </script>
 
 <template>
-	<button type="button" role="menuitem" @click="handleClick" :aria-disabled="isDisabled">
+	<button
+		type="button"
+		role="menuitem"
+		@click="handleClick"
+		:aria-disabled="isDisabled"
+		:aria-pressed="isActive">
 		{{ mark ?? node ?? 'unbound' }}
 	</button>
 </template>
