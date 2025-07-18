@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import { computed, ref, useId, useTemplateRef } from 'vue';
 	import { useTiptapStore } from '../../editor/tiptap.service';
+	import EditorMenuGroup from '../../menu/editor-menu-group.vue';
 
 	const tiptap = useTiptapStore();
 
@@ -54,7 +55,7 @@
 </script>
 
 <template>
-	<div role="group">
+	<editor-menu-group>
 		<button
 			role="menuitem"
 			type="button"
@@ -77,7 +78,7 @@
 		<!--			@click="followLink"-->
 		<!--		>Open link-->
 		<!--		</button>-->
-	</div>
+	</editor-menu-group>
 
 	<form
 		popover

@@ -6,6 +6,7 @@ import boldPlugin from './plugins/styles/bold.plugin';
 import headingPlugin from './plugins/styles/heading.plugin';
 import italicPlugin from './plugins/styles/italic.plugin';
 import linkPlugin from './plugins/styles/link/link.plugin';
+import styleGroupPlugin from './plugins/styles/style-group.plugin';
 
 const app = createApp([
 	boldPlugin,
@@ -15,6 +16,7 @@ const app = createApp([
 	tiptapPlugin,
 	menuPlugin,
 	linkPlugin,
+	styleGroupPlugin,
 ], {
 	id: 'tiptap-demo',
 });
