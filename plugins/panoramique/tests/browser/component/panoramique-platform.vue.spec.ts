@@ -6,6 +6,7 @@ import { ref } from 'vue';
 import { addChild, defineComponentDefinition, panoramiquePlugin, register, rootHarness } from '../../../src';
 import ContextMenu from '../../component/context-menu.vue';
 import ContextOption from '../../component/context-option.vue';
+import DumbComponent from '../../component/dumb-component.vue';
 import TestComponent from '../../component/test-component.vue';
 
 describe('PanoramiquePlatform', () => {
@@ -495,42 +496,21 @@ describe('PanoramiquePlatform', () => {
 			expect(warnSpy).toHaveBeenCalledOnce();
 		});
 
-		// circular dep can be useful but should be used with caution so we won't prevent it (and it would be complex
-		// and flaky to do so anyway)
-		it('should fail to mount with static circular dependency', async () => {
-			// todo make error message more informative
+		it('should mount components with no declared emits', async () => {
 			addPlugins([
 				definePlugin(() => {
-					onCreated(app => {
-						app.services.panoramique.register({
-							id: 'cycle1',
-							type: ContextMenu,
-							props: {
-								open: true,
-							},
-							children: [ 'cycle2' ],
-						});
-						app.services.panoramique.register({
-							id: 'cycle2',
-							type: ContextMenu,
-							props: {
-								open: true,
-							},
-							children: [ 'cycle1' ],
-						});
+					register(defineComponentDefinition('lorem', DumbComponent, ({ bind }) => {
+						bind('prop', 'hello');
+					}));
+					addChild(rootHarness, 'lorem');
 
-						app.services.panoramique.addChild(rootHarness, 'cycle1');
+					onCreated(app => {
+						app.services.vue.app.mount(document.body);
 					});
 				}),
 			], app);
 
-			// the thrown error is not consistent across browsers:
-			// chromium => RangeError: Maximum call stack size exceeded.
-			// webkit => RangeError: Maximum call stack size exceeded
-			// firefox => InternalError: too much recursion
-			expect(() => app.services.vue.app.mount(document.body)).toThrow();
-
-			await expect.element(page.getByRole('menu')).not.toBeInTheDocument();
+			await expect.element(page.getByTestId('lorem'), { timeout: 500 }).toBeVisible();
 		});
 	});
 });

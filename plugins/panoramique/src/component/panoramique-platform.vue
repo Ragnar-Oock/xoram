@@ -31,13 +31,14 @@
 		.entries(harness.value?.events as Record<string, EventHandler[]> | undefined ?? {}),
 	);
 	const models = computed<EventListeners[]>(() => {
-		const _harness = harness.value;
-		if (_harness === undefined) {
+		const _harness = harness.value,
+			emits = (_harness?.type as ConcreteComponent | undefined)?.emits;
+		if (!_harness || !emits || !emits.length) {
 			return [];
 		}
 		return Object
 			.keys(_harness.props)
-			.filter(prop => (_harness.type as ConcreteComponent).emits.includes(updateEvent(prop)))
+			.filter(prop => emits.includes(updateEvent(prop)))
 			.map(prop => [
 				updateEvent(prop),
 				[
