@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" vapor>
 	import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
 	const { testid = 'unnamed menu' } = defineProps<{

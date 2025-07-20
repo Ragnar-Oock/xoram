@@ -37,7 +37,7 @@
   "dependencies": {
     "@xoram/core": "workspace:^",
     "pinia": "^3.0.3",
-    "vue": "^3.5.17",
+    "vue": "3.6.0-alpha.2",
     "vue-component-type-helpers": "^3.0.1"
   },
   "devDependencies": {
