@@ -48,7 +48,7 @@ import { panoramiquePlugin } from "@xoram/plugin-panoramique"; // [!code highlig
 
 createApp([
 	panoramique, // [!code highlight]
-	/* your plugins goes here */
+	/* your plugins go here */
 ]);
 ```
 
@@ -56,9 +56,9 @@ createApp([
 
 ## Quick setup
 
-You can will need to have a plugin mount the Vue application setup by
+You will need to have a plugin mount the Vue application setup by
 `panoramique` to the DOM where and when you want to. Other components will be
-able to register and mount components has needed.
+able to register and mount components as needed.
 
 ::: code-group
 
@@ -85,9 +85,9 @@ createApp([
 
 ## Usage in depth
 
-We only covered the very basics here, to learn more about all the features of
-Panoramique, check the in following pages were you'll learn more about component
-definitions, harnesses, the helpers provided and how you can use reactivity to
+We only covered the very basics here. To learn more about all the features of
+Panoramique, check the following pages where you'll learn more about component
+definitions, harnesses, the helpers provided, and how you can use reactivity to
 your advantage.
 
 You can also check the API reference for the
