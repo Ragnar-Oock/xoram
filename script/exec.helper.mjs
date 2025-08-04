@@ -6,6 +6,13 @@ import {spawn} from 'node:child_process';
  * @param {string} command the command to execute in the child process
  * @param {string[]} args args to pass to the command
  * @param {object} [options] options to pass to the child process
+ *
+ * @returns {Promise<{
+ *   ok: boolean,
+ *   code: number,
+ *   stderr: string,
+ *   stdout: string,
+ * }>}
  */
 // eslint-disable-next-line require-await
 export async function exec(command, args, options) {

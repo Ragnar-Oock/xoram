@@ -7,13 +7,15 @@
     "test": "turbo run build:code && vitest run --browser.headless",
     "test:coverage": "turbo run build:code && vitest run --coverage --browser=chromium --browser.headless",
     "test:watch": "turbo run build:code && vitest --browser=firefox --browser.provider=preview",
-    "packages:publish": "turbo run build:code build:types && changeset version && changeset publish && yarn --mode=update-lockfile"
+    "packages:publish": "turbo run build:code build:types && changeset version && changeset publish && yarn --mode=update-lockfile",
+    "create:plugin": "turbo gen --config ./turbo/generators/config.cts plugin"
   },
   "type": "module",
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
     "@microsoft/api-documenter": "^7.26.31",
     "@microsoft/api-extractor": "^7.52.10",
+    "@turbo/gen": "^2.5.5",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitest/browser": "3.2.4",
     "@vitest/coverage-v8": "3.2.4",
@@ -28,7 +30,7 @@
     "vue": "^3.5.18",
     "vue-tsc": "^3.0.5"
   },
-  "name": "with-vite",
+  "name": "xoram",
   "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c",
   "engines": {
     "node": "^22"

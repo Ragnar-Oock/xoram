@@ -107,3 +107,12 @@ yarn exec vitest dev [package/folder]
 
 If you want to run unit tests only from that package you can use `--project 
 node:*`.
+
+### Creating a plugin
+
+The following command will bootstrap a new plugin package under `./plugins`,
+answer the prompts and commit the created files.
+
+```shell
+yarn create:plugin
+```
