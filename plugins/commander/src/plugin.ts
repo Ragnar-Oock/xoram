@@ -1,8 +1,9 @@
-import { definePlugin } from '@xoram/core';
+import { addService, definePlugin } from '@xoram/core';
+import { CommandService } from './commander.service';
 
 /**
-* @public
-*/
+ * @public
+ */
 export const commanderPlugin = definePlugin('commander', () => {
-	console.log('hi from commander');
+	addService('commander', new CommandService());
 });
