@@ -1,0 +1,1 @@
+export { commanderPlugin } from './plugin';
