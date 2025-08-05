@@ -138,6 +138,10 @@ type _Commands = {
 		? never
 		: name]: CommandConstructor<Parameters<CommandCollection[name]>>;
 }
+/**
+ * Stand in object used as the target of proxies implementing the .commands, .can and .chain methods of Commander
+ */
+const EMPTY = {};
 
 export const commandService = defineService<CommanderNotifications, Commander>((app) => {
 	const _commands: _Commands = {} as _Commands;
@@ -148,7 +152,7 @@ export const commandService = defineService<CommanderNotifications, Commander>((
 	 * @param dispatch the dispatch function to pass to the commands invoked in the chain
 	 */
 	function getChain(transaction: Transaction, dispatch?: (transaction: Transaction) => void): ChainedCommand {
-		const chain = new Proxy({} as ChainedCommand, {
+		const chain = new Proxy(EMPTY as ChainedCommand, {
 			get: (_, property): (() => ChainedCommand) | Invoker | undefined => {
 				// invoke the chain
 				if (property === 'run') {
@@ -186,7 +190,7 @@ export const commandService = defineService<CommanderNotifications, Commander>((
 		get can(): CanCommand {
 			const transaction = new BaseTransaction();
 			const dispatch = undefined;
-			return new Proxy({} as CanCommand, {
+			return new Proxy(EMPTY as CanCommand, {
 				get: (_, property): ChainedCommand | Invoker | undefined => {
 					if (property === 'chain') {
 						return getChain(transaction, dispatch);
@@ -209,7 +213,7 @@ export const commandService = defineService<CommanderNotifications, Commander>((
 
 		get commands(): SingleCommand {
 			const transaction = new BaseTransaction();
-			return new Proxy({} as SingleCommand, {
+			return new Proxy(EMPTY as SingleCommand, {
 				get: (_, property): Invoker | undefined => {
 					const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
 					if (!commandConstructor) {return undefined;}
