@@ -24,6 +24,9 @@ export function getBrowserTestConfig(pkg: PackageJSON): UserProjectConfigFn {
 					{ browser: 'webkit' },
 				],
 			},
+			expect: {
+				requireAssertions: true,
+			},
 		},
 	}));
 }
@@ -41,6 +44,9 @@ export function getNodeTestConfig(pkg: PackageJSON): UserProjectConfigFn {
 			],
 			name: `node:${ unscope(pkg.name) }`,
 			environment: 'node',
+			expect: {
+				requireAssertions: true,
+			},
 		},
 	}));
 }
