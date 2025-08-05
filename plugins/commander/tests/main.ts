@@ -30,7 +30,7 @@ const app = createApp([
 	commanderPlugin,
 	definePlugin('test-commander', () => {
 		onBeforeCreate(({ services }) => {
-			services.commander.register('hi', (msg) => (tr, dispatch): boolean => {
+			services.commander.register('hi', (msg) => (_app, tr, dispatch): boolean => {
 				if (typeof msg !== 'string') {
 					return false;
 				}
@@ -54,3 +54,5 @@ const app = createApp([
 ]);
 
 console.log(app);
+// @ts-expect-error app doesn't exist on window
+window.app = app;

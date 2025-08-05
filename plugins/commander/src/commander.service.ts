@@ -1,4 +1,4 @@
-import { defineService, type Service } from '@xoram/core';
+import { type Application, defineService, type Service } from '@xoram/core';
 import { BaseTransaction } from './base-transaction';
 
 export interface CommandCollection {
@@ -79,7 +79,11 @@ export interface Commander extends Service<CommanderNotifications> {
  * @param dispatch
  * @returns can the command be played in the current context ?
  */
-export type Command = (transaction: Transaction, dispatch?: (transaction: Transaction) => void) => boolean;
+export type Command = (
+	app: Application,
+	transaction: Transaction,
+	dispatch?: (transaction: Transaction) => void,
+) => boolean;
 
 export type CommandConstructor<arguments extends any[]> = (...args: arguments) => Command;
 
@@ -130,7 +134,7 @@ type _Commands = {
 		: name]: CommandConstructor<Parameters<CommandCollection[name]>>;
 }
 
-export const commandService = defineService<CommanderNotifications, Commander>(() => {
+export const commandService = defineService<CommanderNotifications, Commander>((app) => {
 	const _commands: _Commands = {} as _Commands;
 
 	/**
@@ -153,7 +157,7 @@ export const commandService = defineService<CommanderNotifications, Commander>((
 
 				// add a command in the chain
 				return (...args: unknown[]) => {
-					commandConstructor(...args)(transaction, dispatch);
+					commandConstructor(...args)(app, transaction, dispatch);
 					return chain;
 				};
 			},
@@ -186,7 +190,10 @@ export const commandService = defineService<CommanderNotifications, Commander>((
 					const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
 					if (!commandConstructor) {return undefined;}
 
-					return (...args: unknown[]) => commandConstructor(...args)(transaction, dispatch) && transaction.apply();
+					return (...args: unknown[]) => (
+						commandConstructor(...args)(app, transaction, dispatch)
+						&& transaction.apply()
+					);
 				},
 			});
 		},
@@ -202,7 +209,10 @@ export const commandService = defineService<CommanderNotifications, Commander>((
 					const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
 					if (!commandConstructor) {return undefined;}
 
-					return (...args: unknown[]) => commandConstructor(...args)(transaction, () => void 0) && transaction.apply();
+					return (...args: unknown[]) => (
+						commandConstructor(...args)(app, transaction, () => void 0)
+						&& transaction.apply()
+					);
 				},
 			});
 		},
