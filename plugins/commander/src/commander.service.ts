@@ -98,7 +98,12 @@ export interface Step {
 	remove: () => void;
 }
 
+export type TransactionStatus = 'floating' | 'applied' | 'removed';
+
 export interface Transaction {
+	readonly steps: readonly Step[];
+
+	status: TransactionStatus;
 	/**
 	 * add a step in the transaction to be played when the transaction is applied
 	 * @param step
