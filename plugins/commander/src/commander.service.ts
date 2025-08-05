@@ -1,3 +1,4 @@
+import { defineService, type Service } from '@xoram/core';
 import { BaseTransaction } from './base-transaction';
 
 export interface CommandCollection {
@@ -32,7 +33,12 @@ export type CanCommand = {
 	chain: ChainedCommand;
 }
 
-export interface Commander {
+export type CommanderNotifications = {
+	beforeTransactionDispatch: { transaction: Transaction };
+	afterTransactionDispatch: { transaction: Transaction };
+}
+
+export interface Commander extends Service<CommanderNotifications> {
 	/**
 	 * A set of all commands available to run on their own, each call creates a step in the history.
 	 */
@@ -124,70 +130,15 @@ type _Commands = {
 		: name]: CommandConstructor<Parameters<CommandCollection[name]>>;
 }
 
-export class CommandService implements Commander {
-	private readonly _commands: _Commands = {} as _Commands;
-
-	register<commandName extends keyof NonNever<CommandCollection>>(
-		name: commandName,
-		command: CommandConstructor<Parameters<CommandCollection[commandName]>>,
-	): this {
-		if (name in this._commands) {return this;}
-
-		this._commands[name] = command as CommandConstructor<unknown[]>;
-
-		return this;
-	}
-
-	get can(): CanCommand {
-		const transaction = this.transaction;
-		const dispatch = undefined;
-		return new Proxy({} as CanCommand, {
-			get: (_, property): ChainedCommand | Invoker | undefined => {
-
-				if (property === 'chain') {
-					return this.getChain(transaction, dispatch);
-				}
-
-				const commandConstructor = this._commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
-				if (!commandConstructor) {return undefined;}
-
-				return (...args: unknown[]) => commandConstructor(...args)(transaction, dispatch) && transaction.apply();
-			},
-		});
-	}
-
-	/**
-	 * Create a new transaction to play commands with.
-	 * @private
-	 */
-	private get transaction(): Transaction {
-		return new BaseTransaction();
-	}
-
-	get chain(): ChainedCommand {
-		return this.getChain(this.transaction, () => void 0);
-	}
-
-	get commands(): SingleCommand {
-		const transaction = this.transaction;
-		return new Proxy({} as SingleCommand, {
-			get: (_, property): Invoker | undefined => {
-				// @ts-expect-error property can't index _commands
-				const commandConstructor = this._commands[property] as CommandConstructor | undefined;
-				if (!commandConstructor) {return undefined;}
-
-				return (...args: unknown[]) => commandConstructor(...args)(transaction, () => void 0) && transaction.apply();
-			},
-		});
-	}
+export const commandService = defineService<CommanderNotifications, Commander>(() => {
+	const _commands: _Commands = {} as _Commands;
 
 	/**
 	 * Create a chain of commands to apply on the given transaction.
 	 * @param transaction the transaction commands should add their steps to
 	 * @param dispatch the dispatch function to pass to the commands invoked in the chain
-	 * @private
 	 */
-	private getChain(transaction: Transaction, dispatch?: (transaction: Transaction) => void): ChainedCommand {
+	function getChain(transaction: Transaction, dispatch?: (transaction: Transaction) => void): ChainedCommand {
 		const chain = new Proxy({} as ChainedCommand, {
 			get: (_, property): (() => ChainedCommand) | Invoker | undefined => {
 				// invoke the chain
@@ -195,8 +146,7 @@ export class CommandService implements Commander {
 					return () => transaction.apply();
 				}
 
-				// @ts-expect-error property can't index _commands
-				const commandConstructor = this._commands[property] as CommandConstructor | undefined;
+				const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
 
 				// no command exists with the name held by property
 				if (!commandConstructor) {return undefined;}
@@ -211,4 +161,50 @@ export class CommandService implements Commander {
 
 		return chain;
 	}
-}
+
+	return {
+		register<commandName extends keyof NonNever<CommandCollection>>(
+			name: commandName,
+			command: CommandConstructor<Parameters<CommandCollection[commandName]>>,
+		): Commander {
+			if (name in _commands) {return this as Commander;}
+
+			_commands[name] = command as CommandConstructor<unknown[]>;
+
+			return this as Commander;
+		},
+
+		get can(): CanCommand {
+			const transaction = new BaseTransaction();
+			const dispatch = undefined;
+			return new Proxy({} as CanCommand, {
+				get: (_, property): ChainedCommand | Invoker | undefined => {
+					if (property === 'chain') {
+						return getChain(transaction, dispatch);
+					}
+
+					const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
+					if (!commandConstructor) {return undefined;}
+
+					return (...args: unknown[]) => commandConstructor(...args)(transaction, dispatch) && transaction.apply();
+				},
+			});
+		},
+
+		get chain(): ChainedCommand {
+			return getChain(new BaseTransaction(), () => void 0);
+		},
+
+		get commands(): SingleCommand {
+			const transaction = new BaseTransaction();
+			return new Proxy({} as SingleCommand, {
+				get: (_, property): Invoker | undefined => {
+					const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
+					if (!commandConstructor) {return undefined;}
+
+					return (...args: unknown[]) => commandConstructor(...args)(transaction, () => void 0) && transaction.apply();
+				},
+			});
+		},
+	};
+});
