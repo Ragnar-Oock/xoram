@@ -5,40 +5,50 @@ import {
 	definePlugin,
 	dependsOn,
 	destroyApp,
+	onBeforeCreate,
 	onCreated,
 	type PluginDefinition,
 } from '@xoram/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { commanderPlugin } from '../../src';
-import type { ChainedCommand, Command, CommandConstructor, Transaction } from '../../src/commander.service';
-import { TestStep } from '../test-step';
+import type { Command, CommandConstructor } from '../../src/api/command';
 
-declare module '../../src/commander.service' {
+import type { ChainedCommand } from '../../src/api/command.service';
+import type { State, StateService } from '../../src/api/state.service';
+import type { Transaction } from '../../src/api/transaction';
+import { ReplaceTestValueStep } from '../replace-test-value.step';
+
+declare module '../../src/api/command.service' {
+	// noinspection JSUnusedGlobalSymbols
 	export interface CommandCollection {
 		test: (msg?: string) => void;
 	}
 }
 
-// oxlint-disable-next-line func-style
 const noop = (): void => void 0;
-// oxlint-disable-next-line func-style
-const testCommandConstructor: CommandConstructor<[ msg?: string ]> = msg => (app, transaction, dispatch) => {
-	if (msg === undefined) {
+
+const claim = 'test';
+const initialValue = () => ({ value: '' });
+
+const testCommandConstructor: CommandConstructor<[ msg?: string ]> = msg => (state, transaction, dispatch) => {
+	if (msg === undefined || state.realms[claim]?.value === undefined) {
 		return false;
 	}
 	if (dispatch) {
-		transaction.add(new TestStep(msg));
+		transaction.add(new ReplaceTestValueStep(claim, msg));
 	}
 	return true;
 };
+
 const testPlugin: PluginDefinition = definePlugin(() => {
 	dependsOn(commanderPlugin.id);
 
-	onCreated(({ services }) => {
-
+	onBeforeCreate(({ services }) => {
+		services.state.claim(claim, initialValue());
 		services.commander.register('test', testCommandConstructor);
 	});
 });
+
 describe('commander service', () => {
 	let app: Application;
 	beforeEach(({ task }) => {
@@ -152,14 +162,14 @@ describe('commander service', () => {
 
 			expect(commandConstructor).toHaveBeenCalledExactlyOnceWith('message');
 		});
-		it('should invoke the command with the app instance', () => {
-			let application: Application | undefined;
+		it('should invoke the command with the current state instance', () => {
+			let receivedState: State | undefined;
 			addPlugin(definePlugin(() => {
 				dependsOn(commanderPlugin.id);
 
 				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (app, _transaction, _dispatch): boolean => {
-						application = app;
+					services.commander.register('test', _msg => (state, _transaction, _dispatch): boolean => {
+						receivedState = state;
 						return true;
 					});
 				});
@@ -167,7 +177,7 @@ describe('commander service', () => {
 
 			app.services.commander.commands.test('message');
 
-			expect(application).toBe(app);
+			expect(receivedState).toBe(app.services.state);
 		});
 		it('should invoke the command with an empty transaction', () => {
 			let tr: Transaction | undefined;
@@ -214,10 +224,23 @@ describe('commander service', () => {
 
 			expect(app.services.commander.commands.test(/*don't work when no message*/)).toBeFalsy();
 		});
-		// todo find a way to inject the transaction creation
-		it.todo('should apply the transaction', () => {});
-		// todo history interface to be determined
-		it.todo('should add the transaction to the past branch of history', () => {});
+		it('should perform the action', () => {
+			addPlugin(testPlugin, app);
+			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
+
+			app.services.commander.commands.test('hello');
+
+			expect(app.services.state.realms[claim]).toStrictEqual({ value: 'hello' });
+		});
+		it('should add the transaction to history', () => {
+			addPlugin(testPlugin, app);
+
+			expect(app.services.history.hasPast).toBeFalsy();
+
+			app.services.commander.commands.test('hello');
+
+			expect(app.services.history.hasPast).toBeTruthy();
+		});
 	});
 	describe('can[command]', () => {
 		it('should invoke the command constructor with the given arguments', () => {
@@ -235,13 +258,13 @@ describe('commander service', () => {
 			expect(commandConstructor).toHaveBeenCalledExactlyOnceWith('message');
 		});
 		it('should invoke the command with the app instance', () => {
-			let application: Application | undefined;
+			let receivedState: State | undefined;
 			addPlugin(definePlugin(() => {
 				dependsOn(commanderPlugin.id);
 
 				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (app, _transaction, _dispatch): boolean => {
-						application = app;
+					services.commander.register('test', _msg => (state, _transaction, _dispatch): boolean => {
+						receivedState = state;
 						return true;
 					});
 				});
@@ -249,7 +272,7 @@ describe('commander service', () => {
 
 			app.services.commander.can.test('message');
 
-			expect(application).toBe(app);
+			expect(receivedState).toBe(app.services.state);
 		});
 		it('should invoke the command with an empty transaction', () => {
 			let tr: Transaction | undefined;
@@ -296,10 +319,23 @@ describe('commander service', () => {
 
 			expect(app.services.commander.commands.test(/*don't work when no message*/)).toBeFalsy();
 		});
-		// todo find a way to inject the transaction creation
-		it.todo('should keep the transaction floating', () => {});
-		// todo history interface to be determined
-		it.todo('should keep the transaction out of the history', () => {});
+		it('should not perform the action', () => {
+			addPlugin(testPlugin, app);
+			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
+
+			app.services.commander.can.test('hello');
+
+			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
+		});
+		it('should keep the transaction out of the history', () => {
+			addPlugin(testPlugin, app);
+
+			expect(app.services.history.hasPast).toBeFalsy();
+
+			app.services.commander.can.test('hello');
+
+			expect(app.services.history.hasPast).toBeFalsy();
+		});
 	});
 	describe('chain[command]', () => {
 		it('should invoke the command constructor with the given arguments', () => {
@@ -317,13 +353,13 @@ describe('commander service', () => {
 			expect(commandConstructor).toHaveBeenCalledExactlyOnceWith('message');
 		});
 		it('should invoke all the commands with the app instance', () => {
-			const apps: Application[] = [];
+			const states: StateService[] = [];
 			addPlugin(definePlugin(() => {
 				dependsOn(commanderPlugin.id);
 
 				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (app, _transaction, _dispatch): boolean => {
-						apps.push(app);
+					services.commander.register('test', _msg => (state, _transaction, _dispatch): boolean => {
+						states.push(state);
 						return true;
 					});
 				});
@@ -331,8 +367,8 @@ describe('commander service', () => {
 
 			app.services.commander.chain.test('message');
 
-			expect(apps).toSatisfy(value => Array.isArray(value) && value.every(item => item === value[0]));
-			expect(apps[0]).toBe(app);
+			expect(states).toSatisfy(value => Array.isArray(value) && value.every(item => item === value[0]));
+			expect(states[0]).toBe(app.services.state);
 		});
 		it('should invoke the first command with an empty transaction', () => {
 			let tr: Transaction | undefined;
@@ -386,8 +422,14 @@ describe('commander service', () => {
 			expect(dispatchFunctions).toSatisfy(value => Array.isArray(value) && value.every(item => item === value[0]));
 			expect(dispatchFunctions[0]).toBeTypeOf('function');
 		});
-		// todo find a way to inject the transaction creation
-		it.todo('should not apply the transaction', () => {});
+		it('should not perform the action', () => {
+			addPlugin(testPlugin, app);
+			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
+
+			app.services.commander.chain.test('hello');
+
+			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
+		});
 		it('should return the chain object', () => {
 			const chains: ChainedCommand[] = [];
 			addPlugin(testPlugin, app);
@@ -401,10 +443,28 @@ describe('commander service', () => {
 		});
 	});
 	describe('chain.run()', () => {
-		// todo find a way to inject the transaction creation
-		it.todo('should apply the transaction', () => {});
-		// todo history interface to be determined
-		it.todo('should add the transaction to history', () => {});
+		it('should perform the commands actions', () => {
+			addPlugin(testPlugin, app);
+
+			const chain = app.services.commander.chain.test('hello');
+
+			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
+
+			chain.run();
+
+			expect(app.services.state.realms[claim]).toStrictEqual({ value: 'hello' });
+		});
+		it('should add the transaction to history', () => {
+			addPlugin(testPlugin, app);
+
+			const chain = app.services.commander.chain.test('hello');
+
+			expect(app.services.history.hasPast).toBeFalsy();
+
+			chain.run();
+
+			expect(app.services.history.hasPast).toBeTruthy();
+		});
 	});
 	describe('register', () => {
 		it('should add the command to the list of available commands', () => {
