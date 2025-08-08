@@ -15,6 +15,8 @@ export interface Step {
 
 	/**
 	 * Create a step that does the opposite action.
+	 *
+	 * @param state - the state as it was before changes were made
 	 */
-	reverse: () => Step;
+	reverse: (state: State) => Step;
 }

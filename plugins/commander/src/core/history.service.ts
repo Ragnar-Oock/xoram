@@ -27,7 +27,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 					return failure(new HistoryError('Failed to commit transaction', { cause: result.reason }));
 				}
 
-				head = { transaction, time: performance.now(), parent: head };
+				head = { transaction: result.value, time: performance.now(), parent: head };
 				return success(head);
 			},
 			get hasFuture(): boolean {return future !== undefined;},
@@ -51,7 +51,6 @@ export const historyService: (app: Application) => HistoryService = defineServic
 
 				let result = head
 					.transaction
-					.reverse()
 					.apply(app.services.state as State);
 
 				if (!result.ok) {
@@ -59,7 +58,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 				}
 
 				head = head.parent as Commit;
-				future = { transaction: head.transaction, time: performance.now(), parent: future };
+				future = { transaction: result.value, time: performance.now(), parent: future };
 
 				return success(true);
 

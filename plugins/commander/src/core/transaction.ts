@@ -5,7 +5,7 @@ import type { Transaction as TransactionInterface } from '../api/transaction';
 import { TransactionError } from '../api/transaction-error';
 
 export class Transaction implements TransactionInterface {
-	private readonly _steps: Step[] = [];
+	constructor(private readonly _steps: Step[] = []) {}
 
 	public add(step: Step): this {
 		this._steps.push(step);
@@ -16,11 +16,12 @@ export class Transaction implements TransactionInterface {
 		return this._steps;
 	}
 
-	public apply(state: State): Result<undefined, TransactionError> {
-		const playedSteps: Step[] = [];
+	public apply(state: State): Result<Transaction, TransactionError> {
+		const reversedSteps: Step[] = [];
 		let applyError: TransactionError | undefined;
 		// play steps
 		for (const step of this._steps) {
+			const reversed = step.reverse(state);
 			const result = step.apply(state);
 
 			if (!result.ok) {
@@ -28,26 +29,22 @@ export class Transaction implements TransactionInterface {
 				break;
 			}
 
-			playedSteps.push(step);
+			reversedSteps.push(reversed);
 		}
 
 		// rollback on fail
 		if (applyError) {
 			// we don't provide safeguards if the rollback fails
-			for (const step of playedSteps.reverse()) {
-				step.reverse().apply(state);
+			for (const step of reversedSteps.reverse()) {
+				step.apply(state);
 			}
 			return failure(applyError);
 		}
 
-		// oxlint-disable-next-line no-useless-undefined
-		return success(undefined);
+		return success(new Transaction(reversedSteps.reverse()));
 	}
 
-	public reverse(): TransactionInterface {
-		return this._steps.reduce(
-			(transaction, step) => transaction.add(step.reverse()),
-			new Transaction(),
-		);
+	public reverse(state: State): TransactionInterface {
+		return new Transaction(this._steps.map(step => step.reverse(state)));
 	}
 }
