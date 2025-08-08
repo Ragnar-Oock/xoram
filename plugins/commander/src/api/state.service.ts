@@ -1,7 +1,7 @@
 import type { Service } from '@xoram/core';
 import type { Result } from './result';
 
-export type Realm = Record<string, unknown>;
+export type Realm = object;
 
 export type StateNotification = {
 	realClaimed: { name: string };

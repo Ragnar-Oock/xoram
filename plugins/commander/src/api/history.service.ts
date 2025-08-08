@@ -23,7 +23,7 @@ export interface Commit {
 	readonly parent?: Commit;
 }
 
-interface HistoryEvent {
+export interface HistoryEvent {
 	transaction: Transaction;
 }
 
