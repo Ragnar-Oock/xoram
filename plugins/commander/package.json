@@ -35,5 +35,8 @@
   },
   "dependencies": {
     "@xoram/core": "workspace:^"
+  },
+  "devDependencies": {
+    "vite": "^7.0.4"
   }
 }

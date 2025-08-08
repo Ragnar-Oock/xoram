@@ -1,58 +1,82 @@
-import { createApp, definePlugin, onBeforeCreate, onCreated } from '@xoram/core';
-import { commanderPlugin } from '../src';
-import type { Step } from '../src/commander.service';
+import { createApp, definePlugin, onBeforeCreate, onCreated, onEvent } from '@xoram/core';
+import { createApp as createVueApp, h, type Ref, ref } from 'vue';
+import { commanderPlugin, type HistoryEvent } from '../src';
+import { ReplaceTestValueStep } from './replace-test-value.step';
 
-declare module '../src/commander.service' {
+declare module '../src/api/command.service' {
 	export interface CommandCollection {
-		hi: (msg?: string) => void;
+		replaceLine: (text?: string) => void;
 	}
 }
 
-class HiStep implements Step {
-	private p: HTMLParagraphElement | undefined;
-
-	constructor(private msg: string) {}
-
-	public apply(): void {
-		this.p = document.createElement('p');
-		this.p.innerText = this.msg;
-		document.body.append(this.p);
-	}
-
-	public remove(): void {
-		this.p?.remove();
-		this.p = undefined;
-	};
-
-}
-
+const claim = 'test-commander';
 const app = createApp([
 	commanderPlugin,
 	definePlugin('test-commander', () => {
 		onBeforeCreate(({ services }) => {
-			services.commander.register('hi', (msg) => (_app, tr, dispatch): boolean => {
-				if (typeof msg !== 'string') {
+			services.state.claim(claim, ref(''));
+
+			services.commander.register('replaceLine', (msg) => (state, tr, dispatch): boolean => {
+				if (typeof msg !== 'string' || typeof state.realms[claim].value !== 'string') {
 					return false;
 				}
 				if (dispatch) {
-					tr.add(new HiStep(msg));
+					tr.add(new ReplaceTestValueStep(claim, msg));
 				}
 				return true;
 			});
 		});
 
 		onCreated(({ services }) => {
-			console.log('1', services.commander.commands.hi('hello world'));
-			console.log('2', services.commander.can.hi('hello world'));
-			console.log('3', services.commander.can.hi());
-			console.log('4', services.commander.chain.hi('hello').hi('world').run());
-			console.log('5', services.commander.can.chain.hi('hello').hi('world').run());
-			console.log('6', services.commander.can.chain.hi().hi('world').run());
+			([
+				[ `commands.replaceLine('hello world')`, () => services.commander.commands.replaceLine('hello world') ],
+				// [ `can.replaceLine('hello world')`, () => services.commander.can.replaceLine('hello world') ],
+				// [ `can.replaceLine()`, () => services.commander.can.replaceLine() ],
+				[
+					`chain.replaceLine('hello').replaceLine('world').run()`,
+					() => services.commander.chain.replaceLine('hello').replaceLine('world').run(),
+				],
+				// [
+				// 	`can.chain.replaceLine('hello').replaceLine('world').run()`,
+				// 	() => services.commander.can.chain.replaceLine('hello').replaceLine('world').run(),
+				// ],
+				// [
+				// 	`can.chain.replaceLine().replaceLine('world').run()`,
+				// 	() => services.commander.can.chain.replaceLine().replaceLine('world').run(),
+				// ],
+				[ 'undo', () => services.history.undo() ],
+			] as const).forEach(([ label, callback ]) => {
+				const button = document.createElement('button');
+				button.innerText = label;
+				button.addEventListener('click', callback);
+				xoram.append(button);
+			});
 
 		});
+
+		onEvent(
+			'history',
+			'*',
+			(event, { transaction }: HistoryEvent) => console.log(
+				event,
+				`transaction (${ transaction.steps.length }) : \n${
+					transaction.steps.map(step =>
+						`\t${ step.constructor.name }(${
+							Object
+								.entries(step)
+								.map(([ k, v ]) => `${ k }: ${ v }`)
+								.join(', ')
+						})`).join(',\n') }`,
+				// transaction,
+			),
+		);
 	}),
 ]);
 
 console.log(app);
 // @ts-expect-error app doesn't exist on window
 window.app = app;
+
+createVueApp((props: { line: Ref<string> }) => h('p', { innerHTML: props.line?.value ?? '' }), {
+	line: app.services.state.realms[claim],
+}).mount('#vue');
