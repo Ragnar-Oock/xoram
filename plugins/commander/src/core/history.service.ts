@@ -18,6 +18,9 @@ export const historyService: (app: Application) => HistoryService = defineServic
 
 		return {
 			commit(transaction: Transaction): Result<Commit, HistoryError> {
+				if (transaction.steps.length === 0) {
+					return success(head);
+				}
 				let result = transaction.apply(app.services.state as State);
 
 				if (!result.ok) {
