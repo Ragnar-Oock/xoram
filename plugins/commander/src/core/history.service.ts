@@ -11,7 +11,7 @@ import { Transaction } from './transaction';
  * @internal
  */
 export const historyService: (app: Application) => HistoryService = defineService<HistoryNotifications, HistoryService>(
-	app => {
+	(app, emitter) => {
 		const root: Commit = { time: performance.now(), transaction: new Transaction() };
 		let head: Commit = root;
 		let future: Commit | undefined;
@@ -21,6 +21,9 @@ export const historyService: (app: Application) => HistoryService = defineServic
 				if (transaction.steps.length === 0) {
 					return success(head);
 				}
+
+				emitter.emit('beforeCommit', { transaction });
+
 				let result = transaction.apply(app.services.state as State);
 
 				if (!result.ok) {
@@ -28,6 +31,8 @@ export const historyService: (app: Application) => HistoryService = defineServic
 				}
 
 				head = { transaction: result.value, time: performance.now(), parent: head };
+				emitter.emit('afterCommit', { transaction });
+
 				return success(head);
 			},
 			get hasFuture(): boolean {return future !== undefined;},
