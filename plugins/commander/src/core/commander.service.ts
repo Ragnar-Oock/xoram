@@ -1,5 +1,5 @@
 import type { Application } from '@xoram/core';
-import { defineService } from '@xoram/core';
+import { defineService, handleError } from '@xoram/core';
 import type { CommandConstructor } from '../api/command';
 import type {
 	CanCommand,
@@ -30,6 +30,14 @@ export const commandService: (app: Application) => CommandService = defineServic
 	(app) => {
 		const _commands: _Commands = {} as _Commands;
 
+		const commitWithErrorHandling = (transaction: Transaction): boolean => {
+			const result = app.services.history.commit(transaction);
+			if (!result.ok) {
+				handleError(result.reason, undefined, app, 'unknown');
+			}
+			return result.ok;
+		};
+
 		/**
 		 * Create a chain of commands to apply on the given transaction.
 		 * @param transaction the transaction commands should add their steps to
@@ -37,17 +45,29 @@ export const commandService: (app: Application) => CommandService = defineServic
 		 */
 		function getChain(transaction: Transaction, dispatch?: (transaction: Transaction) => void): ChainedCommand {
 			let chainHasBeenRan = false;
+			const commandResults: boolean[] = [];
 			const chain = new Proxy(EMPTY as ChainedCommand, {
 				get: (_, property): (() => ChainedCommand) | Invoker | undefined => {
 					// invoke the chain
 					if (property === 'run') {
 						return () => {
+							// prevent re-running a chain
 							if (chainHasBeenRan) {
-								app.onError(new Error('Called .run() on a command chain that has already been run.'));
+								handleError(
+									new Error('Called .run() on a command chain that has already been run.'),
+									undefined,
+									app,
+									'unknown',
+								);
 								return false;
 							}
 							chainHasBeenRan = true;
-							return transaction.apply();
+
+							if (!dispatch) {
+								return commandResults.every(Boolean);
+							}
+
+							return commitWithErrorHandling(transaction);
 						};
 					}
 
@@ -58,7 +78,9 @@ export const commandService: (app: Application) => CommandService = defineServic
 
 					// add a command in the chain
 					return (...args: unknown[]) => {
-						commandConstructor(...args)(app.services.state, transaction, dispatch);
+						commandResults.push(
+							commandConstructor(...args)(app.services.state, transaction, dispatch),
+						);
 						return chain;
 					};
 				},
@@ -93,7 +115,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 
 						return (...args: unknown[]) => (
 							commandConstructor(...args)(app.services.state, transaction, dispatch)
-							&& transaction.apply()
+							&& commitWithErrorHandling(transaction)
 						);
 					},
 				});
@@ -112,7 +134,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 
 						return (...args: unknown[]) => (
 							commandConstructor(...args)(app.services.state, transaction, () => void 0)
-							&& transaction.apply()
+							&& commitWithErrorHandling(transaction)
 						);
 					},
 				});
