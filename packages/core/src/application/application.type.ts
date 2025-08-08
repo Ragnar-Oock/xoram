@@ -1,4 +1,5 @@
 import type { Emitter } from 'mitt';
+import type { ErrorContext } from '../error-handling';
 import type { ApplicationPluginHooks, DefinedPlugin, PluginId } from '../plugins';
 import type { ApplicationServiceHooks, Service } from '../services/services.type';
 import type { Prettify } from '../type-helper';
@@ -72,8 +73,16 @@ export interface ApplicationOptions {
 	 * Invoked when an error is caught by the application.
 	 * @param error - the error that got caught, should be an Error object, but could be anything if you use third party
 	 *   libs or throw random stuff yourself
+	 * @param plugin - the plugin the error originates from, can be `undefined` for async errors
+	 * @param app - the app instance
+	 * @param context - a xoram specific identifier, usually a lifecycle hook or helper name
 	 */
-	onError: (error: unknown) => void;
+	onError: (
+		error: string | Error,
+		plugin: DefinedPlugin | undefined,
+		app: Application,
+		context: ErrorContext,
+	) => void;
 }
 
 /**

@@ -24,10 +24,6 @@ export type _AsyncPluginError = {
 	 */
 	asyncPluginImport: never;
 }
-/**
- * @internal
- */
-export type _AsyncPluginErrors = keyof _AsyncPluginError;
 
 /**
  * Load a set of plugins in the application when a condition is met

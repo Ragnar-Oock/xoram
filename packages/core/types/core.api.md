@@ -89,6 +89,12 @@ export type ApplicationServiceHooks = {
     };
 };
 
+// @internal (undocumented)
+export type _AsyncPluginError = {
+    asyncPluginCondition: never;
+    asyncPluginImport: never;
+};
+
 // @public
 export function createApp(plugins: PluginDefinition[], options?: Partial<ApplicationOptions>): Application;
 
@@ -126,6 +132,11 @@ export function dependsOn(dependency: PluginId): void;
 // @public
 export function destroyApp(app: Application): void;
 
+// Warning: (ae-incompatible-release-tags) The symbol "ErrorContext" is marked as @public, but its signature references "_AsyncPluginError" which is marked as @internal
+//
+// @public (undocumented)
+export type ErrorContext = keyof _PluginHooks | keyof ApplicationHooks | keyof _AsyncPluginError | 'onEvent' | 'unknown';
+
 // @public
 export type EventCleanup = () => void;
 
@@ -144,6 +155,21 @@ export type EventSourceGetter<notifications extends Notifications> = ((applicati
 // @public (undocumented)
 type EventTarget_2<notifications extends Notifications> = EventSource_2<notifications> | EventSourceContainer<notifications> | EventSourceGetter<notifications> | ServiceId;
 export { EventTarget_2 as EventTarget }
+
+// @public (undocumented)
+export function handleError(error: string | Error, plugin?: DefinedPlugin | undefined, app?: Application | undefined, context?: ErrorContext): void;
+
+// Warning: (ae-internal-missing-underscore) The name "makeSafe" should be prefixed with an underscore because the declaration is marked as @internal
+//
+// @internal (undocumented)
+export const makeSafe: <fn extends ((...args: unknown[]) => void)>(func: MaybeSafeFunction<fn>) => SafeFunction<fn>;
+
+// Warning: (ae-internal-missing-underscore) The name "MaybeSafeFunction" should be prefixed with an underscore because the declaration is marked as @internal
+//
+// @internal (undocumented)
+export type MaybeSafeFunction<fn extends ((...args: unknown[]) => void)> = fn & {
+    _safe?: fn;
+};
 
 // @public (undocumented)
 export type MergedEvents<notifications extends Notifications, events extends (keyof notifications)[]> = UnionToIntersection<notifications[events[number]]>;
@@ -181,7 +207,7 @@ export interface PluginDefinition {
     id: PluginId;
 }
 
-// @internal
+// @public
 export type _PluginHooks = {
     setup: never;
     beforeCreate: Application;
@@ -209,6 +235,13 @@ export function removePlugin(idOrPlugin: PluginId | DefinedPlugin): void;
 
 // @public
 export function removePlugin(idOrPlugin: PluginId | DefinedPlugin, app: Application): void;
+
+// Warning: (ae-internal-missing-underscore) The name "SafeFunction" should be prefixed with an underscore because the declaration is marked as @internal
+//
+// @internal (undocumented)
+export type SafeFunction<fn extends ((...args: unknown[]) => void)> = fn & {
+    _safe: fn;
+};
 
 // @public
 export interface Service<notifications extends Record<string, unknown> = Record<string, unknown>> {

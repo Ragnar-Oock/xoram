@@ -2,6 +2,7 @@ export { addPlugins, addPlugin } from './add-plugin';
 
 export type { OneOrMore } from './array.helper';
 
+export type { _AsyncPluginError } from './define-async-plugin';
 export { defineAsyncPlugin } from './define-async-plugin';
 
 export {
