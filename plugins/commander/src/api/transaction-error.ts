@@ -1,4 +1,4 @@
-import type { Transaction } from './commander.service';
+import type { Transaction } from './transaction';
 
 
 export class TransactionError extends Error {
