@@ -62,8 +62,8 @@ export interface CommandService extends Service<CommanderNotifications> {
 
 	/**
 	 * Add a new command.
-	 * @param name a valid JS identifier string, will be used to invoke the command.
-	 * @param command the command implementation.
+	 * @param name - a valid JS identifier string, will be used to invoke the command.
+	 * @param command - the command implementation.
 	 */
 	register: <commandName extends keyof NonNever<CommandCollection>>(
 		name: commandName,

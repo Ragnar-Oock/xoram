@@ -37,11 +37,11 @@ export interface HistoryNotifications extends ServiceNotifications {
  */
 export interface HistoryService extends Service<HistoryNotifications> {
 	/**
-	 * Safely perform the effects of a transaction and log it in the history.
+	 * Safely perform the effects of a transaction and log it in the history if it did anything
 	 *
-	 * @param transaction the transaction to apply.
+	 * @param transaction - the transaction to apply.
 	 *
-	 * @returns the commit holding the applied transaction or the error that prevented its application
+	 * @returns the new head commit or the error that prevented its application
 	 */
 	commit(transaction: Transaction): Result<Commit, HistoryError>;
 

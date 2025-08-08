@@ -12,8 +12,8 @@ export interface StateService extends Service<StateNotification> {
 
 	/**
 	 * Register a space for historisable data to be stored.
-	 * @param name a unique identifier used to edit the realm's data in steps and read from it
-	 * @param initialValue a value to set the realm to when creating it
+	 * @param name - a unique identifier used to edit the realm's data in steps and read from it
+	 * @param initialValue - a value to set the realm to when creating it
 	 */
 	claim(name: string, initialValue?: Realm): Result<Readonly<Realm>, RealmError>;
 }

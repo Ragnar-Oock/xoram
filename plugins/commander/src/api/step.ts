@@ -8,6 +8,8 @@ export interface Step {
 	/**
 	 * Execute the steps action. This method's action **MUST** only be impacted by the content of the given state,
 	 * it **MUST** not use any outside state, it **CAN** mutate the passed state.
+	 *
+	 * @param state - the state to apply changes to
 	 */
 	apply: (state: State) => Result<State>;
 
