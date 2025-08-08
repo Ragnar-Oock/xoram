@@ -25,77 +25,85 @@ describe('defineAsyncPlugin', () => {
 	describe('it capture errors thrown by the callbacks and abort', () => {
 		it('should capture errors thrown synchronously by "when"', () => {
 			const error = new Error('catch me');
-			const app = createApp([
-				defineAsyncPlugin(
-					async () => purePlugin,
-					() => {
-						throw error;
-					},
-					[],
-				),
-			], {
-				onError: spy,
-			});
+			const asyncPlugin = defineAsyncPlugin(
+				async () => purePlugin,
+				() => {
+					throw error;
+				},
+				[],
+			);
+			const app = createApp([ asyncPlugin ], { onError: spy });
 
-			expect(spy).toHaveBeenCalledExactlyOnceWith(error);
+			expect(spy).toHaveBeenCalledExactlyOnceWith(
+				error,
+				app[pluginSymbol].get(asyncPlugin.id),
+				app,
+				'asyncPluginCondition',
+			);
 			expect(app[pluginSymbol].has(purePlugin.id), 'plugins should not be loaded if an error occurred').toBeFalsy();
 		});
 		it('should capture errors thrown asynchronously by "when"', async () => {
 			const error = new Error('catch me');
-			const app = createApp([
-				defineAsyncPlugin(
-					async () => purePlugin,
-					async () => {
-						throw error;
-					},
-					[],
-					() => done.resolve(),
-				),
-			], {
-				onError: spy,
-			});
+			const asyncPlugin: any = defineAsyncPlugin(
+				async () => purePlugin,
+				async () => {
+					throw error;
+				},
+				[],
+				() => done.resolve(),
+			);
+			const app = createApp([ asyncPlugin ], { onError: spy });
 
 			await done.promise;
 
-			expect(spy).toHaveBeenCalledExactlyOnceWith(error);
+			expect(spy).toHaveBeenCalledExactlyOnceWith(
+				error,
+				app[pluginSymbol].get(asyncPlugin.id),
+				app,
+				'asyncPluginCondition',
+			);
 			expect(app[pluginSymbol].has(purePlugin.id), 'plugins should not be loaded if an error occurred').toBeFalsy();
 		});
 		it('should capture errors thrown synchronously by "importer"', async () => {
 			const error = new Error('catch me');
-			createApp([
-				defineAsyncPlugin(
-					() => {
-						throw error;
-					},
-					asyncNoop,
-					[],
-					() => done.resolve(),
-				),
-			], {
-				onError: spy,
-			});
+			const asyncPlugin: any = defineAsyncPlugin(
+				() => {
+					throw error;
+				},
+				asyncNoop,
+				[],
+				() => done.resolve(),
+			);
+			const app = createApp([ asyncPlugin ], { onError: spy });
 
 			await done.promise;
 
-			expect(spy).toHaveBeenCalledExactlyOnceWith(error);
+			expect(spy).toHaveBeenCalledExactlyOnceWith(
+				error,
+				app[pluginSymbol].get(asyncPlugin.id),
+				app,
+				'asyncPluginImport',
+			);
 		});
 		it('should capture errors thrown asynchronously by "importer"', async () => {
-			createApp([
-				defineAsyncPlugin(
-					async () => {
-						throw new Error('catch me');
-					},
-					asyncNoop,
-					[],
-					() => done.resolve(),
-				),
-			], {
-				onError: spy,
-			});
+			const asyncPlugin: any = defineAsyncPlugin(
+				async () => {
+					throw new Error('catch me');
+				},
+				asyncNoop,
+				[],
+				() => done.resolve(),
+			);
+			const app = createApp([ asyncPlugin ], { onError: spy });
 
 			await done.promise;
 
-			expect(spy).toHaveBeenCalledExactlyOnceWith(new Error('catch me'));
+			expect(spy).toHaveBeenCalledExactlyOnceWith(
+				new Error('catch me'),
+				app[pluginSymbol].get(asyncPlugin.id),
+				app,
+				'asyncPluginImport',
+			);
 		});
 	});
 	describe('it awaits the condition', () => {

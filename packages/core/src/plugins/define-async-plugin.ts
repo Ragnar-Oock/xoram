@@ -111,7 +111,7 @@ export function defineAsyncPlugin(
 				}
 				catch (error) {
 					handleError(error as Error | string, plugin, app, 'asyncPluginImport');
-					plugins = [];
+					return;
 				}
 				addPlugins(plugins, app);
 				removePlugin(plugin.id, app);
