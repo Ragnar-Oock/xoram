@@ -133,7 +133,10 @@
     ],
     "func-style": [
       "warn",
-      "declaration"
+      "declaration",
+      {
+        "allowArrowFunctions": true
+      }
     ],
     "grouped-accessor-pairs": "error",
     "guard-for-in": "warn",
@@ -214,7 +217,16 @@
     "prefer-structured-clone": "error",
     "switch-case-braces": "error",
     "throw-new-error": "error",
-    "no-import-node-test": "error"
+    "no-import-node-test": "error",
+    "consistent-type-imports": [
+      "error",
+      {
+        "prefer": "type-imports",
+        "fixStyle": "separate-type-imports",
+        "disallowTypeAnnotations": true
+      }
+    ],
+    "import/consistent-type-specifier-style": true
   },
   "overrides": [
     {
