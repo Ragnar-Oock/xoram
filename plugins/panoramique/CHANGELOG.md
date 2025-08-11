@@ -1,5 +1,11 @@
 # @xoram/plugin-panoramique
 
+## 0.1.3
+
+### Patch Changes
+
+- 4f0537e: Prevent blocking error when trying to mount a component with no declared events
+
 ## 0.1.2
 
 ### Patch Changes
