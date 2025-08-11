@@ -12,19 +12,19 @@
   },
   "dependencies": {
     "@repo/core-size-check": "workspace:*",
-    "@vueuse/core": "^13.5.0",
+    "@vueuse/core": "^13.6.0",
     "@xoram/core": "workspace:*",
     "@xoram/plugin-panoramique": "workspace:*",
     "markdown-it": "^14.1.0",
-    "sass": "^1.89.2",
-    "vitepress-plugin-group-icons": "^1.6.1",
-    "vue": "^3.5.17"
+    "sass": "^1.90.0",
+    "vitepress-plugin-group-icons": "^1.6.2",
+    "vue": "^3.5.18"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.26.29",
+    "@microsoft/api-documenter": "^7.26.31",
     "@repo/config-typescript": "*",
-    "typescript": "^5.8.3",
-    "vite": "^7.0.4",
-    "vitepress": "^1.6.3"
+    "typescript": "^5.9.2",
+    "vite": "^7.1.1",
+    "vitepress": "^1.6.4"
   }
 }
