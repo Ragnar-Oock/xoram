@@ -10,7 +10,7 @@ import {
 	type PluginDefinition,
 } from '@xoram/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { commanderPlugin } from '../../src';
+import { defaultCommanderPlugin as commanderPlugin } from '../../src';
 import type { Command, CommandConstructor } from '../../src/api/command';
 
 import type { ChainedCommand } from '../../src/api/command.service';

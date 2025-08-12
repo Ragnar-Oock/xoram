@@ -1,13 +1,41 @@
-import { addService, definePlugin, type PluginDefinition } from '@xoram/core';
+import { addService, type Application, definePlugin, type PluginDefinition } from '@xoram/core';
+import type { HistoryService } from '../api/history.service';
+import type { StateService } from '../api/state.service';
 import { commandService } from './commander.service';
-import { historyService } from './history.service';
-import { stateService } from './state.service';
+import { historyService as history } from './history.service';
+import { stateService as state } from './state.service';
+
+export type CommanderConfig = {
+	/**
+	 * A factory to create the state service.
+	 *
+	 * Use the default {@link stateService} or a custom one implementing the {@link StateService} interface.
+	 *
+	 * @param app
+	 */
+	state: (app: Application) => StateService,
+	/**
+	 * A factory to create the history service.
+	 *
+	 * Use the default {@link historyService} or a custom one implementing the {@link HistoryService} interface
+	 * @param app
+	 */
+	history: (app: Application) => HistoryService;
+}
 
 /**
  * @public
  */
-export const commanderPlugin: PluginDefinition = definePlugin('commander', () => {
-	addService('state', stateService);
-	addService('commander', commandService);
-	addService('history', historyService);
+export const commanderPlugin: (config: CommanderConfig) => PluginDefinition = ({ state, history }) => definePlugin(
+	'commander',
+	() => {
+		addService('state', state);
+		addService('commander', commandService);
+		addService('history', history);
+	},
+);
+
+export const defaultCommanderPlugin = commanderPlugin({
+	state,
+	history,
 });

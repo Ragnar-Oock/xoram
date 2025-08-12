@@ -5,7 +5,7 @@ import type { Realm, State, StateNotification, StateService } from '../api/state
 import { RealmError } from '../api/state.service';
 
 /**
- * @internal
+ * @public
  */
 export const stateService: (app: Application) => StateService = defineService<StateNotification, StateService & State>(
 	() => {

@@ -8,7 +8,7 @@ import type { Transaction as TransactionInterface } from '../api/transaction';
 import { Transaction } from './transaction';
 
 /**
- * @internal
+ * @public
  */
 export const historyService: (app: Application) => HistoryService = defineService<HistoryNotifications, HistoryService>(
 	(app, emitter) => {

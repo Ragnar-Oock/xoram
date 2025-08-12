@@ -1,6 +1,6 @@
 import { createApp, definePlugin, onBeforeCreate, onCreated, onEvent } from '@xoram/core';
 import { createApp as createVueApp, h, type Ref, ref } from 'vue';
-import { commanderPlugin, type HistoryEvent } from '../src';
+import { defaultCommanderPlugin as commanderPlugin, type HistoryEvent } from '../src';
 import { ReplaceTestValueStep } from './replace-test-value.step';
 
 declare module '../src/api/command.service' {
