@@ -7,6 +7,8 @@ import type { State } from '../api/state.service';
 import type { Transaction as TransactionInterface } from '../api/transaction';
 import { Transaction } from './transaction';
 
+const commitedTransaction = 'Commited Transaction'; // Symbol(import.meta.env.DEV ? 'Commited Transaction' : undefined);
+
 /**
  * @public
  */
@@ -17,9 +19,12 @@ export const historyService: (app: Application) => HistoryService = defineServic
 		let future: Commit | undefined;
 
 		return {
-			commit(transaction: Transaction): Result<Commit, HistoryError> {
+			commit(transaction: TransactionInterface): Result<Commit, HistoryError> {
 				if (transaction.steps.length === 0) {
 					return success(head);
+				}
+				if (transaction[commitedTransaction]) {
+					return failure(new HistoryError('Tried to commit an already commited transaction.'));
 				}
 
 				emitter.emit('beforeCommit', { transaction });
@@ -31,6 +36,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 				}
 
 				head = { transaction: result.value, time: performance.now(), parent: head };
+				transaction[commitedTransaction] = true;
 				emitter.emit('afterCommit', { transaction });
 
 				return success(head);
