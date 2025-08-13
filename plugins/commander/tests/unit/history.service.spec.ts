@@ -386,14 +386,45 @@ describe('history service', () => {
 	});
 
 	describe('hasFuture', () => {
-		it.todo('should be true when a commit has been successfully undone', () => {});
-		it.todo('should be false when a transaction has been commited over an undone commit', () => {});
-		it.todo('should be false when no commit has been undone', () => {});
+		it('should be true when a commit has been successfully undone', () => {
+			const transaction = getTransaction();
+
+			app.services.history.commit(transaction);
+
+			expect(app.services.history.hasFuture).toBeFalsy();
+
+			app.services.history.undo();
+
+			expect(app.services.history.hasFuture).toBeTruthy();
+		});
+		it('should be false when a transaction has been commited over an undone commit', () => {
+			app.services.history.commit(getTransaction());
+			app.services.history.undo();
+
+			app.services.history.commit(getTransaction());
+
+			expect(app.services.history.hasFuture).toBeFalsy();
+		});
+		it('should be false when no commit has been undone', () => {
+			app.services.history.commit(getTransaction());
+
+			expect(app.services.history.hasFuture).toBeFalsy();
+		});
 	});
 
 	describe('hasPast', () => {
-		it.todo('should be true when a transaction has been successfully commited', () => {});
-		it.todo('should be false when no transaction has been commited', () => {});
-		it.todo('should be false when all commits have been successfully undone', () => {});
+		it('should be true when a transaction has been successfully commited', () => {
+			app.services.history.commit(getTransaction());
+
+			expect(app.services.history.hasPast).toBeTruthy();
+		});
+		it('should be false when no transaction has been commited', () => {
+			expect(app.services.history.hasPast).toBeFalsy();
+		});
+		it('should be false when all commits have been successfully undone', () => {
+			app.services.history.commit(getTransaction());
+			app.services.history.undo();
+			expect(app.services.history.hasPast).toBeFalsy();
+		});
 	});
 });
