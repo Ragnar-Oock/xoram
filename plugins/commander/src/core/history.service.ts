@@ -18,8 +18,16 @@ export const historyService: (app: Application) => HistoryService = defineServic
 		let head: Commit = root;
 		let future: Commit | undefined;
 
-		return {
-			commit(transaction: TransactionInterface): Result<Commit, HistoryError> {
+		// we need an intermediary const to avoid typescript using the interface as the type of the object, removing the
+		// private members from `this` noinspection UnnecessaryLocalVariableJS
+		const service = {
+			/**
+			 *
+			 * @param transaction
+			 * @param purgeFuture should commits in the future branch be forgotten, preventing subsequent calls to .redo()
+			 *   from succeeding
+			 */
+			commit(transaction: TransactionInterface, { purgeFuture } = { purgeFuture: true }): Result<Commit, HistoryError> {
 				if (transaction.steps.length === 0) {
 					return success(head);
 				}
@@ -36,7 +44,12 @@ export const historyService: (app: Application) => HistoryService = defineServic
 				}
 
 				head = { transaction: result.value, time: performance.now(), parent: head };
-				transaction[commitedTransaction] = true;
+				(transaction as CommitedTransaction)[commitedTransaction] = true;
+
+				if (purgeFuture) {
+					future = undefined;
+				}
+
 				emitter.emit('afterCommit', { transaction });
 
 				return success(head);
@@ -47,7 +60,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 			redo(): Result<boolean, HistoryError> {
 				if (!future) { return success(false); }
 
-				const result = this.commit(future.transaction);
+				const result = this.commit(future.transaction, { purgeFuture: false });
 
 				if (!result.ok) {
 					return result;
@@ -77,5 +90,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 			transaction(): TransactionInterface {
 				return new Transaction();
 			},
-		};
+		} as const;
+
+		return service;
 	});
