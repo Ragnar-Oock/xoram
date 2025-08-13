@@ -427,4 +427,20 @@ describe('history service', () => {
 			expect(app.services.history.hasPast).toBeFalsy();
 		});
 	});
+
+	describe('hooks', () => {
+		describe('beforeCommit', () => {
+			it.todo('should emit beforeCommit before applying a transaction', () => {});
+			it.todo('should not emit beforeCommit when the transaction is empty', () => {});
+			it.todo('should not emit beforeCommit when the transaction has already been commited', () => {});
+			it.todo('should pass the transaction to be commited in the payload', () => {});
+		});
+		describe('afterCommit', () => {
+			it.todo('should emit afterCommit after emitting beforeCommit', () => {});
+			it.todo('should emit afterCommit after applying a transaction', () => {});
+			it.todo('should not emit afterCommit when the transaction fails to apply', () => {});
+			it.todo('should pass the commited transaction in the payload', () => {});
+			it.todo('should pass the newly created commit in the payload', () => {});
+		});
+	});
 });
