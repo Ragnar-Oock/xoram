@@ -7,7 +7,12 @@ import type { State } from '../api/state.service';
 import type { Transaction as TransactionInterface } from '../api/transaction';
 import { Transaction } from './transaction';
 
-const commitedTransaction = 'Commited Transaction'; // Symbol(import.meta.env.DEV ? 'Commited Transaction' : undefined);
+// branding symbol used to differentiate already commited transactions from fresh ones
+const commitedTransaction = Symbol(import.meta.env.DEV ? 'Commited Transaction' : undefined);
+
+interface CommitedTransaction extends TransactionInterface {
+	[commitedTransaction]: true;
+}
 
 /**
  * @public
@@ -31,7 +36,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 				if (transaction.steps.length === 0) {
 					return success(head);
 				}
-				if (transaction[commitedTransaction]) {
+				if ((transaction as CommitedTransaction)[commitedTransaction]) {
 					return failure(new HistoryError('Tried to commit an already commited transaction.'));
 				}
 
