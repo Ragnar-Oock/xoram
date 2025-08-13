@@ -86,12 +86,15 @@ describe('history service', () => {
 	});
 });
 
+const testValue: string = 'noop';
+const initialValue: string = '';
+const realm: string = 'test';
 describe('history service', () => {
 	let app: Application;
 	beforeEach(({ task }) => {
 		app = createApp([
 			commanderPlugin, definePlugin(() => {
-				onBeforeCreate(app => app.services.state.claim('test', { value: '' }));
+				onBeforeCreate(app => app.services.state.claim(realm, { value: initialValue }));
 			}),
 		], { id: task.name });
 	});
@@ -104,7 +107,7 @@ describe('history service', () => {
 	function getTransaction() {
 		return app.services.history
 			.transaction()
-			.add(new ReplaceTestValueStep('test', 'noop'));
+			.add(new ReplaceTestValueStep(realm, testValue));
 	}
 
 	describe('commit', () => {
@@ -237,18 +240,149 @@ describe('history service', () => {
 			);
 		});
 		describe('success', () => {
-			it.todo('should unapply the transaction of the present commit', () => {});
-			it.todo('should set the present commit to its parent', () => {});
-			it.todo('should create a future branch', () => {});
-			it.todo('should return a falsy success when called without a past', () => {});
+			it('should unapply the transaction of the present commit', () => {
+				const transaction = getTransaction();
+
+				app.services.history.commit(transaction);
+
+				expect(app.services.state.realms[realm].value).toBe(testValue);
+
+				const result = app.services.history.undo();
+
+				if (!result.ok) {
+					expect.fail(
+						result,
+						expect.objectContaining({ ok: true, value: true }),
+						'Expected a success',
+					);
+				}
+				else {
+					expect(result.value).toBeTruthy();
+				}
+
+			});
+			it('should set the present commit to its parent', () => {
+				const transaction = getTransaction();
+
+				app.services.history.commit(transaction);
+
+				expect(app.services.state.realms[realm].value).toBe(testValue);
+
+				const present = app.services.history.present;
+
+				const result = app.services.history.undo();
+
+				if (!result.ok) {
+					return expect.fail(
+						result,
+						expect.objectContaining({ ok: true, value: true }),
+						'Expected a success',
+					);
+				}
+
+				expect(app.services.history.present).toBe(present.parent);
+
+			});
+			it('should create a future branch', () => {
+				const transaction = getTransaction();
+
+				app.services.history.commit(transaction);
+
+				expect(app.services.state.realms[realm].value).toBe(testValue);
+				expect(app.services.history.hasFuture).toBeFalsy();
+
+				const result = app.services.history.undo();
+
+				if (!result.ok) {
+					return expect.fail(
+						result,
+						expect.objectContaining({ ok: true, value: true }),
+						'Expected a success',
+					);
+				}
+
+				expect(app.services.history.hasFuture).toBeTruthy();
+			});
+			it('should return a falsy success when called without a past', () => {
+				expect(app.services.history.hasPast).toBeFalsy();
+
+				const result = app.services.history.undo();
+
+				if (!result.ok) {
+					return expect.fail(
+						result,
+						expect.objectContaining({ ok: true, value: true }),
+						'Expected a success',
+					);
+				}
+
+				expect(result.value).toBeFalsy();
+			});
 		});
 	});
 
 	describe('redo', () => {
-		it.todo('should return a falsy success when called without a future', () => {});
-		it.todo('should apply a transaction equivalent to the previously undo one', () => {});
-		it.todo('should create a new present commit', () => {});
-		it.todo('should return a truthy success', () => {});
+		it('should return a falsy success when called without a future', () => {
+			expect(app.services.history.hasFuture).toBeFalsy();
+
+			const result = app.services.history.redo();
+
+			if (!result.ok) {
+				return expect.fail(
+					result,
+					expect.objectContaining({ ok: true, value: true }),
+					'Expected a success',
+				);
+			}
+
+			expect(result.value).toBeFalsy();
+		});
+		it('should apply a transaction equivalent to the previously undo one', () => {
+			const transaction = getTransaction();
+
+			app.services.history.commit(transaction);
+
+			expect(app.services.state.realms[realm].value).toBe(testValue);
+
+			app.services.history.undo();
+
+			expect(app.services.state.realms[realm].value).toBe(initialValue);
+
+			app.services.history.redo();
+
+			expect(app.services.state.realms[realm].value).toBe(testValue);
+
+		});
+		it('should create a new present commit', () => {
+			const transaction = getTransaction();
+
+			app.services.history.commit(transaction);
+
+			const present = app.services.history.present;
+
+			app.services.history.undo();
+			app.services.history.redo();
+
+			expect(app.services.history.present).not.toBe(present);
+
+		});
+		it('should return a truthy success', () => {
+			const transaction = getTransaction();
+
+			app.services.history.commit(transaction);
+			app.services.history.undo();
+
+			const result = app.services.history.redo();
+
+			if (!result.ok) {
+				return expect.fail(
+					result,
+					expect.objectContaining({ ok: true, value: true }),
+					'Expected a success',
+				);
+			}
+			expect(result.value).toBeTruthy();
+		});
 	});
 
 	describe('hasFuture', () => {
