@@ -9,6 +9,7 @@ import {
 	TransactionError,
 } from '../../src';
 import { failure } from '../../src/api/result';
+import { IrreversibleReplaceTestValueStep } from '../irreversible-replace-test-value.step';
 import { ReplaceTestValueStep } from '../replace-test-value.step';
 
 function isTransaction(candidate: unknown): candidate is Transaction {
@@ -234,9 +235,31 @@ describe('history service', () => {
 
 	describe('undo', () => {
 		describe('bail out', () => {
-			it.todo(
+			it(
 				'should return a failure holding an error when the transaction of the last commit fails to unapply',
-				() => {},
+				() => {
+					const transaction = app.services.history
+						.transaction()
+						.add(new IrreversibleReplaceTestValueStep(realm, testValue));
+
+					app.services.history.commit(transaction);
+
+					const result = app.services.history.undo();
+
+					if (result.ok) {
+						expect.fail(
+							result,
+							expect.objectContaining({ ok: false, reason: expect.any(Error) }),
+							'Expected a failure',
+						);
+					}
+
+					expect(result.reason).toStrictEqual(expect.any(HistoryError));
+					expect(result.reason.cause).toStrictEqual(expect.any(TransactionError));
+					expect((result.reason.cause as TransactionError).cause)
+						.toStrictEqual(new Error(`value already set to replacement (${ testValue })`));
+
+				},
 			);
 		});
 		describe('success', () => {
