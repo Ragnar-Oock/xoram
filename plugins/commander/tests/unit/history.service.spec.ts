@@ -1,4 +1,4 @@
-import { type Application, createApp, definePlugin, destroyApp, onBeforeCreate } from '@xoram/core';
+import { addPlugin, type Application, createApp, definePlugin, destroyApp, onBeforeCreate, onEvent } from '@xoram/core';
 import { afterEach, beforeEach, describe, expect, it, type RunnerTestCase, vi } from 'vitest';
 import {
 	defaultCommanderPlugin as commanderPlugin,
@@ -430,17 +430,123 @@ describe('history service', () => {
 
 	describe('hooks', () => {
 		describe('beforeCommit', () => {
-			it.todo('should emit beforeCommit before applying a transaction', () => {});
-			it.todo('should not emit beforeCommit when the transaction is empty', () => {});
-			it.todo('should not emit beforeCommit when the transaction has already been commited', () => {});
-			it.todo('should pass the transaction to be commited in the payload', () => {});
+			it('should emit beforeCommit before applying a transaction', () => {
+				let hadPast = false;
+				const spy = vi.fn(() => hadPast = app.services.history.hasPast);
+
+				addPlugin(definePlugin(() => {
+					onEvent('history', 'beforeCommit', spy);
+				}), app);
+
+				expect(spy).not.toHaveBeenCalled();
+
+				app.services.history.commit(getTransaction());
+
+				// hasPast depends on the existence of a commit in the history, we want to make sure the event was emitted
+				// before any commit is added to it
+				expect(spy).toHaveBeenCalled();
+				expect(hadPast).toBeFalsy();
+			});
+			it('should not emit beforeCommit when the transaction is empty', () => {
+				const spy = vi.fn();
+				addPlugin(definePlugin(() => {
+					onEvent('history', 'beforeCommit', spy);
+				}), app);
+
+				expect(spy).not.toHaveBeenCalled();
+
+				app.services.history.commit(app.services.history.transaction());
+
+				expect(spy).not.toHaveBeenCalled();
+			});
+			it('should not emit beforeCommit when the transaction has already been commited', () => {
+				const transaction = getTransaction();
+
+				const spy = vi.fn();
+				addPlugin(definePlugin(() => {
+					onEvent('history', 'beforeCommit', spy);
+				}), app);
+				// first commit
+				app.services.history.commit(transaction);
+				// recommit same transaction
+				app.services.history.commit(transaction);
+
+				expect(spy).toHaveBeenCalledOnce();
+			});
+			it('should pass the transaction to be commited in the payload', () => {
+				const spy = vi.fn();
+				addPlugin(definePlugin(() => {
+					onEvent('history', 'beforeCommit', spy);
+				}), app);
+
+				const transaction = getTransaction();
+				app.services.history.commit(transaction);
+
+				expect(spy).toHaveBeenCalledWith({ transaction });
+			});
 		});
 		describe('afterCommit', () => {
-			it.todo('should emit afterCommit after emitting beforeCommit', () => {});
-			it.todo('should emit afterCommit after applying a transaction', () => {});
-			it.todo('should not emit afterCommit when the transaction fails to apply', () => {});
-			it.todo('should pass the commited transaction in the payload', () => {});
-			it.todo('should pass the newly created commit in the payload', () => {});
+			it('should emit afterCommit after emitting beforeCommit', () => {
+				let calls: string[] = [];
+
+				addPlugin(definePlugin(() => {
+					onEvent('history', 'afterCommit', () => calls.push('afterCommit'));
+					onEvent('history', 'beforeCommit', () => calls.push('beforeCommit'));
+				}), app);
+
+				app.services.history.commit(getTransaction());
+
+				expect(calls).toEqual([ 'beforeCommit', 'afterCommit' ]);
+			});
+			it('should emit afterCommit after saving a new commit', () => {
+				let hadPast = false;
+
+				addPlugin(definePlugin(() => {
+					onEvent('history', 'afterCommit', () => hadPast = app.services.history.hasPast);
+				}), app);
+
+				app.services.history.commit(getTransaction());
+
+				// hasPast depends on the existence of a commit in the history
+				expect(hadPast).toBeTruthy();
+			});
+			it('should not emit afterCommit when the transaction fails to apply', () => {
+				const spy = vi.fn();
+				addPlugin(definePlugin(() => {
+					onEvent('history', 'afterCommit', spy);
+				}), app);
+
+				expect(spy).not.toHaveBeenCalled();
+
+				app.services.history.commit(app.services.history.transaction());
+
+				expect(spy).not.toHaveBeenCalled();
+			});
+			it('should not emit afterCommit when the transaction has already been commited', () => {
+				const transaction = getTransaction();
+
+				const spy = vi.fn();
+				addPlugin(definePlugin(() => {
+					onEvent('history', 'afterCommit', spy);
+				}), app);
+				// first commit
+				app.services.history.commit(transaction);
+				// recommit same transaction
+				app.services.history.commit(transaction);
+
+				expect(spy).toHaveBeenCalledOnce();
+			});
+			it('should pass the expected payload', () => {
+				const spy = vi.fn();
+				addPlugin(definePlugin(() => {
+					onEvent('history', 'afterCommit', spy);
+				}), app);
+
+				const transaction = getTransaction();
+				app.services.history.commit(transaction);
+
+				expect(spy).toHaveBeenCalledWith({ transaction });
+			});
 		});
 	});
 });
