@@ -23,13 +23,12 @@ function isTransaction(candidate: unknown): candidate is Transaction {
 }
 
 const initializeApp = (task: RunnerTestCase) => createApp([ commanderPlugin ], { id: task.name });
-//
-// function onFail<payload, error extends Error, U>(
-// 	result: Result<payload, error>,
-// 	cb: (reason: error) => U,
-// ): U | undefined {
-// 	return result.ok ? undefined : cb(result.reason);
-// }
+
+declare module '../../src' {
+	interface Realms {
+		test: { value: string };
+	}
+}
 
 describe('history service', () => {
 
@@ -89,7 +88,8 @@ describe('history service', () => {
 
 const testValue: string = 'noop';
 const initialValue: string = '';
-const realm: string = 'test';
+const realm = 'test';
+
 describe('history service', () => {
 	let app: Application;
 	beforeEach(({ task }) => {

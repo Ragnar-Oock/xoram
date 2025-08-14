@@ -10,7 +10,7 @@ export class ReplaceTestValueStep implements Step {
 	) {}
 
 	public apply(state: State): Result<State> {
-		const realm = state.realms[this.realm];
+		const realm = state.realms[this.realm] as { value?: string };
 		if (typeof realm?.value === 'string') {
 			realm.value = this.msg;
 			return success(state);
@@ -19,7 +19,7 @@ export class ReplaceTestValueStep implements Step {
 	}
 
 	public reverse(state: State): Step {
-		return new ReplaceTestValueStep(this.realm, state.realms[this.realm].value);
+		return new ReplaceTestValueStep(this.realm, (state.realms[this.realm] as { value?: string }).value);
 	}
 
 }

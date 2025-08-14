@@ -10,7 +10,7 @@ export class IrreversibleReplaceTestValueStep implements Step {
 	) {}
 
 	public apply(state: State): Result<State> {
-		const realm = state.realms[this.realm];
+		const realm = state.realms[this.realm] as { value?: string };
 		if (typeof realm?.value !== 'string') {
 			return failure(new Error('No test realm to write to'));
 		}
@@ -21,7 +21,7 @@ export class IrreversibleReplaceTestValueStep implements Step {
 		return success(state);
 	}
 
-	public reverse(state: State): Step {
+	public reverse(): Step {
 		return this;
 	}
 
