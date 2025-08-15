@@ -1,6 +1,6 @@
 import type { Application } from '@xoram/core';
 import { defineService, handleError } from '@xoram/core';
-import type { CommandConstructor } from '../api/command';
+import type { CommandConstructor, CommandParameters } from '../api/command';
 import type {
 	CanCommand,
 	ChainedCommand,
@@ -38,14 +38,63 @@ export const commandService: (app: Application) => CommandService = defineServic
 			return result.ok;
 		};
 
+		function createCommandParameters(
+			transaction?: Transaction,
+			shouldDispatch = true,
+		): CommandParameters {
+			const parameters = {
+				get chain() { return getChain(transaction, shouldDispatch); },
+				get can() { return getCan(transaction); },
+				get command() {
+					return new Proxy(EMPTY as SingleCommand, {
+						get: (_, property): Invoker | undefined => {
+							const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
+							if (!commandConstructor) {return undefined;}
+
+							return (...args: unknown[]) => (
+								commandConstructor(...args)(parameters)
+								&& commitWithErrorHandling(transaction)
+							);
+						},
+					});
+				},
+				state: app.services.state,
+				transaction,
+				dispatch: shouldDispatch ? () => undefined : undefined,
+			} satisfies CommandParameters;
+
+			return parameters;
+		}
+
+		function getCan(transaction = app.services.history.transaction()) {
+			return new Proxy(EMPTY as CanCommand, {
+				get: (_, property): ChainedCommand | Invoker | undefined => {
+					if (property === 'chain') {
+						return getChain(transaction, false);
+					}
+
+					const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
+					if (!commandConstructor) {return undefined;}
+
+					return (...args: unknown[]) => (
+						commandConstructor(...args)(createCommandParameters(transaction, false))
+						&& commitWithErrorHandling(transaction)
+					);
+				},
+			});
+		}
+
 		/**
 		 * Create a chain of commands to apply on the given transaction.
 		 * @param transaction the transaction commands should add their steps to
-		 * @param dispatch the dispatch function to pass to the commands invoked in the chain
+		 * @param shouldDispatch should the chain be created in dry run mode ?
 		 */
-		function getChain(transaction: Transaction, dispatch?: (transaction: Transaction) => void): ChainedCommand {
+		function getChain(transaction?: Transaction, shouldDispatch = true): ChainedCommand {
 			let chainHasBeenRan = false;
+			const hadTransaction = transaction !== undefined;
+			const _transaction = transaction ?? app.services.history.transaction();
 			const commandResults: boolean[] = [];
+			const parameters = createCommandParameters(_transaction, shouldDispatch);
 			const chain = new Proxy(EMPTY as ChainedCommand, {
 				get: (_, property): (() => ChainedCommand) | Invoker | undefined => {
 					// invoke the chain
@@ -63,11 +112,11 @@ export const commandService: (app: Application) => CommandService = defineServic
 							}
 							chainHasBeenRan = true;
 
-							if (!dispatch) {
-								return commandResults.every(Boolean);
-							}
-
-							return commitWithErrorHandling(transaction);
+							// if a transaction was passed in we defer commiting the transaction to the code that created it, so
+							// we only check if the chain can run or not
+							return (shouldDispatch && !hadTransaction)
+								? commitWithErrorHandling(_transaction)
+								: commandResults.every(Boolean);
 						};
 					}
 
@@ -78,9 +127,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 
 					// add a command in the chain
 					return (...args: unknown[]) => {
-						commandResults.push(
-							commandConstructor(...args)(app.services.state, transaction, dispatch),
-						);
+						commandResults.push(commandConstructor(...args)(parameters));
 						return chain;
 					};
 				},
@@ -102,27 +149,11 @@ export const commandService: (app: Application) => CommandService = defineServic
 			},
 
 			get can(): CanCommand {
-				const transaction = app.services.history.transaction();
-				const dispatch = undefined;
-				return new Proxy(EMPTY as CanCommand, {
-					get: (_, property): ChainedCommand | Invoker | undefined => {
-						if (property === 'chain') {
-							return getChain(transaction, dispatch);
-						}
-
-						const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
-						if (!commandConstructor) {return undefined;}
-
-						return (...args: unknown[]) => (
-							commandConstructor(...args)(app.services.state, transaction, dispatch)
-							&& commitWithErrorHandling(transaction)
-						);
-					},
-				});
+				return getCan();
 			},
 
 			get chain(): ChainedCommand {
-				return getChain(app.services.history.transaction(), () => void 0);
+				return getChain();
 			},
 
 			get commands(): SingleCommand {
@@ -133,7 +164,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 						if (!commandConstructor) {return undefined;}
 
 						return (...args: unknown[]) => (
-							commandConstructor(...args)(app.services.state, transaction, () => void 0)
+							commandConstructor(...args)(createCommandParameters(transaction, true))
 							&& commitWithErrorHandling(transaction)
 						);
 					},
