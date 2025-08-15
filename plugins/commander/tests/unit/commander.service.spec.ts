@@ -20,35 +20,14 @@ import { claim, initialValue, setValueCommandConstructor, testPlugin } from '../
 declare module '../../src/api/command.service' {
 	// noinspection JSUnusedGlobalSymbols
 	export interface CommandCollection {
-		test: (msg?: string) => void;
+		// command set by individual tests
+		testCommand: () => void;
 	}
 }
 
 const allItemsAreStrictlyEqual = value => Array.isArray(value) && value.every(item => item === value[0]);
 
 const noop = (): void => void 0;
-
-const claim = 'test';
-const initialValue = () => ({ value: '' });
-
-const testCommandConstructor: CommandConstructor<[ msg?: string ]> = msg => (state, transaction, dispatch) => {
-	if (msg === undefined || state.realms[claim]?.value === undefined) {
-		return false;
-	}
-	if (dispatch) {
-		transaction.add(new ReplaceTestValueStep(claim, msg));
-	}
-	return true;
-};
-
-const testPlugin: PluginDefinition = definePlugin(() => {
-	dependsOn(commanderPlugin.id);
-
-	onBeforeCreate(({ services }) => {
-		services.state.claim(claim, initialValue());
-		services.commander.register('test', testCommandConstructor);
-	});
-});
 
 describe('commander service', () => {
 	let app: Application;
@@ -67,7 +46,7 @@ describe('commander service', () => {
 		it('should hold registered commands', () => {
 			addPlugin(testPlugin, app);
 
-			expect(app.services.commander.commands.test).toBeTypeOf('function');
+			expect(app.services.commander.commands.setValue).toBeTypeOf('function');
 		});
 		it('should be non-assignable (no setter)', () => {
 			addPlugin(testPlugin, app);
@@ -80,10 +59,10 @@ describe('commander service', () => {
 		it('should be non-writable (no [[Set]] method)', () => {
 			addPlugin(testPlugin, app);
 
-			// @ts-expect-error cannot assign to test
-			app.services.commander.commands.test = noop;
+			// @ts-expect-error cannot assign to setValue
+			app.services.commander.commands.setValue = noop;
 
-			expect(app.services.commander.commands.test).toBeTypeOf('function');
+			expect(app.services.commander.commands.setValue).toBeTypeOf('function');
 		});
 		// it.todo('should be enumerable ([[OwnKeys]] method)', () => {});
 		// it.todo('should be queryable ([[HasProperty]] method)', () => {});
@@ -92,7 +71,7 @@ describe('commander service', () => {
 		it('should hold the registered commands', () => {
 			addPlugin(testPlugin, app);
 
-			expect(app.services.commander.can.test).toBeTypeOf('function');
+			expect(app.services.commander.can.setValue).toBeTypeOf('function');
 		});
 		it('should be non-assignable (no setter)', () => {
 			addPlugin(testPlugin, app);
@@ -105,10 +84,10 @@ describe('commander service', () => {
 		it('should be non-writable (no [[Set]] method)', () => {
 			addPlugin(testPlugin, app);
 
-			// @ts-expect-error cannot assign to test
-			app.services.commander.can.test = noop;
+			// @ts-expect-error cannot assign to setValue
+			app.services.commander.can.setValue = noop;
 
-			expect(app.services.commander.can.test).toBeTypeOf('function');
+			expect(app.services.commander.can.setValue).toBeTypeOf('function');
 		});
 		// it.todo('should be enumerable ([[OwnKeys]] method)', () => {});
 		// it.todo('should be queryable ([[HasProperty]] method)', () => {});
@@ -122,7 +101,7 @@ describe('commander service', () => {
 		it('should hold the registered commands', () => {
 			addPlugin(testPlugin, app);
 
-			expect(app.services.commander.chain.test).toBeTypeOf('function');
+			expect(app.services.commander.chain.setValue).toBeTypeOf('function');
 		});
 		it('should be non-assignable (no setter)', () => {
 			addPlugin(testPlugin, app);
@@ -135,10 +114,10 @@ describe('commander service', () => {
 		it('should be non-writable (no [[Set]] method)', () => {
 			addPlugin(testPlugin, app);
 
-			// @ts-expect-error cannot assign to test
-			app.services.commander.chain.test = noop;
+			// @ts-expect-error cannot assign to setValue
+			app.services.commander.chain.setValue = noop;
 
-			expect(app.services.commander.chain.test).toBeTypeOf('function');
+			expect(app.services.commander.chain.setValue).toBeTypeOf('function');
 		});
 		// it.todo('should be enumerable ([[OwnKeys]] method)', () => {});
 		// it.todo('should be queryable ([[HasProperty]] method)', () => {});
@@ -155,11 +134,11 @@ describe('commander service', () => {
 				dependsOn(commanderPlugin.id);
 
 				onCreated(({ services }) => {
-					services.commander.register('test', commandConstructor);
+					services.commander.register('setValue', commandConstructor);
 				});
 			}), app);
 
-			app.services.commander.commands.test('message');
+			app.services.commander.commands.setValue('message');
 
 			expect(commandConstructor).toHaveBeenCalledExactlyOnceWith('message');
 		});
@@ -170,14 +149,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ state }): boolean => {
+						services.commander.register('setValue', _msg => ({ state }): boolean => {
 							receivedState = state;
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.commands.test('message');
+				app.services.commander.commands.setValue('message');
 
 				expect(receivedState).toBe(app.services.state);
 			});
@@ -187,14 +166,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ transaction }): boolean => {
+						services.commander.register('setValue', _msg => ({ transaction }): boolean => {
 							tr = transaction;
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.commands.test('message');
+				app.services.commander.commands.setValue('message');
 
 				expect(tr?.steps).toStrictEqual([]);
 			});
@@ -205,14 +184,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ dispatch }): boolean => {
+						services.commander.register('setValue', _msg => ({ dispatch }): boolean => {
 							dispatchFunction = dispatch;
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.commands.test();
+				app.services.commander.commands.setValue();
 
 				expect(dispatchFunction).toBeTypeOf('function');
 			});
@@ -253,18 +232,18 @@ describe('commander service', () => {
 		it('should return true when the command succeeds', () => {
 			addPlugin(testPlugin, app);
 
-			expect(app.services.commander.commands.test('works!')).toBeTruthy();
+			expect(app.services.commander.commands.setValue('works!')).toBeTruthy();
 		});
 		it('should return false when the command fails', () => {
 			addPlugin(testPlugin, app);
 
-			expect(app.services.commander.commands.test(/*don't work when no message*/)).toBeFalsy();
+			expect(app.services.commander.commands.setValue(/*don't work when no message*/)).toBeFalsy();
 		});
 		it('should perform the action', () => {
 			addPlugin(testPlugin, app);
 			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
 
-			app.services.commander.commands.test('hello');
+			app.services.commander.commands.setValue('hello');
 
 			expect(app.services.state.realms[claim]).toStrictEqual({ value: 'hello' });
 		});
@@ -273,7 +252,7 @@ describe('commander service', () => {
 
 			expect(app.services.history.hasPast).toBeFalsy();
 
-			app.services.commander.commands.test('hello');
+			app.services.commander.commands.setValue('hello');
 
 			expect(app.services.history.hasPast).toBeTruthy();
 		});
@@ -285,11 +264,11 @@ describe('commander service', () => {
 				dependsOn(commanderPlugin.id);
 
 				onCreated(({ services }) => {
-					services.commander.register('test', commandConstructor);
+					services.commander.register('setValue', commandConstructor);
 				});
 			}), app);
 
-			app.services.commander.can.test('message');
+			app.services.commander.can.setValue('message');
 
 			expect(commandConstructor).toHaveBeenCalledExactlyOnceWith('message');
 		});
@@ -301,14 +280,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ state }): boolean => {
+						services.commander.register('setValue', _msg => ({ state }): boolean => {
 							receivedState = state;
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.can.test('message');
+				app.services.commander.can.setValue('message');
 
 				expect(receivedState).toBe(app.services.state);
 			});
@@ -318,14 +297,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ transaction }): boolean => {
+						services.commander.register('setValue', _msg => ({ transaction }): boolean => {
 							tr = transaction;
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.can.test('message');
+				app.services.commander.can.setValue('message');
 
 				expect(tr?.steps).toStrictEqual([]);
 			});
@@ -336,14 +315,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ dispatch }): boolean => {
+						services.commander.register('setValue', _msg => ({ dispatch }): boolean => {
 							dispatchFunction = dispatch;
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.commands.test();
+				app.services.commander.commands.setValue();
 
 				expect(dispatchFunction).toBeTypeOf('function');
 			});
@@ -354,18 +333,18 @@ describe('commander service', () => {
 		it('should return true when the command can apply', () => {
 			addPlugin(testPlugin, app);
 
-			expect(app.services.commander.commands.test('works!')).toBeTruthy();
+			expect(app.services.commander.commands.setValue('works!')).toBeTruthy();
 		});
 		it('should return false when the command can\' apply', () => {
 			addPlugin(testPlugin, app);
 
-			expect(app.services.commander.commands.test(/*don't work when no message*/)).toBeFalsy();
+			expect(app.services.commander.commands.setValue(/*don't work when no message*/)).toBeFalsy();
 		});
 		it('should not perform the action', () => {
 			addPlugin(testPlugin, app);
 			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
 
-			app.services.commander.can.test('hello');
+			app.services.commander.can.setValue('hello');
 
 			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
 		});
@@ -374,7 +353,7 @@ describe('commander service', () => {
 
 			expect(app.services.history.hasPast).toBeFalsy();
 
-			app.services.commander.can.test('hello');
+			app.services.commander.can.setValue('hello');
 
 			expect(app.services.history.hasPast).toBeFalsy();
 		});
@@ -386,11 +365,11 @@ describe('commander service', () => {
 				dependsOn(commanderPlugin.id);
 
 				onCreated(({ services }) => {
-					services.commander.register('test', commandConstructor);
+					services.commander.register('setValue', commandConstructor);
 				});
 			}), app);
 
-			app.services.commander.chain.test('message');
+			app.services.commander.chain.setValue('message');
 
 			expect(commandConstructor).toHaveBeenCalledExactlyOnceWith('message');
 		});
@@ -401,14 +380,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ state }): boolean => {
+						services.commander.register('setValue', _msg => ({ state }): boolean => {
 							states.push(state);
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.chain.test('message');
+				app.services.commander.chain.setValue('message');
 
 				expect(states).toSatisfy(allItemsAreStrictlyEqual);
 				expect(states[0]).toBe(app.services.state);
@@ -419,14 +398,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ transaction }): boolean => {
+						services.commander.register('setValue', _msg => ({ transaction }): boolean => {
 							tr = transaction;
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.chain.test('message');
+				app.services.commander.chain.setValue('message');
 
 				expect(tr?.steps).toStrictEqual([]);
 			});
@@ -436,14 +415,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ transaction }): boolean => {
+						services.commander.register('setValue', _msg => ({ transaction }): boolean => {
 							transactions.push(transaction);
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.chain.test('message 1').test('message 2');
+				app.services.commander.chain.setValue('message 1').setValue('message 2');
 
 				expect(transactions).toSatisfy(allItemsAreStrictlyEqual);
 			});
@@ -453,14 +432,14 @@ describe('commander service', () => {
 					dependsOn(commanderPlugin.id);
 
 					onCreated(({ services }) => {
-						services.commander.register('test', _msg => ({ dispatch }): boolean => {
+						services.commander.register('setValue', _msg => ({ dispatch }): boolean => {
 							dispatchFunctions.push(dispatch);
 							return true;
 						});
 					});
 				}), app);
 
-				app.services.commander.chain.test('message');
+				app.services.commander.chain.setValue('message');
 
 				expect(dispatchFunctions).toSatisfy(allItemsAreStrictlyEqual);
 				expect(dispatchFunctions[0]).toBeTypeOf('function');
@@ -474,7 +453,7 @@ describe('commander service', () => {
 			addPlugin(testPlugin, app);
 			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
 
-			app.services.commander.chain.test('hello');
+			app.services.commander.chain.setValue('hello');
 
 			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
 		});
@@ -484,8 +463,8 @@ describe('commander service', () => {
 
 			const chain = app.services.commander.chain;
 			chains.push(chain);
-			chains.push(chain.test('message 1'));
-			chains.push(chain.test('message 2'));
+			chains.push(chain.setValue('message 1'));
+			chains.push(chain.setValue('message 2'));
 
 			expect(chains).toSatisfy(allItemsAreStrictlyEqual);
 		});
@@ -494,7 +473,7 @@ describe('commander service', () => {
 		it('should perform the commands actions', () => {
 			addPlugin(testPlugin, app);
 
-			const chain = app.services.commander.chain.test('hello');
+			const chain = app.services.commander.chain.setValue('hello');
 
 			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
 
@@ -505,7 +484,7 @@ describe('commander service', () => {
 		it('should add the transaction to history', () => {
 			addPlugin(testPlugin, app);
 
-			const chain = app.services.commander.chain.test('hello');
+			const chain = app.services.commander.chain.setValue('hello');
 
 			expect(app.services.history.hasPast).toBeFalsy();
 
@@ -520,16 +499,16 @@ describe('commander service', () => {
 				dependsOn(commanderPlugin.id);
 
 				onCreated(({ services }) => {
-					services.commander.register('test', setValueCommandConstructor);
+					services.commander.register('setValue', setValueCommandConstructor);
 				});
 			}), app);
 
-			expect(app.services.commander.commands.test).toBeTypeOf('function');
-			expect(app.services.commander.can.test).toBeTypeOf('function');
-			expect(app.services.commander.chain.test).toBeTypeOf('function');
+			expect(app.services.commander.commands.setValue).toBeTypeOf('function');
+			expect(app.services.commander.can.setValue).toBeTypeOf('function');
+			expect(app.services.commander.chain.setValue).toBeTypeOf('function');
 		});
 		it('should return the service', () => {
-			expect(app.services.commander.register('test', setValueCommandConstructor)).toBe(app.services.commander);
+			expect(app.services.commander.register('setValue', setValueCommandConstructor)).toBe(app.services.commander);
 		});
 	});
 });

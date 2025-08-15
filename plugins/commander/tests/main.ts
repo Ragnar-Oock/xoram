@@ -1,7 +1,7 @@
 import { createApp, definePlugin, onBeforeCreate, onCreated, onEvent } from '@xoram/core';
 import { createApp as createVueApp, h, type Ref, ref } from 'vue';
 import { defaultCommanderPlugin as commanderPlugin, type HistoryEvent } from '../src';
-import { ReplaceTestValueStep } from './replace-test-value.step';
+import { ReplaceTestValueStep } from './dummies/replace-test-value.step';
 
 declare module '../src/api/command.service' {
 	export interface CommandCollection {
@@ -21,7 +21,7 @@ const app = createApp([
 					return false;
 				}
 				if (dispatch) {
-					tr.add(new ReplaceTestValueStep(claim, msg));
+					tr.add(new ReplaceTestValueStep(claim, 0, 0, msg));
 				}
 				return true;
 			});

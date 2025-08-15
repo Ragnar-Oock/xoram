@@ -9,8 +9,8 @@ import {
 	TransactionError,
 } from '../../src';
 import { failure } from '../../src/api/result';
-import { IrreversibleReplaceTestValueStep } from '../irreversible-replace-test-value.step';
-import { ReplaceTestValueStep } from '../replace-test-value.step';
+import { IrreversibleReplaceTestValueStep } from '../dummies/irreversible-replace-test-value.step';
+import { ReplaceTestValueStep } from '../dummies/replace-test-value.step';
 
 function isTransaction(candidate: unknown): candidate is Transaction {
 	return (
@@ -108,7 +108,7 @@ describe('history service', () => {
 	function getTransaction() {
 		return app.services.history
 			.transaction()
-			.add(new ReplaceTestValueStep(realm, testValue));
+			.add(new ReplaceTestValueStep(realm, -1, -1, testValue));
 	}
 
 	describe('commit', () => {
