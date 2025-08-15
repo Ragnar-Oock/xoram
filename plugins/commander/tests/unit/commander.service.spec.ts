@@ -1,22 +1,21 @@
 import {
 	addPlugin,
+	addPlugins,
 	type Application,
 	createApp,
 	definePlugin,
 	dependsOn,
 	destroyApp,
-	onBeforeCreate,
 	onCreated,
-	type PluginDefinition,
 } from '@xoram/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defaultCommanderPlugin as commanderPlugin } from '../../src';
-import type { Command, CommandConstructor } from '../../src/api/command';
+import type { Command } from '../../src/api/command';
 
 import type { ChainedCommand } from '../../src/api/command.service';
 import type { State, StateService } from '../../src/api/state.service';
 import type { Transaction } from '../../src/api/transaction';
-import { ReplaceTestValueStep } from '../replace-test-value.step';
+import { claim, initialValue, setValueCommandConstructor, testPlugin } from '../dummies/test-plugin';
 
 declare module '../../src/api/command.service' {
 	// noinspection JSUnusedGlobalSymbols
@@ -24,6 +23,8 @@ declare module '../../src/api/command.service' {
 		test: (msg?: string) => void;
 	}
 }
+
+const allItemsAreStrictlyEqual = value => Array.isArray(value) && value.every(item => item === value[0]);
 
 const noop = (): void => void 0;
 
@@ -149,7 +150,7 @@ describe('commander service', () => {
 	});
 	describe('commands[command]', () => {
 		it('should invoke the command constructor with the given arguments', () => {
-			const commandConstructor = vi.fn<(msg?: string) => Command>(testCommandConstructor);
+			const commandConstructor = vi.fn<(msg?: string) => Command>(setValueCommandConstructor);
 			addPlugin(definePlugin(() => {
 				dependsOn(commanderPlugin.id);
 
@@ -162,57 +163,92 @@ describe('commander service', () => {
 
 			expect(commandConstructor).toHaveBeenCalledExactlyOnceWith('message');
 		});
-		it('should invoke the command with the current state instance', () => {
-			let receivedState: State | undefined;
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
+		describe('command parameters', () => {
+			it('should invoke the command with the current state instance', () => {
+				let receivedState: State | undefined;
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (state, _transaction, _dispatch): boolean => {
-						receivedState = state;
-						return true;
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ state }): boolean => {
+							receivedState = state;
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.commands.test('message');
+				app.services.commander.commands.test('message');
 
-			expect(receivedState).toBe(app.services.state);
-		});
-		it('should invoke the command with an empty transaction', () => {
-			let tr: Transaction | undefined;
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
+				expect(receivedState).toBe(app.services.state);
+			});
+			it('should invoke the command with an empty transaction', () => {
+				let tr: Transaction | undefined;
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (_app, transaction, _dispatch): boolean => {
-						tr = transaction;
-						return true;
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ transaction }): boolean => {
+							tr = transaction;
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.commands.test('message');
+				app.services.commander.commands.test('message');
 
-			expect(tr?.steps).toStrictEqual([]);
-		});
-		it('should invoke the command with a dispatch function', () => {
-			// oxlint-disable-next-line no-null
-			let dispatchFunction: ((transaction: Transaction) => void) | null | undefined = null;
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
+				expect(tr?.steps).toStrictEqual([]);
+			});
+			it('should invoke the command with a dispatch function', () => {
+				// oxlint-disable-next-line no-null
+				let dispatchFunction: ((transaction: Transaction) => void) | null | undefined = null;
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (_app, _transaction, dispatch): boolean => {
-						dispatchFunction = dispatch;
-						return true;
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ dispatch }): boolean => {
+							dispatchFunction = dispatch;
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.commands.test();
+				app.services.commander.commands.test();
 
-			expect(dispatchFunction).toBeTypeOf('function');
+				expect(dispatchFunction).toBeTypeOf('function');
+			});
+			it('should invoke the command with a chain adding to the same transaction', () => {
+				let transactions: Transaction = [];
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ chain, transaction }) => {
+										transactions.push(transaction);
+										return chain
+											.append('1')
+											.append('2')
+											.spy()
+											.run();
+									},
+								)
+								.register('spy', () => ({ transaction }) => {
+									transactions.push(transaction);
+									return true;
+								});
+						});
+					}), testPlugin,
+				], app);
+
+				app.services.commander.commands.testCommand();
+
+				expect(app.services.state.realms[claim].value).toBe('12');
+				expect(transactions).toSatisfy(allItemsAreStrictlyEqual);
+			});
+			it.todo('should invoke the command with a can command collection', () => {});
+			it.todo('should invoke the command with a command collection adding to the same transaction', () => {});
 		});
 		it('should return true when the command succeeds', () => {
 			addPlugin(testPlugin, app);
@@ -244,7 +280,7 @@ describe('commander service', () => {
 	});
 	describe('can[command]', () => {
 		it('should invoke the command constructor with the given arguments', () => {
-			const commandConstructor = vi.fn<(msg?: string) => Command>(testCommandConstructor);
+			const commandConstructor = vi.fn<(msg?: string) => Command>(setValueCommandConstructor);
 			addPlugin(definePlugin(() => {
 				dependsOn(commanderPlugin.id);
 
@@ -257,57 +293,63 @@ describe('commander service', () => {
 
 			expect(commandConstructor).toHaveBeenCalledExactlyOnceWith('message');
 		});
-		it('should invoke the command with the app instance', () => {
-			let receivedState: State | undefined;
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (state, _transaction, _dispatch): boolean => {
-						receivedState = state;
-						return true;
+		describe('command parameters', () => {
+			it('should invoke the command with the current state instance', () => {
+				let receivedState: State | undefined;
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
+
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ state }): boolean => {
+							receivedState = state;
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.can.test('message');
+				app.services.commander.can.test('message');
 
-			expect(receivedState).toBe(app.services.state);
-		});
-		it('should invoke the command with an empty transaction', () => {
-			let tr: Transaction | undefined;
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
+				expect(receivedState).toBe(app.services.state);
+			});
+			it('should invoke the command with an empty transaction', () => {
+				let tr: Transaction | undefined;
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (_app, transaction, _dispatch): boolean => {
-						tr = transaction;
-						return true;
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ transaction }): boolean => {
+							tr = transaction;
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.can.test('message');
+				app.services.commander.can.test('message');
 
-			expect(tr?.steps).toStrictEqual([]);
-		});
-		it('should invoke the command without a dispatch function', () => {
-			// oxlint-disable-next-line no-null
-			let dispatchFunction: ((transaction: Transaction) => void) | null | undefined = null;
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
+				expect(tr?.steps).toStrictEqual([]);
+			});
+			it('should invoke the command without a dispatch function', () => {
+				// oxlint-disable-next-line no-null
+				let dispatchFunction: ((transaction: Transaction) => void) | null | undefined = null;
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (_app, _transaction, dispatch): boolean => {
-						dispatchFunction = dispatch;
-						return true;
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ dispatch }): boolean => {
+							dispatchFunction = dispatch;
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.commands.test();
+				app.services.commander.commands.test();
 
-			expect(dispatchFunction).toBeTypeOf('function');
+				expect(dispatchFunction).toBeTypeOf('function');
+			});
+			it.todo('should invoke the command with a chain in dry run', () => {});
+			it.todo('should invoke the command with a can command collection', () => {});
+			it.todo('should invoke the command with a command collection in dry run', () => {});
 		});
 		it('should return true when the command can apply', () => {
 			addPlugin(testPlugin, app);
@@ -339,7 +381,7 @@ describe('commander service', () => {
 	});
 	describe('chain[command]', () => {
 		it('should invoke the command constructor with the given arguments', () => {
-			const commandConstructor = vi.fn<(msg?: string) => Command>(testCommandConstructor);
+			const commandConstructor = vi.fn<(msg?: string) => Command>(setValueCommandConstructor);
 			addPlugin(definePlugin(() => {
 				dependsOn(commanderPlugin.id);
 
@@ -352,75 +394,81 @@ describe('commander service', () => {
 
 			expect(commandConstructor).toHaveBeenCalledExactlyOnceWith('message');
 		});
-		it('should invoke all the commands with the app instance', () => {
-			const states: StateService[] = [];
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
+		describe('command parameters', () => {
+			it('should invoke all the commands with the app instance', () => {
+				const states: StateService[] = [];
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (state, _transaction, _dispatch): boolean => {
-						states.push(state);
-						return true;
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ state }): boolean => {
+							states.push(state);
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.chain.test('message');
+				app.services.commander.chain.test('message');
 
-			expect(states).toSatisfy(value => Array.isArray(value) && value.every(item => item === value[0]));
-			expect(states[0]).toBe(app.services.state);
-		});
-		it('should invoke the first command with an empty transaction', () => {
-			let tr: Transaction | undefined;
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
+				expect(states).toSatisfy(allItemsAreStrictlyEqual);
+				expect(states[0]).toBe(app.services.state);
+			});
+			it('should invoke the first command with an empty transaction', () => {
+				let tr: Transaction | undefined;
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (_app, transaction, _dispatch): boolean => {
-						tr = transaction;
-						return true;
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ transaction }): boolean => {
+							tr = transaction;
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.chain.test('message');
+				app.services.commander.chain.test('message');
 
-			expect(tr?.steps).toStrictEqual([]);
-		});
-		it('should invoke all the chained commands with the same transaction', () => {
-			const transactions: Transaction[] = [];
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
+				expect(tr?.steps).toStrictEqual([]);
+			});
+			it('should invoke all the chained commands with the same transaction', () => {
+				const transactions: Transaction[] = [];
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (_app, transaction, _dispatch): boolean => {
-						transactions.push(transaction);
-						return true;
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ transaction }): boolean => {
+							transactions.push(transaction);
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.chain.test('message 1').test('message 2');
+				app.services.commander.chain.test('message 1').test('message 2');
 
-			expect(transactions).toSatisfy(value => Array.isArray(value) && value.every(item => item === value[0]));
-		});
-		it('should invoke all the commands with a dispatch function', () => {
-			const dispatchFunctions: (((tr: Transaction) => void) | undefined)[] = [];
-			addPlugin(definePlugin(() => {
-				dependsOn(commanderPlugin.id);
+				expect(transactions).toSatisfy(allItemsAreStrictlyEqual);
+			});
+			it('should invoke all the commands with a dispatch function', () => {
+				const dispatchFunctions: (((tr: Transaction) => void) | undefined)[] = [];
+				addPlugin(definePlugin(() => {
+					dependsOn(commanderPlugin.id);
 
-				onCreated(({ services }) => {
-					services.commander.register('test', _msg => (_app, _transaction, dispatch): boolean => {
-						dispatchFunctions.push(dispatch);
-						return true;
+					onCreated(({ services }) => {
+						services.commander.register('test', _msg => ({ dispatch }): boolean => {
+							dispatchFunctions.push(dispatch);
+							return true;
+						});
 					});
-				});
-			}), app);
+				}), app);
 
-			app.services.commander.chain.test('message');
+				app.services.commander.chain.test('message');
 
-			expect(dispatchFunctions).toSatisfy(value => Array.isArray(value) && value.every(item => item === value[0]));
-			expect(dispatchFunctions[0]).toBeTypeOf('function');
+				expect(dispatchFunctions).toSatisfy(allItemsAreStrictlyEqual);
+				expect(dispatchFunctions[0]).toBeTypeOf('function');
+			});
+			it.todo('should invoke the command with a chain adding to the same transaction', () => {});
+			it.todo('should invoke the command with a different chain than the current one', () => {});
+			it.todo('should invoke the command with a can command collection', () => {});
+			it.todo('should invoke the command with a command collection adding to the same transaction', () => {});
 		});
 		it('should not perform the action', () => {
 			addPlugin(testPlugin, app);
@@ -439,7 +487,7 @@ describe('commander service', () => {
 			chains.push(chain.test('message 1'));
 			chains.push(chain.test('message 2'));
 
-			expect(chains).toSatisfy(value => Array.isArray(value) && value.every(item => item === value[0]));
+			expect(chains).toSatisfy(allItemsAreStrictlyEqual);
 		});
 	});
 	describe('chain.run()', () => {
@@ -472,7 +520,7 @@ describe('commander service', () => {
 				dependsOn(commanderPlugin.id);
 
 				onCreated(({ services }) => {
-					services.commander.register('test', testCommandConstructor);
+					services.commander.register('test', setValueCommandConstructor);
 				});
 			}), app);
 
@@ -481,7 +529,7 @@ describe('commander service', () => {
 			expect(app.services.commander.chain.test).toBeTypeOf('function');
 		});
 		it('should return the service', () => {
-			expect(app.services.commander.register('test', testCommandConstructor)).toBe(app.services.commander);
+			expect(app.services.commander.register('test', setValueCommandConstructor)).toBe(app.services.commander);
 		});
 	});
 });
