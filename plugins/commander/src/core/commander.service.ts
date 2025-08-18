@@ -30,8 +30,8 @@ export const commandService: (app: Application) => CommandService = defineServic
 	(app) => {
 		const _commands: _Commands = {} as _Commands;
 
-		const commitWithErrorHandling = (transaction: Transaction): boolean => {
-			const result = app.services.history.commit(transaction);
+		const applyWithErrorHandling = (transaction: Transaction): true | never => {
+			const result = app.services.state.apply(transaction);
 			if (!result.ok) {
 				handleError(result.reason, undefined, app, 'unknown');
 			}
@@ -51,10 +51,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 							const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;
 							if (!commandConstructor) {return undefined;}
 
-							return (...args: unknown[]) => (
-								commandConstructor(...args)(parameters)
-								&& commitWithErrorHandling(transaction)
-							);
+							return (...args: unknown[]) => commandConstructor(...args)(parameters);
 						},
 					});
 				},
@@ -78,7 +75,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 
 					return (...args: unknown[]) => (
 						commandConstructor(...args)(createCommandParameters(transaction, false))
-						&& commitWithErrorHandling(transaction)
+						&& applyWithErrorHandling(transaction)
 					);
 				},
 			});
@@ -115,7 +112,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 							// if a transaction was passed in we defer commiting the transaction to the code that created it, so
 							// we only check if the chain can run or not
 							return (shouldDispatch && !hadTransaction)
-								? commitWithErrorHandling(_transaction)
+								? applyWithErrorHandling(_transaction)
 								: commandResults.every(Boolean);
 						};
 					}
@@ -165,7 +162,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 
 						return (...args: unknown[]) => (
 							commandConstructor(...args)(createCommandParameters(transaction, true))
-							&& commitWithErrorHandling(transaction)
+							&& applyWithErrorHandling(transaction)
 						);
 					},
 				});

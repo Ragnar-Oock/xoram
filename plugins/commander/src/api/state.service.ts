@@ -10,7 +10,22 @@ export interface Realms {
 }
 
 export type StateNotification = {
-	realClaimed: { name: string };
+	beforeTransactionApply: {
+		/**
+		 * The transaction to be applied
+		 */
+		transaction: Transaction;
+		/**
+		 * Block the application of the transaction on the state
+		 */
+		prevent: () => void;
+	};
+	afterTransactionApply: {
+		/**
+		 * The newly applied transaction
+		 */
+		transaction: Transaction;
+	};
 } & Record<string, unknown>
 
 export interface StateService extends Service<StateNotification> {
@@ -28,6 +43,12 @@ export interface StateService extends Service<StateNotification> {
 	 * Create a new transaction for the {@link CommandService} to consume.
 	 */
 	transaction(): Transaction;
+
+	/**
+	 * Apply a transaction to update the state's content
+	 * @param transaction
+	 */
+	apply(transaction: Transaction): Result<boolean, StateError>;
 }
 
 /**
@@ -36,6 +57,8 @@ export interface StateService extends Service<StateNotification> {
 export interface State {
 	realms: Readonly<Realms>;
 }
+
+export class StateError extends Error {}
 
 export class RealmError extends Error {
 	constructor(reason: string, cause?: Error) {

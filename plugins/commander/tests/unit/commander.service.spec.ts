@@ -247,15 +247,6 @@ describe('commander service', () => {
 
 			expect(app.services.state.realms[claim]).toStrictEqual({ value: 'hello' });
 		});
-		it('should add the transaction to history', () => {
-			addPlugin(testPlugin, app);
-
-			expect(app.services.history.hasPast).toBeFalsy();
-
-			app.services.commander.commands.setValue('hello');
-
-			expect(app.services.history.hasPast).toBeTruthy();
-		});
 	});
 	describe('can[command]', () => {
 		it('should invoke the command constructor with the given arguments', () => {
@@ -347,15 +338,6 @@ describe('commander service', () => {
 			app.services.commander.can.setValue('hello');
 
 			expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
-		});
-		it('should keep the transaction out of the history', () => {
-			addPlugin(testPlugin, app);
-
-			expect(app.services.history.hasPast).toBeFalsy();
-
-			app.services.commander.can.setValue('hello');
-
-			expect(app.services.history.hasPast).toBeFalsy();
 		});
 	});
 	describe('chain[command]', () => {
@@ -480,17 +462,6 @@ describe('commander service', () => {
 			chain.run();
 
 			expect(app.services.state.realms[claim]).toStrictEqual({ value: 'hello' });
-		});
-		it('should add the transaction to history', () => {
-			addPlugin(testPlugin, app);
-
-			const chain = app.services.commander.chain.setValue('hello');
-
-			expect(app.services.history.hasPast).toBeFalsy();
-
-			chain.run();
-
-			expect(app.services.history.hasPast).toBeTruthy();
 		});
 	});
 	describe('register', () => {
