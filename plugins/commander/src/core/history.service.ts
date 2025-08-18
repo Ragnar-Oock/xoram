@@ -6,11 +6,10 @@ import { failure, type Result, success } from '../api/result';
 import type { State } from '../api/state.service';
 import type { Transaction } from '../api/transaction';
 
-// branding symbol used to differentiate already commited transactions from fresh ones
-const commitedTransaction = Symbol(import.meta.env.DEV ? 'Commited Transaction' : undefined);
-
-interface CommitedTransaction extends Transaction {
-	[commitedTransaction]: true;
+declare module '../api/transaction' {
+	interface TransactionMeta {
+		isCommited: true;
+	}
 }
 
 /**
@@ -35,7 +34,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 				if (transaction.steps.length === 0) {
 					return success(head);
 				}
-				if ((transaction as CommitedTransaction)[commitedTransaction]) {
+				if (transaction.getMeta('isCommited')) {
 					return failure(new HistoryError('Tried to commit an already commited transaction.'));
 				}
 
@@ -48,7 +47,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 				}
 
 				head = { transaction: result.value, time: performance.now(), parent: head };
-				(transaction as CommitedTransaction)[commitedTransaction] = true;
+				transaction.setMeta('isCommited', true);
 
 				if (purgeFuture) {
 					future = undefined;
