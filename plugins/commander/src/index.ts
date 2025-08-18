@@ -16,7 +16,7 @@ export { HistoryError } from './api/history.service';
 export type { Realm, Realms, State, StateService, StateNotification } from './api/state.service';
 export { RealmError } from './api/state.service';
 export type { Step } from './api/step';
-export type { Transaction } from './api/transaction';
+export type { Transaction, TransactionMeta } from './api/transaction';
 export { TransactionError } from './api/transaction-error';
 
 export type {

@@ -1,11 +1,14 @@
 import { failure, type Result, success } from '../api/result';
 import type { State } from '../api/state.service';
 import { type Step } from '../api/step';
-import type { Transaction as TransactionInterface } from '../api/transaction';
+import type { Transaction as TransactionInterface, TransactionMeta } from '../api/transaction';
 import { TransactionError } from '../api/transaction-error';
 
 export class Transaction implements TransactionInterface {
-	constructor(private readonly _steps: Step[] = []) {}
+	constructor(
+		private readonly _steps: Step[] = [],
+		private readonly _meta: Partial<TransactionMeta> = {},
+	) {}
 
 	public add(step: Step): this {
 		this._steps.push(step);
@@ -46,5 +49,14 @@ export class Transaction implements TransactionInterface {
 
 	public reverse(state: State): TransactionInterface {
 		return new Transaction(this._steps.map(step => step.reverse(state)));
+	}
+
+	public getMeta<meta extends keyof TransactionMeta>(name: meta): TransactionMeta[meta] | undefined {
+		return this._meta[name];
+	}
+
+	public setMeta<meta extends keyof TransactionMeta>(name: meta, value: TransactionMeta[meta]): this {
+		this._meta[name] = value;
+		return this;
 	}
 }

@@ -3,6 +3,12 @@ import type { State } from './state.service';
 import type { Step } from './step';
 import type { TransactionError } from './transaction-error';
 
+export interface TransactionMeta extends Record<string, unknown> {
+	// set if the transaction has already been applied to the state it belongs to
+	isApplied: true;
+}
+
+
 export interface Transaction {
 	readonly steps: readonly Step[];
 	/**
@@ -25,4 +31,16 @@ export interface Transaction {
 	 * @param state - the state to apply the changes to
 	 */
 	reverse: (state: State) => Transaction;
+
+	/**
+	 * Access a transaction metadata
+	 * @see TransactionMeta
+	 */
+	getMeta: <meta extends keyof TransactionMeta>(name: meta) => TransactionMeta[meta] | undefined;
+	/**
+	 * Set the value of a transaction metadata
+	 * @see TransactionMeta
+	 */
+	setMeta: <meta extends keyof TransactionMeta>(name: meta, value: TransactionMeta[meta]) => this;
+
 }
