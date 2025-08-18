@@ -227,8 +227,52 @@ describe('commander service', () => {
 				expect(app.services.state.realms[claim].value).toBe('12');
 				expect(transactions).toSatisfy(allItemsAreStrictlyEqual);
 			});
-			it.todo('should invoke the command with a can command collection', () => {});
-			it.todo('should invoke the command with a command collection adding to the same transaction', () => {});
+			it('should invoke the command with a can command collection', () => {
+				let hasCan: boolean | undefined;
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ can }) => {
+										hasCan = can.append('hello');
+										return true;
+									},
+								);
+						});
+					}), testPlugin,
+				], app);
+
+				app.services.commander.commands.testCommand();
+
+				expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
+				expect(hasCan).toBeTruthy();
+			});
+			it('should invoke the command with a command collection adding to the same transaction', () => {
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ command }) => {
+									return command.append('hello') && command.append(' world');
+								});
+						});
+					}),
+					testPlugin,
+				], app);
+
+				const spy = vi.spyOn(app.services.state, 'apply');
+
+				app.services.commander.commands.testCommand();
+				expect(app.services.state.realms[claim].value).toStrictEqual('hello world');
+
+				expect(spy).toHaveBeenCalledOnce();
+			});
 		});
 		it('should return true when the command succeeds', () => {
 			addPlugin(testPlugin, app);
@@ -318,9 +362,77 @@ describe('commander service', () => {
 
 				expect(dispatchFunction).toBeTypeOf('function');
 			});
-			it.todo('should invoke the command with a chain in dry run', () => {});
-			it.todo('should invoke the command with a can command collection', () => {});
-			it.todo('should invoke the command with a command collection in dry run', () => {});
+			it('should invoke the command with a chain in dry run', () => {
+				let hasChain: boolean | undefined;
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ chain }) => {
+									hasChain = typeof chain === 'object';
+									return chain.append('hello').append(' world').run();
+								});
+						});
+					}),
+					testPlugin,
+				], app);
+
+
+				app.services.commander.can.testCommand();
+
+				expect(hasChain).toBeTruthy();
+				expect(app.services.state.realms[claim]).toStrictEqual(initialValue()); // the chain should not have run
+			});
+			it('should invoke the command with a can command collection', () => {
+				let hasCan: boolean | undefined;
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ can }) => {
+										hasCan = can.append('hello');
+										return true;
+									},
+								);
+						});
+					}), testPlugin,
+				], app);
+
+				app.services.commander.can.testCommand();
+
+				expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
+				expect(hasCan).toBeTruthy();
+			});
+			it('should invoke the command with a command collection in dry run', () => {
+				let hasCommand: boolean | undefined;
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ command }) => {
+									hasCommand = typeof command === 'object';
+									return command.append('hello') && command.append(' world');
+								});
+						});
+					}),
+					testPlugin,
+				], app);
+
+				app.services.commander.can.testCommand();
+
+				expect(hasCommand).toBeTruthy();
+				// the nested commands should not have been applied
+				expect(app.services.state.realms[claim]).toStrictEqual(initialValue());
+			});
 		});
 		it('should return true when the command can apply', () => {
 			addPlugin(testPlugin, app);
@@ -427,10 +539,111 @@ describe('commander service', () => {
 				expect(dispatchFunctions).toSatisfy(allItemsAreStrictlyEqual);
 				expect(dispatchFunctions[0]).toBeTypeOf('function');
 			});
-			it.todo('should invoke the command with a chain adding to the same transaction', () => {});
-			it.todo('should invoke the command with a different chain than the current one', () => {});
-			it.todo('should invoke the command with a can command collection', () => {});
-			it.todo('should invoke the command with a command collection adding to the same transaction', () => {});
+			it('should invoke the command with a chain adding to the same transaction', () => {
+				let transactions: Transaction[] = [];
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ chain, transaction }) => {
+										transactions.push(transaction);
+										return chain
+											.append('1')
+											.append('2')
+											.spy()
+											.run();
+									},
+								)
+								.register('spy', () => ({ transaction }) => {
+									transactions.push(transaction);
+									return true;
+								});
+						});
+					}), testPlugin,
+				], app);
+
+				app.services.commander.chain.testCommand();
+
+				expect(transactions).toSatisfy(allItemsAreStrictlyEqual);
+			});
+			it('should invoke the command with a different chain than the current one', () => {
+				let nestedChain: ChainedCommand | undefined;
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ chain }) => {
+										nestedChain = chain;
+										return chain
+											.append('1')
+											.append('2')
+											.run();
+									},
+								);
+						});
+					}), testPlugin,
+				], app);
+
+				const chain = app.services.commander.chain
+					.testCommand()
+					.testCommand();
+
+				expect(nestedChain).not.toBe(chain);
+			});
+			it('should invoke the command with a can command collection', () => {
+				let hasCan: boolean | undefined;
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ can }) => {
+										hasCan = can.append('hello');
+										return true;
+									},
+								);
+						});
+					}), testPlugin,
+				], app);
+
+				app.services.commander.chain.testCommand();
+
+				expect(hasCan).toBeTruthy();
+			});
+			it('should invoke the command with a command collection adding to the same transaction', () => {
+				const transactions: Transaction[] = [];
+				addPlugins([
+					definePlugin(() => {
+						dependsOn(commanderPlugin.id);
+						dependsOn(testPlugin.id);
+
+						onCreated(({ services }) => {
+							services.commander
+								.register('testCommand', () => ({ command, transaction }) => {
+									transactions.push(transaction);
+									return command.spy() && command.append(' world');
+								})
+								.register('spy', () => ({ transaction }) => {
+									transactions.push(transaction);
+									return true;
+								});
+						});
+					}),
+					testPlugin,
+				], app);
+
+				app.services.commander.chain.testCommand().spy();
+
+				expect(transactions).toSatisfy(allItemsAreStrictlyEqual);
+			});
 		});
 		it('should not perform the action', () => {
 			addPlugin(testPlugin, app);
