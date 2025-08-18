@@ -19,13 +19,14 @@ import { claim, initialValue, setValueCommandConstructor, testPlugin } from '../
 
 declare module '../../src/api/command.service' {
 	// noinspection JSUnusedGlobalSymbols
-	export interface CommandCollection {
+	interface CommandCollection {
 		// command set by individual tests
 		testCommand: () => void;
+		spy: () => void;
 	}
 }
 
-const allItemsAreStrictlyEqual = value => Array.isArray(value) && value.every(item => item === value[0]);
+const allItemsAreStrictlyEqual = (value: unknown) => Array.isArray(value) && value.every(item => item === value[0]);
 
 const noop = (): void => void 0;
 
@@ -196,7 +197,7 @@ describe('commander service', () => {
 				expect(dispatchFunction).toBeTypeOf('function');
 			});
 			it('should invoke the command with a chain adding to the same transaction', () => {
-				let transactions: Transaction = [];
+				let transactions: Transaction[] = [];
 				addPlugins([
 					definePlugin(() => {
 						dependsOn(commanderPlugin.id);

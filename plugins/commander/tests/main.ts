@@ -1,10 +1,10 @@
-import { createApp, definePlugin, onBeforeCreate, onCreated, onEvent } from '@xoram/core';
+import { createApp, definePlugin, onBeforeCreate, onCreated } from '@xoram/core';
 import { createApp as createVueApp, h, type Ref, ref } from 'vue';
-import { defaultCommanderPlugin as commanderPlugin, type HistoryEvent } from '../src';
+import { defaultCommanderPlugin as commanderPlugin } from '../src';
 import { ReplaceTestValueStep } from './dummies/replace-test-value.step';
 
 declare module '../src/api/command.service' {
-	export interface CommandCollection {
+	interface CommandCollection {
 		replaceLine: (text?: string) => void;
 	}
 }
@@ -16,12 +16,14 @@ const app = createApp([
 		onBeforeCreate(({ services }) => {
 			services.state.claim(claim, ref(''));
 
-			services.commander.register('replaceLine', (msg) => (state, tr, dispatch): boolean => {
-				if (typeof msg !== 'string' || typeof state.realms[claim].value !== 'string') {
+			services.commander.register('replaceLine', (msg) => ({ state, transaction, dispatch }): boolean => {
+				if (typeof msg !== 'string' || typeof (state.realms[claim] as {
+					value: string | undefined
+				}).value !== 'string') {
 					return false;
 				}
 				if (dispatch) {
-					tr.add(new ReplaceTestValueStep(claim, 0, 0, msg));
+					transaction.add(new ReplaceTestValueStep(claim, 0, 0, msg));
 				}
 				return true;
 			});
@@ -49,27 +51,27 @@ const app = createApp([
 				const button = document.createElement('button');
 				button.innerText = label;
 				button.addEventListener('click', callback);
-				xoram.append(button);
+				document.getElementById('xoram')!.append(button);
 			});
 
 		});
 
-		onEvent(
-			'history',
-			'*',
-			(event, { transaction }: HistoryEvent) => console.log(
-				event,
-				`transaction (${ transaction.steps.length }) : \n${
-					transaction.steps.map(step =>
-						`\t${ step.constructor.name }(${
-							Object
-								.entries(step)
-								.map(([ k, v ]) => `${ k }: ${ v }`)
-								.join(', ')
-						})`).join(',\n') }`,
-				// transaction,
-			),
-		);
+		// onEvent(
+		// 	'history',
+		// 	'*',
+		// 	(event, { transaction }: HistoryEvent) => console.log(
+		// 		event,
+		// 		`transaction (${ transaction.steps.length }) : \n${
+		// 			transaction.steps.map(step =>
+		// 				`\t${ step.constructor.name }(${
+		// 					Object
+		// 						.entries(step)
+		// 						.map(([ k, v ]) => `${ k }: ${ v }`)
+		// 						.join(', ')
+		// 				})`).join(',\n') }`,
+		// 		// transaction,
+		// 	),
+		// );
 	}),
 ]);
 

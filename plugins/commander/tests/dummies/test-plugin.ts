@@ -2,15 +2,13 @@ import { definePlugin, dependsOn, onBeforeCreate, type PluginDefinition } from '
 import { type CommandConstructor, defaultCommanderPlugin as commanderPlugin } from '../../src';
 import { ReplaceTestValueStep } from './replace-test-value.step';
 
-declare module '../../src' {
+declare module '../../src/api/command.service' {
 	// noinspection JSUnusedGlobalSymbols
 	export interface CommandCollection {
 		// set the value of the claimed realm to `msg`
 		setValue: (msg?: string) => void;
 		// append `msg` to the current value of the claimed realm
 		append: (msg?: string) => void;
-		// command set by individual tests
-		testCommand: () => void;
 	}
 }
 export const claim = 'test';
