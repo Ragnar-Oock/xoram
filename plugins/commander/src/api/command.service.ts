@@ -1,10 +1,10 @@
 import type { Service } from '@xoram/core';
 import type { CommandConstructor } from './command';
-import type { Transaction } from './transaction';
+import type { Transaction, TransactionMeta } from './transaction';
 
 export interface CommandCollection {
 	// commands will be added here with module augmentation
-	undo: () => void;
+	setMeta: <meta extends keyof TransactionMeta>(name: meta, value: TransactionMeta[meta]) => void;
 
 	// Reserved for the chain functionality.
 	run: never;

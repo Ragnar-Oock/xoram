@@ -1,4 +1,4 @@
-import { addService, type Application, definePlugin, type PluginDefinition } from '@xoram/core';
+import { addService, type Application, definePlugin, onBeforeCreate, type PluginDefinition } from '@xoram/core';
 import type { HistoryService } from '../api/history.service';
 import type { StateService } from '../api/state.service';
 import { commandService } from './commander.service';
@@ -32,6 +32,15 @@ export const commanderPlugin: (config: CommanderConfig) => PluginDefinition = ({
 		addService('state', state);
 		addService('commander', commandService);
 		addService('history', history);
+
+		onBeforeCreate(app => {
+			app.services
+				.commander
+				.register('setMeta', (meta, value) => ({ transaction }) => {
+					transaction.setMeta(meta, value);
+					return true;
+				});
+		});
 	},
 );
 
