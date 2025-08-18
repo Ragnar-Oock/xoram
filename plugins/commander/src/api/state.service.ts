@@ -1,6 +1,7 @@
 import type { Service } from '@xoram/core';
 import type { Immutable } from './immutable';
 import type { Result } from './result';
+import type { Transaction } from './transaction';
 
 export type Realm = object;
 
@@ -21,6 +22,12 @@ export interface StateService extends Service<StateNotification> {
 	 * @param initialValue - a value to set the realm to when creating it
 	 */
 	claim(name: keyof Realms, initialValue?: Realm): Result<Immutable<Realm>, RealmError>;
+
+
+	/**
+	 * Create a new transaction for the {@link CommandService} to consume.
+	 */
+	transaction(): Transaction;
 }
 
 /**

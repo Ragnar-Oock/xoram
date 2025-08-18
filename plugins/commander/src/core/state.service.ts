@@ -3,6 +3,8 @@ import { defineService } from '@xoram/core';
 import { failure, type Result, success } from '../api/result';
 import type { Realm, State, StateNotification, StateService } from '../api/state.service';
 import { RealmError } from '../api/state.service';
+import type { Transaction as TransactionInterface } from '../api/transaction';
+import { Transaction } from './transaction';
 
 
 /**
@@ -18,6 +20,9 @@ export const stateService: (app: Application) => StateService = defineService<St
 				}
 				this.realms[name] = initialValue;
 				return success(this.realms[name]);
+			},
+			transaction(): TransactionInterface {
+				return new Transaction();
 			},
 		};
 	});

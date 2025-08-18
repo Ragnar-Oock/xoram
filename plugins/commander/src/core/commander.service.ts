@@ -39,7 +39,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 		};
 
 		function createCommandParameters(
-			transaction?: Transaction,
+			transaction: Transaction,
 			shouldDispatch = true,
 		): CommandParameters {
 			const parameters = {
@@ -66,7 +66,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 			return parameters;
 		}
 
-		function getCan(transaction = app.services.history.transaction()) {
+		function getCan(transaction = app.services.state.transaction()) {
 			return new Proxy(EMPTY as CanCommand, {
 				get: (_, property): ChainedCommand | Invoker | undefined => {
 					if (property === 'chain') {
@@ -92,7 +92,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 		function getChain(transaction?: Transaction, shouldDispatch = true): ChainedCommand {
 			let chainHasBeenRan = false;
 			const hadTransaction = transaction !== undefined;
-			const _transaction = transaction ?? app.services.history.transaction();
+			const _transaction = transaction ?? app.services.state.transaction();
 			const commandResults: boolean[] = [];
 			const parameters = createCommandParameters(_transaction, shouldDispatch);
 			const chain = new Proxy(EMPTY as ChainedCommand, {
@@ -157,7 +157,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 			},
 
 			get commands(): SingleCommand {
-				const transaction = app.services.history.transaction();
+				const transaction = app.services.state.transaction();
 				return new Proxy(EMPTY as SingleCommand, {
 					get: (_, property): Invoker | undefined => {
 						const commandConstructor = _commands[property as keyof _Commands] as CommandConstructor<unknown[]> | undefined;

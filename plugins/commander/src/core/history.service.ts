@@ -4,13 +4,12 @@ import type { Commit, HistoryNotifications, HistoryService } from '../api/histor
 import { HistoryError } from '../api/history.service';
 import { failure, type Result, success } from '../api/result';
 import type { State } from '../api/state.service';
-import type { Transaction as TransactionInterface } from '../api/transaction';
-import { Transaction } from './transaction';
+import type { Transaction } from '../api/transaction';
 
 // branding symbol used to differentiate already commited transactions from fresh ones
 const commitedTransaction = Symbol(import.meta.env.DEV ? 'Commited Transaction' : undefined);
 
-interface CommitedTransaction extends TransactionInterface {
+interface CommitedTransaction extends Transaction {
 	[commitedTransaction]: true;
 }
 
@@ -19,7 +18,7 @@ interface CommitedTransaction extends TransactionInterface {
  */
 export const historyService: (app: Application) => HistoryService = defineService<HistoryNotifications, HistoryService>(
 	(app, emitter) => {
-		const root: Commit = { time: performance.now(), transaction: new Transaction() };
+		const root: Commit = { time: performance.now(), transaction: app.services.state.transaction() };
 		let head: Commit = root;
 		let future: Commit | undefined;
 
@@ -32,7 +31,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 			 * @param purgeFuture should commits in the future branch be forgotten, preventing subsequent calls to .redo()
 			 *   from succeeding
 			 */
-			commit(transaction: TransactionInterface, { purgeFuture } = { purgeFuture: true }): Result<Commit, HistoryError> {
+			commit(transaction: Transaction, { purgeFuture } = { purgeFuture: true }): Result<Commit, HistoryError> {
 				if (transaction.steps.length === 0) {
 					return success(head);
 				}
@@ -91,9 +90,6 @@ export const historyService: (app: Application) => HistoryService = defineServic
 
 				return success(true);
 
-			},
-			transaction(): TransactionInterface {
-				return new Transaction();
 			},
 		} as const;
 

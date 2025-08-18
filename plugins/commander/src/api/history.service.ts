@@ -74,11 +74,6 @@ export interface HistoryService extends Service<HistoryNotifications> {
 	 * should result in a clone of the current state.
 	 */
 	readonly present: Commit;
-
-	/**
-	 * Create a new transaction for the {@link CommandService} to consume.
-	 */
-	transaction(): Transaction;
 }
 
 export class HistoryError extends Error {}
