@@ -1,0 +1,44 @@
+{
+  "name": "@xoram/plugin-basic-history",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build:code:prod": "vite build --mode production",
+    "build:code:dev": "NODE_ENV=development vite build --mode development",
+    "build:code": "node ../../script/build-code.script.mjs",
+    "build:types": "node ../../script/build-types.script.mjs"
+  },
+  "bugs": "https://github.com/Ragnar-Oock/xoram/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ragnar-Oock/xoram.git",
+    "directory": "plugins/basic-history"
+  },
+  "files": [
+    "./dist",
+    "./types/*.d.ts",
+    "tsdoc-metadata.json"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./types/plugin-basic-history.public.d.ts",
+        "default": {
+          "development": "./dist/plugin-basic-history.development.js",
+          "default": "./dist/plugin-basic-history.production.js"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@xoram/core": "workspace:^",
+    "@xoram/plugin-commander": "workspace:^",
+    "@xoram/utils": "workspace:^"
+  },
+  "devDependencies": {
+    "vue-tsc": "^3.0.5"
+  }
+}

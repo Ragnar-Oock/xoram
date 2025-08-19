@@ -1,6 +1,6 @@
 import type { Service, ServiceNotifications } from '@xoram/core';
-import type { Result } from './result';
-import type { Transaction } from './transaction';
+import type { Transaction } from '@xoram/plugin-commander';
+import type { Result } from '@xoram/utils/result';
 
 /**
  * A representation of a mutation in time. A commit is immutable, to modify the history it is part

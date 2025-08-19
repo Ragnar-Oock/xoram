@@ -1,12 +1,10 @@
 import type { Application } from '@xoram/core';
 import { defineService } from '@xoram/core';
-import type { Commit, HistoryNotifications, HistoryService } from '../api/history.service';
-import { HistoryError } from '../api/history.service';
-import { failure, type Result, success } from '../api/result';
-import type { State } from '../api/state.service';
-import type { Transaction } from '../api/transaction';
+import type { Commit, HistoryNotifications, HistoryService, State, Transaction } from '@xoram/plugin-commander';
+import { HistoryError } from '@xoram/plugin-commander';
+import { failure, type Result, success } from '@xoram/utils/result';
 
-declare module '../api/transaction' {
+declare module '@xoram/plugin-commander' {
 	interface TransactionMeta {
 		isCommited: true;
 	}

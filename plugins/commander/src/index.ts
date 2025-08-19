@@ -1,3 +1,5 @@
+import './service';
+
 export type { CommanderConfig } from './core/plugin';
 export { commanderPlugin, defaultCommanderPlugin } from './core/plugin';
 export type {
@@ -11,8 +13,6 @@ export type {
 	NonNever,
 } from './api/command.service';
 export type { Command, CommandConstructor } from './api/command';
-export type { HistoryService, HistoryNotifications, HistoryEvent, Commit } from './api/history.service';
-export { HistoryError } from './api/history.service';
 export type { Realm, Realms, State, StateService, StateNotification } from './api/state.service';
 export { RealmError } from './api/state.service';
 export type { Step } from './api/step';
