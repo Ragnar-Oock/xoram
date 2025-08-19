@@ -53,3 +53,5 @@ export type {
 	NonNever,
 	Writable,
 } from './service/helper.type';
+
+import './service';

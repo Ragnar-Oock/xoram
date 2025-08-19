@@ -22,12 +22,12 @@
   ],
   "exports": {
     "./*": {
-      "import": "./dist/*/index.ts",
-      "types": "./types/*/index.ts",
-      "development": {
-        "import": "./src/*/index.ts",
-        "types": "./src/*/index.ts"
-      }
+      "xoram:dev": {
+        "types": "./src/*/index.ts",
+        "default": "./src/*/index.ts"
+      },
+      "types": "./types/*/index.d.ts",
+      "import": "./dist/*/index.ts"
     }
   }
 }

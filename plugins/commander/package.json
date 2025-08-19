@@ -24,13 +24,11 @@
   ],
   "exports": {
     ".": {
-      "import": {
-        "types": "./types/plugin-commander.public.d.ts",
-        "default": {
-          "development": "./dist/plugin-commander.development.js",
-          "default": "./dist/plugin-commander.production.js"
-        }
-      }
+      "xoram:dev": {
+        "types": "./src/index.ts"
+      },
+      "types": "./types/plugin-commander.public.d.ts",
+      "import": "./dist/plugin-commander.production.js"
     }
   },
   "dependencies": {

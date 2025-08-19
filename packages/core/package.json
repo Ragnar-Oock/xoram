@@ -25,17 +25,11 @@
   ],
   "exports": {
     ".": {
-      "import": {
-        "types": {
-          "xoram:internal": "./types/core.internal.d.ts",
-          "default": "./types/core.public.d.ts"
-        },
-        "default": {
-          "xoram:internal": "./dist/core.development.js",
-          "development": "./dist/core.development.js",
-          "default": "./dist/core.production.js"
-        }
-      }
+      "xoram:dev": {
+        "types": "./src/index.ts"
+      },
+      "types": "./types/core.public.d.ts",
+      "import": "./dist/core.production.js"
     }
   },
   "devDependencies": {

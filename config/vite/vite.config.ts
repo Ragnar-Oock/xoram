@@ -27,7 +27,7 @@ export function defineLibConfig(pkg: PackageJSON): UserConfigFnObject {
 			target: 'esnext',
 			emptyOutDir: false,
 			resolve: {
-				condition: [ 'module', 'browser', 'development|production', 'xoram:internal' ],
+				condition: [ 'module', 'browser', 'development|production' ],
 			},
 		},
 		server: {
