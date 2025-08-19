@@ -1,0 +1,25 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "build:code": {
+      "dependsOn": [
+        "^build:code",
+        "build:synthetic-index"
+      ]
+    },
+    "build:types": {
+      "dependsOn": [
+        "^build:types",
+        "build:synthetic-index"
+      ]
+    },
+    "build:synthetic-index": {
+      "outputs": [
+        "./src/index.ts"
+      ]
+    }
+  }
+}

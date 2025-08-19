@@ -1,5 +1,24 @@
-import {appendFileSync, existsSync, readFileSync, rmSync} from 'node:fs';
+/**
+ * This script build source typescript files into type declaration files and compile them
+ * via api-extractor into:
+ *  - a public API rollup file (modulename.public.d.ts)
+ *  - an internal API rullup file (modulename.internal.d.ts)
+ *  - an api report file (modulename.api.md)
+ *  - an api model file (modulename.api.json)
+ *
+ * If `--preserve-individual-files` is passed the type declaration files will
+ * be copied into the `./types` folder, keeping the same file structure as the ./src folder,
+ */
+
+
+import {appendFileSync, cpSync, existsSync, readFileSync, rmSync} from 'node:fs';
+import {resolve} from 'node:path';
+
 import {exec} from './exec.helper.mjs';
+import {argv} from 'node:process';
+import {readdirSync} from 'fs';
+
+const preserveIndividualFiles = argv.includes('--preserve-individual-files');
 
 const pkg = JSON.parse(readFileSync('package.json', {encoding: 'utf-8'}));
 
@@ -25,6 +44,15 @@ if (existsSync(serviceAugmentationFile)) {
 	for (const target of targets) {
 		appendFileSync(`./types/${trimmedPackageName}.${target}.d.ts`, cleanedUp);
 	}
+}
+
+if (preserveIndividualFiles) {
+	console.log('copying .d.ts files to ./types');
+
+	readdirSync('./temp/types', {recursive: true, encoding: 'utf-8'})
+		.filter(file => file.endsWith('.d.ts'))
+		.map(file => [resolve(`./temp/types/${file}`), resolve(`./types/${file}`)])
+		.forEach(([source, dest]) => cpSync(source, dest));
 }
 
 // cleanup temporary files
