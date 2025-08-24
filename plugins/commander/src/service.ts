@@ -1,3 +1,4 @@
+import '@xoram/core';
 import type { CommandService } from './api/command.service';
 import type { StateService } from './api/state.service';
 
