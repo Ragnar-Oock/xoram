@@ -27,7 +27,7 @@
         "default": "./src/*/index.ts"
       },
       "types": "./types/*/index.d.ts",
-      "import": "./dist/*/index.ts"
+      "import": "./dist/*/index.js"
     }
   }
 }

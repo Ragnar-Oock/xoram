@@ -18,10 +18,10 @@ export default defineConfig(env =>
 			build: {
 				lib: {
 					entry: Object.fromEntries(
-						getDirectories('./src')
+						getDirectories(resolve(__dirname, `./src`))
 							.map(dir => [ dir, resolve(__dirname, `./src/${ dir }/index.ts`) ] as [ string, string ]),
 					),
-					fileName: (_, name) => `${ name }.js`,
+					fileName: (_, name) => `${ name }/index.js`,
 				},
 			},
 		} satisfies UserConfig,
