@@ -1,7 +1,6 @@
 import './service';
 
-export type { CommanderConfig } from './core/plugin';
-export { commanderPlugin, defaultCommanderPlugin } from './core/plugin';
+export { commanderPlugin } from './core/plugin';
 export type {
 	CanCommand,
 	CommandCollection,

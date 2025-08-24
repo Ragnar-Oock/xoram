@@ -1,5 +1,5 @@
 import { definePlugin, dependsOn, onBeforeCreate, type PluginDefinition } from '@xoram/core';
-import { type CommandConstructor, defaultCommanderPlugin as commanderPlugin } from '../../src';
+import { type CommandConstructor, commanderPlugin } from '../../src';
 import { ReplaceTestValueStep } from './replace-test-value.step';
 
 declare module '../../src/api/command.service' {
