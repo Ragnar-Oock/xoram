@@ -1,6 +1,6 @@
-import { failure, type Result, success } from '../../src/api/result';
-import type { State } from '../../src/api/state.service';
-import { type Step } from '../../src/api/step';
+import type { State, Step } from '@xoram/plugin-commander';
+import type { Result } from '@xoram/utils/result';
+import { failure, success } from '@xoram/utils/result';
 
 export class IrreversibleReplaceTestValueStep implements Step {
 

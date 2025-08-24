@@ -1,14 +1,9 @@
 import { addPlugin, type Application, createApp, definePlugin, destroyApp, onBeforeCreate, onEvent } from '@xoram/core';
+import { commanderPlugin, type Step, type Transaction, TransactionError } from '@xoram/plugin-commander';
+import { failure } from '@xoram/utils/result';
 import { afterEach, beforeEach, describe, expect, it, type RunnerTestCase, vi } from 'vitest';
-import {
-	defaultCommanderPlugin as commanderPlugin,
-	HistoryError,
-	type HistoryService,
-	type Step,
-	type Transaction,
-	TransactionError,
-} from '../../src';
-import { failure } from '../../src/api/result';
+import { basicHistoryPlugin } from '../../src';
+import { HistoryError, type HistoryService } from '../../src/api/history.service';
 import { IrreversibleReplaceTestValueStep } from '../dummies/irreversible-replace-test-value.step';
 import { ReplaceTestValueStep } from '../dummies/replace-test-value.step';
 
@@ -16,15 +11,15 @@ function isTransaction(candidate: unknown): candidate is Transaction {
 	return (
 		candidate !== null
 		&& typeof candidate === 'object'
-		&& Array.isArray(candidate.steps as Step[])
+		&& Array.isArray((candidate as Transaction).steps as Step[])
 		&& ([ 'add', 'apply', 'reverse' ] as const)
 			.every(method => typeof (candidate as Transaction)[method] === 'function')
 	);
 }
 
-const initializeApp = (task: RunnerTestCase) => createApp([ commanderPlugin ], { id: task.name });
+const initializeApp = (task: RunnerTestCase) => createApp([ commanderPlugin, basicHistoryPlugin ], { id: task.name });
 
-declare module '../../src' {
+declare module '@xoram/plugin-commander' {
 	interface Realms {
 		test: { value: string };
 	}
@@ -60,7 +55,7 @@ describe('history service', () => {
 			});
 			it('should have a timestamp at or after the app instantiation', ({ task }) => {
 				const beforeTimeStamp = performance.now();
-				const app = createApp([ commanderPlugin ], { id: task.name });
+				const app = createApp([ commanderPlugin, basicHistoryPlugin ], { id: task.name });
 
 				expect(app.services.history.present.time).toBeGreaterThanOrEqual(beforeTimeStamp);
 
@@ -94,7 +89,9 @@ describe('history service', () => {
 	let app: Application;
 	beforeEach(({ task }) => {
 		app = createApp([
-			commanderPlugin, definePlugin(() => {
+			commanderPlugin,
+			basicHistoryPlugin,
+			definePlugin(() => {
 				onBeforeCreate(app => app.services.state.claim(realm, { value: initialValue }));
 			}),
 		], { id: task.name });
@@ -106,9 +103,12 @@ describe('history service', () => {
 	});
 
 	function getTransaction() {
-		return app.services.history
-			.transaction()
+		return getEmptyTransaction()
 			.add(new ReplaceTestValueStep(realm, -1, -1, testValue));
+	}
+
+	function getEmptyTransaction() {
+		return app.services.state.transaction();
 	}
 
 	describe('commit', () => {
@@ -117,7 +117,7 @@ describe('history service', () => {
 				'should return the present commit wrapped in a success result when commiting empty transactions',
 				() => {
 					const present = app.services.history.present;
-					const result = app.services.history.commit(app.services.history.transaction());
+					const result = app.services.history.commit(getEmptyTransaction());
 
 					if (result.ok) {
 						expect(result.value).toBe(present);
@@ -212,34 +212,12 @@ describe('history service', () => {
 		});
 	});
 
-	describe('transaction', () => {
-		it('should return a transaction', () => {
-			const transaction = app.services.history.transaction();
-			const transactionProps = [ 'apply', 'reverse', 'add' ];
-
-			for (const transactionProp of transactionProps) {
-				expect(transaction).toHaveProperty(transactionProp);
-			}
-
-			expect(transaction.steps).toBeInstanceOf(Array);
-		});
-		it('should return an empty transaction', () => {
-			const transaction = app.services.history.transaction();
-			expect(transaction.steps).toHaveLength(0);
-		});
-		it('should create a new transaction object each time', () => {
-			const transaction = app.services.history.transaction();
-			expect(app.services.history.transaction()).not.toBe(transaction);
-		});
-	});
-
 	describe('undo', () => {
 		describe('bail out', () => {
 			it(
 				'should return a failure holding an error when the transaction of the last commit fails to unapply',
 				() => {
-					const transaction = app.services.history
-						.transaction()
+					const transaction = getEmptyTransaction()
 						.add(new IrreversibleReplaceTestValueStep(realm, testValue));
 
 					app.services.history.commit(transaction);
@@ -478,7 +456,7 @@ describe('history service', () => {
 
 				expect(spy).not.toHaveBeenCalled();
 
-				app.services.history.commit(app.services.history.transaction());
+				app.services.history.commit(getEmptyTransaction());
 
 				expect(spy).not.toHaveBeenCalled();
 			});
@@ -541,7 +519,7 @@ describe('history service', () => {
 
 				expect(spy).not.toHaveBeenCalled();
 
-				app.services.history.commit(app.services.history.transaction());
+				app.services.history.commit(getEmptyTransaction());
 
 				expect(spy).not.toHaveBeenCalled();
 			});
