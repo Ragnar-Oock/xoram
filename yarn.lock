@@ -3449,6 +3449,7 @@ __metadata:
   dependencies:
     "@repo/config-api-extractor": "workspace:*"
     "@repo/config-typescript": "workspace:*"
+    "@xoram/utils": "workspace:^"
     mitt: "npm:^3.0.1"
     oxlint: "npm:^1.11.1"
     typescript: "npm:^5.9.2"

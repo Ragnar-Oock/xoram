@@ -1,5 +1,5 @@
+import { warn } from '@xoram/utils/warn';
 import type { Application } from '../application/application.type';
-import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
 import type { _PluginHooks } from './plugin-hooks.type';
 import { beforeCreate, beforeDestroy, created } from './plugin-hooks.type';

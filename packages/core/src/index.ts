@@ -14,5 +14,3 @@ export { handleError, makeSafe } from './error-handling';
 
 
 export type * from './type-helper';
-
-export { warn as _warn } from './warn.helper';

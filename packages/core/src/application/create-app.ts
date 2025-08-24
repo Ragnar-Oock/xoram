@@ -1,3 +1,4 @@
+import { warn } from '@xoram/utils/warn';
 import { emitter } from '../emitter';
 import { handleError } from '../error-handling';
 import type { PluginDefinition } from '../plugins';
@@ -8,7 +9,6 @@ import {
 	playDestroyedHook,
 } from '../plugins/play-plugin-hook';
 import { sortPluginsByDependencies } from '../plugins/sort';
-import { warn } from '../warn.helper';
 import { setActiveApp } from './active-app';
 import type { Application, ApplicationOptions, ServiceCollection } from './application.type';
 import { pluginSymbol } from './application.type';

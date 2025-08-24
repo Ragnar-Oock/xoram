@@ -1,7 +1,7 @@
+import { warn } from '@xoram/utils/warn';
 import { getActiveApp } from '../application/active-app';
 import type { Application } from '../application/application.type';
 import { pluginSymbol } from '../application/application.type';
-import { warn } from '../warn.helper';
 import { type PluginDefinition } from './define-plugin';
 import { playBeforeCreateHook, playCreatedHook } from './play-plugin-hook';
 import { isPluginLike } from './plugin.helper';

@@ -1,8 +1,8 @@
+import { warn } from '@xoram/utils/warn';
 import type { Emitter, EventType, Handler, WildcardHandler } from 'mitt';
 import { getActiveApp } from '../application/active-app';
 import type { Application } from '../application/application.type';
 import type { Service, ServiceId } from '../services/services.type';
-import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
 import type { OneOrMore } from './array.helper';
 import { toArray } from './array.helper';

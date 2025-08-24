@@ -1,4 +1,4 @@
-import { warn } from '../warn.helper';
+import { warn } from '@xoram/utils/warn';
 import { getActivePlugin } from './active-plugin';
 import type { PluginId } from './plugin.type';
 

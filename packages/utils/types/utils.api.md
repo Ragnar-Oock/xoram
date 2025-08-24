@@ -4,6 +4,13 @@
 
 ```ts
 
+import { MockInstance } from 'vitest';
+
+// Warning: (ae-missing-release-tag) "expectPrettyWarn" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export function expectPrettyWarn(spy: MockInstance<(...data: any[]) => void>, ...args: any[]): void;
+
 // @public
 export type Failure<error extends Error> = Readonly<{
     ok: false;
@@ -28,6 +35,12 @@ export type Success<payload> = Readonly<{
 //
 // @public
 export const success: <payload>(value: payload) => Success<payload>;
+
+// @public
+export function warn(msgOrError: string | Error, ...args: unknown[]): void;
+
+// @internal (undocumented)
+export const _warnParams: string[];
 
 // (No @packageDocumentation comment for this package)
 

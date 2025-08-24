@@ -41,6 +41,7 @@
     "vitest": "3.2.4"
   },
   "dependencies": {
+    "@xoram/utils": "workspace:^",
     "mitt": "^3.0.1"
   }
 }

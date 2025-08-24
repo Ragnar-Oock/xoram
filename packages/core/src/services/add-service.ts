@@ -1,7 +1,7 @@
+import { warn } from '@xoram/utils/warn';
 import type { Application, ServiceCollection } from '../application';
 import { getActivePlugin } from '../plugins/active-plugin';
 import { beforeCreate, destroyed } from '../plugins/plugin-hooks.type';
-import { warn } from '../warn.helper';
 import type { Service, ServiceId } from './services.type';
 
 /**

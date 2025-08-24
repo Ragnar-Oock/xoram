@@ -1,4 +1,4 @@
-import { _warn } from '@xoram/core';
+import { warn } from '@xoram/utils/warn';
 import type { Component, MaybeRefOrGetter } from 'vue';
 import type { ComponentProps, ComponentSlots } from 'vue-component-type-helpers';
 import type {
@@ -122,7 +122,7 @@ export function defineComponentDefinition<id extends string, component extends C
 		) => {
 			if (index !== undefined && !Number.isInteger(index)) {
 				if (import.meta.env.DEV) {
-					_warn(new Error(`slot() index parameter must be an integer, received ${ index.toString(10) }, rounding to nearest integer.`));
+					warn(new Error(`slot() index parameter must be an integer, received ${ index.toString(10) }, rounding to nearest integer.`));
 				}
 				index = Math.round(index);
 			}

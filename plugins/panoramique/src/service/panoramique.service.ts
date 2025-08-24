@@ -1,4 +1,5 @@
-import { _warn, defineService, onBeforeDestroy } from '@xoram/core';
+import { defineService, onBeforeDestroy } from '@xoram/core';
+import { warn } from '@xoram/utils/warn';
 import { createPinia, defineStore, disposePinia, type Pinia } from 'pinia';
 import { type Component, computed, type ComputedRef, markRaw, reactive } from 'vue';
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
@@ -134,7 +135,7 @@ export const usePanoramiqueStore = defineStore<'panoramique', PanoramiqueStore>(
 
 			if (index !== undefined && !Number.isInteger(index)) {
 				if (import.meta.env.DEV) {
-					_warn(new Error(`addChild() index parameter must be an integer, received ${ index.toString(10) }, rounding to nearest integer.`));
+					warn(new Error(`addChild() index parameter must be an integer, received ${ index.toString(10) }, rounding to nearest integer.`));
 				}
 				index = Math.round(index);
 			}

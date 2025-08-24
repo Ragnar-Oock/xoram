@@ -1,9 +1,9 @@
+import { warn } from '@xoram/utils/warn';
 import { getActiveApp } from './application/active-app';
 import type { Application, ApplicationHooks } from './application/application.type';
 import type { _PluginHooks, DefinedPlugin } from './plugins';
 import { getActivePlugin } from './plugins/active-plugin';
 import type { _AsyncPluginError } from './plugins/define-async-plugin';
-import { warn } from './warn.helper';
 
 
 /**

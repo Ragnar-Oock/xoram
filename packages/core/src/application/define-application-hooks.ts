@@ -1,5 +1,5 @@
 // oxlint-disable prefer-await-to-callbacks
-import { warn } from '../warn.helper';
+import { warn } from '@xoram/utils/warn';
 import { getActiveApp } from './active-app';
 import type { ApplicationHooks } from './application.type';
 

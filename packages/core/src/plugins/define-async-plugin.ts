@@ -1,6 +1,6 @@
+import { warn } from '@xoram/utils/warn';
 import type { Application } from '../application';
 import { handleError } from '../error-handling';
-import { warn } from '../warn.helper';
 import { getActivePlugin } from './active-plugin';
 import { addPlugins } from './add-plugin';
 import { type OneOrMore, toArray } from './array.helper';
