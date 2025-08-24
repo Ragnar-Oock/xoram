@@ -1,7 +1,7 @@
 import type { Application } from '@xoram/core';
 import { defineService } from '@xoram/core';
+import { failure, type Result, success } from '@xoram/utils/result';
 import type { Immutable } from '../api/immutable';
-import { failure, type Result, success } from '../api/result';
 import {
 	type Realm,
 	RealmError,

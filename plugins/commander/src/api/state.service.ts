@@ -1,6 +1,6 @@
 import type { Service } from '@xoram/core';
+import type { Result } from '@xoram/utils/result';
 import type { Immutable } from './immutable';
-import type { Result } from './result';
 import type { Transaction } from './transaction';
 
 export type Realm = object;

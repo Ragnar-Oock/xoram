@@ -28,7 +28,4 @@ export type {
 } from './api/immutable';
 
 
-// todo move that to a dedicated package
-export type { Failure, Result, Success } from './api/result';
-
 

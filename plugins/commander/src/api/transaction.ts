@@ -1,4 +1,4 @@
-import type { Result } from './result';
+import type { Result } from '@xoram/utils/result';
 import type { State } from './state.service';
 import type { Step } from './step';
 import type { TransactionError } from './transaction-error';

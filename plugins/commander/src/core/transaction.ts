@@ -1,4 +1,4 @@
-import { failure, type Result, success } from '../api/result';
+import { failure, type Result, success } from '@xoram/utils/result';
 import type { State } from '../api/state.service';
 import { type Step } from '../api/step';
 import type { Transaction as TransactionInterface, TransactionMeta } from '../api/transaction';

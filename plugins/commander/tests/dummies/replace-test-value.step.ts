@@ -1,4 +1,4 @@
-import { failure, type Result, success } from '../../src/api/result';
+import { failure, type Result, success } from '@xoram/utils/result';
 import type { State } from '../../src/api/state.service';
 import { type Step } from '../../src/api/step';
 
