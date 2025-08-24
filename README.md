@@ -70,6 +70,23 @@ This project is too early in its development to accept outside contribution but
 that will come in the not so distant future. In the meantime feel free to open
 an issue if you have any suggestions.
 
+### IDE Config
+
+#### Custom import condition (optional)
+
+To improve DX when working on cross package features or bugfixes all package
+exports have a custom export condition of `xoram:dev` exposed in their
+`package.json` file that changes how imports of packages within the monorepo are
+mapped. This can instruct the language service or any typescript tooling to
+import types directly from the source code, this allows you to make changes in a
+package and have them applied to others without needing to rebuild all impacted
+packages.
+
+To enable this feature you will need to pass `--customConditions xoram:dev`
+as a command line argument to the language service.
+
+This should be enabled by default if you use an intellij IDE.
+
 ### Running tests
 
 All tests are using Vitest for both unit and e2e test, you can run either or
@@ -110,8 +127,8 @@ node:*`.
 
 ### Creating a plugin
 
-The following command will bootstrap a new plugin package under `./plugins`,
-answer the prompts and commit the created files.
+The following command will bootstrap a new plugin package under `./plugins`, all
+you have to do is answer the prompts and commit the created files.
 
 ```shell
 yarn create:plugin

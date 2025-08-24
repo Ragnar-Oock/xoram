@@ -22,9 +22,6 @@
       "ESNext",
       "DOM",
       "DOM.Iterable"
-    ],
-    "customConditions": [
-      "xoram:dev"
     ]
   },
   "exclude": [
