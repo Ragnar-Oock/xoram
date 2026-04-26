@@ -1,4 +1,3 @@
-import type { Result } from '@xoram/utils/result';
 import type { State } from './state.service';
 
 /**
@@ -11,7 +10,7 @@ export interface Step {
 	 *
 	 * @param state - the state to apply changes to
 	 */
-	apply: (state: State) => Result<State>;
+	apply: (state: State) => State;
 
 	/**
 	 * Create a step that does the opposite action.

@@ -46,7 +46,7 @@ const app = createApp([
 				// 	`can.chain.replaceLine().replaceLine('world').run()`,
 				// 	() => services.commander.can.chain.replaceLine().replaceLine('world').run(),
 				// ],
-				[ 'undo', () => services.history.undo() ],
+				// [ 'undo', () => services.history.undo() ],
 			] as const).forEach(([ label, callback ]) => {
 				const button = document.createElement('button');
 				button.innerText = label;

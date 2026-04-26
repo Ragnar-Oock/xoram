@@ -2,9 +2,15 @@ import type { Service } from '@xoram/core';
 import type { CommandConstructor } from './command';
 import type { Transaction, TransactionMeta } from './transaction';
 
-export interface CommandCollection {
+export interface CommandCollection<returnType = void> {
 	// commands will be added here with module augmentation
-	setMeta: <meta extends keyof TransactionMeta>(name: meta, value: TransactionMeta[meta]) => void;
+	/**
+	 * Set a metadata on the current transaction
+	 * @param name name of the metadata, augment {@link TransactionMeta} if you want to make it public and discoverable
+	 *   by client plugins
+	 * @param value value to set the meta to
+	 */
+	setMeta: <meta extends keyof TransactionMeta>(name: meta, value: TransactionMeta[meta]) => returnType;
 
 	// Reserved for the chain functionality.
 	run: never;
@@ -17,17 +23,21 @@ export interface CommandCollection {
  */
 export type Invoker<name extends keyof CommandCollection = keyof CommandCollection> = (...args: Parameters<CommandCollection[name]>) => boolean;
 export type SingleCommand = {
-	readonly [name in keyof CommandCollection as CommandCollection[name] extends never ? never : name]: Invoker<name>;
+	readonly [name in keyof CommandCollection as CommandCollection[name] extends never
+		? never
+		: name]: CommandCollection<boolean>[name];
 }
 export type ChainedCommand = {
 	readonly [name in keyof CommandCollection as CommandCollection[name] extends never
 		? never
-		: name]: (...args: Parameters<CommandCollection[name]>) => ChainedCommand;
+		: name]: CommandCollection<ChainedCommand>[name];
 } & {
-	run: Invoker;
+	run: () => boolean;
 }
 export type CanCommand = {
-	readonly [name in keyof CommandCollection as CommandCollection[name] extends never ? never : name]: Invoker<name>;
+	readonly [name in keyof CommandCollection as CommandCollection[name] extends never
+		? never
+		: name]: CommandCollection<boolean>[name];
 } & {
 	chain: ChainedCommand;
 }

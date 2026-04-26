@@ -1,6 +1,6 @@
 import type { UserProjectConfigFn } from 'vitest/config';
 import { defineProject } from 'vitest/config';
-import { PackageJSON, unscope } from './package.helper.ts';
+import { type PackageJSON, unscope } from './package.helper.js';
 
 /**
  * Create a Vite/Vitest config for a package with tests running in a browser environment only
@@ -41,6 +41,12 @@ export function getNodeTestConfig(pkg: PackageJSON): UserProjectConfigFn {
 			],
 			name: `node:${ unscope(pkg.name) }`,
 			environment: 'node',
+			typecheck: {
+				enabled: true,
+				exclude: [
+					'tests/main.ts', // used in plugins and package as the dev mode playground
+				],
+			},
 		},
 	}));
 }

@@ -45,7 +45,7 @@ export type ApplicationHooks = ApplicationServiceHooks & ApplicationPluginHooks;
 // @public
 export interface ApplicationOptions {
     id: string;
-    onError: (error: unknown) => void;
+    onError: (error: string | Error, plugin: DefinedPlugin | undefined, app: Application, context: ErrorContext) => void;
 }
 
 // @public
@@ -126,6 +126,11 @@ export function defineService<notification extends Record<string, unknown> = Rec
 // @public
 export function defineService<notification extends Record<string, unknown> = Record<string, never>, service = object>(setup: (app: Application, emitter: Emitter<notification & ServiceNotifications>) => Omit<service, keyof Service>): (app: Application) => Service<notification> & service;
 
+// Warning: (ae-missing-release-tag) "dependsOn" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public
+export function dependsOn(dependency: PluginDefinition): void;
+
 // @public
 export function dependsOn(dependency: PluginId): void;
 
@@ -156,7 +161,7 @@ export type EventSourceGetter<notifications extends Notifications> = ((applicati
 type EventTarget_2<notifications extends Notifications> = EventSource_2<notifications> | EventSourceContainer<notifications> | EventSourceGetter<notifications> | ServiceId;
 export { EventTarget_2 as EventTarget }
 
-// @public (undocumented)
+// @public
 export function handleError(error: string | Error, plugin?: DefinedPlugin | undefined, app?: Application | undefined, context?: ErrorContext): void;
 
 // Warning: (ae-internal-missing-underscore) The name "makeSafe" should be prefixed with an underscore because the declaration is marked as @internal

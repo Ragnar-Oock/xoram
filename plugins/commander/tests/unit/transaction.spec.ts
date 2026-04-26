@@ -40,8 +40,18 @@ describe('transaction', () => {
 			const state = getMockState();
 
 			const reversed = transaction.reverse(state);
-			expect(reversed).not.toBe(transaction);
-			expect(reversed).toBeInstanceOf(Transaction); // this might not be ideal
+
+
+			if (!reversed.ok) {
+				return expect.fail(
+					reversed,
+					expect.objectContaining({ ok: true, value: true }),
+					'Expected a success',
+				);
+			}
+
+			expect(reversed.value).not.toBe(transaction);
+			expect(reversed.value).toBeInstanceOf(Transaction); // this might not be ideal
 		});
 		it('should invoke the steps reverse method', () => {
 			const step = new ReplaceTestValueStep('test', 0, -1, 'hello');

@@ -1,6 +1,6 @@
-import { defineService, onBeforeDestroy } from '@xoram/core';
+import { defineService } from '@xoram/core';
 import { warn } from '@xoram/utils/warn';
-import { createPinia, defineStore, disposePinia, type Pinia } from 'pinia';
+import { defineStore, type Pinia } from 'pinia';
 import { type Component, computed, type ComputedRef, markRaw, reactive } from 'vue';
 import type { ComponentDefinition, ComponentHarness } from './component-definition.type';
 import type { StoreAsService } from './pinia-compat';
@@ -67,6 +67,10 @@ export interface PanoramiqueStore {
 	 * @param slotName - name of the slot the child is registered into, default's to the `default` slot
 	 */
 	removeChild: (parent: string, child: string, slotName?: string) => void;
+}
+
+export interface PiniaService {
+	pinia: Pinia;
 }
 
 /**
@@ -178,18 +182,5 @@ export const usePanoramiqueStore = defineStore<'panoramique', PanoramiqueStore>(
 );
 
 export const panoramique = defineService<Record<string, unknown>, StoreAsService<PanoramiqueStore>>(({ services }) => {
-	const pinia: Pinia = createPinia()
-		.use(({ store }) => {
-			// Add the emitter key to pinia stores to allow defineService to inject the emitter when registering the store as
-			// a service
-			// don't use the return syntax to avoid having the emitter in the devtools
-			store.emitter = {};
-		});
-	services.vue.app.use(pinia);
-
-	onBeforeDestroy(() => {
-		disposePinia(pinia);
-	});
-
 	return usePanoramiqueStore();
 });

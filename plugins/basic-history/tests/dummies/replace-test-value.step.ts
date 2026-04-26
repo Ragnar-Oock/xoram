@@ -21,19 +21,19 @@ export class ReplaceTestValueStep implements Step {
 		return failure(new Error('No setValue realm to write to'));
 	}
 
-	public reverse(state: State): Step {
+	public reverse(state: State): Result<Step> {
 		const realm = (state.realms[this.realm] as { value?: string });
 		if (realm.value === undefined) {
 			throw new TypeError(`Invalid test realm ${ this.realm }, value is undefined`);
 		}
 		const from = this.from < 0 ? realm.value.length + this.from + 1 : this.from;
 		const to = this.to < 0 ? realm.value.length + this.to + 1 : this.to;
-		return new ReplaceTestValueStep(
+		return success(new ReplaceTestValueStep(
 			this.realm,
 			from,
 			from + this.content.length,
 			realm.value.slice(from, to),
-		);
+		));
 	}
 
 }

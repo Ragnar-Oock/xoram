@@ -21,8 +21,8 @@ export class IrreversibleReplaceTestValueStep implements Step {
 		return success(state);
 	}
 
-	public reverse(): Step {
-		return this;
+	public reverse(): Result<Step> {
+		return success(this);
 	}
 
 }

@@ -6,6 +6,7 @@ import { basicHistoryPlugin } from '../../src';
 import { HistoryError, type HistoryService } from '../../src/api/history.service';
 import { IrreversibleReplaceTestValueStep } from '../dummies/irreversible-replace-test-value.step';
 import { ReplaceTestValueStep } from '../dummies/replace-test-value.step';
+import { UnRedoableStep } from '../dummies/un-redoable.step';
 
 function isTransaction(candidate: unknown): candidate is Transaction {
 	return (
@@ -383,6 +384,24 @@ describe('history service', () => {
 				);
 			}
 			expect(result.value).toBeTruthy();
+		});
+		it('should return a failure when a step fails to re-apply', () => {
+			const transaction = getEmptyTransaction();
+			transaction.add(new UnRedoableStep(realm, 'replacement'));
+			app.services.history.commit(transaction);
+			expect(app.services.history.hasPast).toBeTruthy();
+			app.services.history.undo();
+			expect(app.services.history.hasFuture).toBeTruthy();
+			const result = app.services.history.redo();
+
+			if (result.ok) {
+				return expect.fail(
+					result,
+					expect.objectContaining({ ok: false, reason: expect.any(Error) }),
+					'Expected a failure',
+				);
+			}
+			expect(result.reason).toStrictEqual(new HistoryError('Failed to redo transaction'));
 		});
 	});
 

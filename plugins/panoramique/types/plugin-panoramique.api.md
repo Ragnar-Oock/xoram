@@ -16,6 +16,7 @@ import { PluginDefinition } from '@xoram/core';
 import type { Prettify } from '@xoram/core';
 import { Service } from '@xoram/core';
 import type { Store } from 'pinia';
+import type { StoreDefinition } from 'pinia';
 import type { VNodeProps } from 'vue';
 
 // @public
@@ -167,7 +168,7 @@ export const rootHarness = "root";
 export type ServiceAsStore<service extends Service> = Omit<service, keyof Service>;
 
 // @public
-export type StoreAsService<store, notifications extends Record<string, unknown> = Record<string, unknown>, storeId extends string = string> = (store extends Store ? store : Store<storeId, _ExtractStateFromSetupStore<store>, _ExtractGettersFromSetupStore<store>, _ExtractActionsFromSetupStore<store>>) & Service<notifications>;
+export type StoreAsService<store, notifications extends Record<string, unknown> = Record<string, unknown>, storeId extends string = string> = (store extends Store ? store : store extends StoreDefinition ? Omit<ReturnType<store>, '$id'> : Store<storeId, _ExtractStateFromSetupStore<store>, _ExtractGettersFromSetupStore<store>, _ExtractActionsFromSetupStore<store>>) & Service<notifications>;
 
 // @public
 export interface VueService extends Service {

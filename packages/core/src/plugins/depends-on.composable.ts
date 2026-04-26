@@ -1,7 +1,14 @@
 import { warn } from '@xoram/utils/warn';
 import { getActivePlugin } from './active-plugin';
+import type { PluginDefinition } from './define-plugin';
 import type { PluginId } from './plugin.type';
 
+/**
+ *
+ * Mark the plugin as depending on the given dependency.
+ * @param dependency - the other plugin you depend on.
+ */
+export function dependsOn(dependency: PluginDefinition): void;
 /**
  * Mark the plugin as depending on the given dependency.
  * @param dependency - the id of the other plugin you depend on. Make sure to have at least one import in your module
@@ -9,7 +16,8 @@ import type { PluginId } from './plugin.type';
  *
  * @public
  */
-export function dependsOn(dependency: PluginId): void {
+export function dependsOn(dependency: PluginId): void;
+export function dependsOn(dependency: PluginDefinition | PluginId): void {
 	const activePlugin = getActivePlugin();
 
 	if (!activePlugin || activePlugin.phase !== 'setup') {
@@ -20,6 +28,6 @@ export function dependsOn(dependency: PluginId): void {
 		return;
 	}
 
-	activePlugin.dependencies.push(dependency);
+	activePlugin.dependencies.push(typeof dependency === 'function' ? dependency.id : dependency);
 	return;
 }

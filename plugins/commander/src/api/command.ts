@@ -1,12 +1,12 @@
 import type { CanCommand, ChainedCommand, SingleCommand } from './command.service';
-import type { StateService } from './state.service';
+import type { State } from './state.service';
 import type { Transaction } from './transaction';
 
 export interface CommandParameters {
 	/**
 	 * The state a command's {@link Step | steps} will act upon.
 	 */
-	state: StateService,
+	state: State,
 	/**
 	 * The transaction to add steps to
 	 */

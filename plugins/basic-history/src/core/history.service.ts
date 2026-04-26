@@ -65,7 +65,7 @@ export const historyService: (app: Application) => HistoryService = defineServic
 				const result = this.commit(future.transaction, { purgeFuture: false });
 
 				if (!result.ok) {
-					return result;
+					return failure(new HistoryError('Failed to redo transaction', { cause: result.reason }));
 				}
 
 				future = future.parent;

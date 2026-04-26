@@ -30,7 +30,7 @@ export interface Transaction {
 	 *
 	 * @param state - the state to apply the changes to
 	 */
-	reverse: (state: State) => Transaction;
+	reverse: (state: State) => Result<Transaction, TransactionError>;
 
 	/**
 	 * Access a transaction metadata

@@ -11,6 +11,7 @@ import type {
 	NonNever,
 	SingleCommand,
 } from '../api/command.service';
+import type { State } from '../api/state.service';
 import type { Transaction } from '../api/transaction';
 
 type _Commands = {
@@ -33,7 +34,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 		const applyWithErrorHandling = (transaction: Transaction): true | never => {
 			const result = app.services.state.apply(transaction);
 			if (!result.ok) {
-				handleError(result.reason, undefined, app, 'unknown');
+				throw result.reason;
 			}
 			return result.ok;
 		};
@@ -42,6 +43,8 @@ export const commandService: (app: Application) => CommandService = defineServic
 			transaction: Transaction,
 			shouldDispatch = true,
 		): CommandParameters {
+			let clone: State;
+
 			const parameters = {
 				get chain() { return getChain(transaction, shouldDispatch); },
 				get can() { return getCan(transaction); },
@@ -55,7 +58,7 @@ export const commandService: (app: Application) => CommandService = defineServic
 						},
 					});
 				},
-				state: app.services.state,
+				get state() { return clone ??= { realms: structuredClone(app.services.state.realms) }; },
 				transaction,
 				dispatch: shouldDispatch ? () => undefined : undefined,
 			} satisfies CommandParameters;

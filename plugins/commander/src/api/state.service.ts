@@ -1,9 +1,12 @@
-import type { Service } from '@xoram/core';
+import type { Application, Service } from '@xoram/core';
 import type { Result } from '@xoram/utils/result';
 import type { Immutable } from './immutable';
 import type { Transaction } from './transaction';
 
-export type Realm = object;
+export interface Realm<T = unknown> {
+	initialize: (state: State, app: Application) => T;
+	apply: (transaction: Transaction, value: T, previousState: State, newState: State) => T;
+}
 
 export interface Realms {
 	[name: string]: Realm;
@@ -30,13 +33,13 @@ export type StateNotification = {
 
 export interface StateService extends Service<StateNotification> {
 	readonly realms: Immutable<Realms>;
-
-	/**
-	 * Register a space for historisable data to be stored.
-	 * @param name - a unique identifier used to edit the realm's data in steps and read from it
-	 * @param initialValue - a value to set the realm to when creating it
-	 */
-	claim(name: keyof Realms, initialValue?: Realm): Result<Immutable<Realm>, RealmError>;
+	// todo move this to a step
+	// /**
+	//  * Register a space for historisable data to be stored.
+	//  * @param name - a unique identifier used to edit the realm's data in steps and read from it
+	//  * @param initialValue - a value to set the realm to when creating it
+	//  */
+	// claim(name: keyof Realms, initialValue?: Realm): Result<Immutable<Realm>, RealmError>;
 
 
 	/**
@@ -55,7 +58,7 @@ export interface StateService extends Service<StateNotification> {
  * Allow read and write to the realms by steps.
  */
 export interface State {
-	realms: Readonly<Realms>;
+	realms: Realms;
 }
 
 export class StateError extends Error {}

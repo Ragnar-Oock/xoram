@@ -22,6 +22,16 @@ export type Failure<error extends Error> = Readonly<{
 // @public
 export const failure: <error extends Error>(reason: error) => Failure<error>;
 
+// Warning: (ae-missing-release-tag) "fromCall" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const fromCall: <result, error extends Error>(action: () => result) => Result<result, error>;
+
+// Warning: (ae-missing-release-tag) "map" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export const map: <input, output, error extends Error>(items: input[], cb: (item: NoInfer<input>, index: number, array: input[]) => Result<output, error>) => Result<output[], error>;
+
 // @public
 export type Result<payload, error extends Error = Error> = Success<payload> | Failure<error>;
 

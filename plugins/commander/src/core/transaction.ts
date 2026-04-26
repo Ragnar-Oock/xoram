@@ -1,4 +1,4 @@
-import { failure, type Result, success } from '@xoram/utils/result';
+import { failure, fromCall, type Result, success } from '@xoram/utils/result';
 import type { State } from '../api/state.service';
 import { type Step } from '../api/step';
 import type { Transaction as TransactionInterface, TransactionMeta } from '../api/transaction';
@@ -24,15 +24,19 @@ export class Transaction implements TransactionInterface {
 		let applyError: TransactionError | undefined;
 		// play steps
 		for (const step of this._steps) {
-			const reversed = step.reverse(state);
-			const result = step.apply(state);
+			const reversed = fromCall(() => step.reverse(state));
+			if (!reversed.ok) {
+				applyError = new TransactionError('Failed to create reverse step', reversed.reason, this);
+				break;
+			}
+			const applied = fromCall(() => step.apply(state));
 
-			if (!result.ok) {
-				applyError = new TransactionError('Failed to apply transaction', result.reason as Error, this);
+			if (!applied.ok) {
+				applyError = new TransactionError('Failed to apply transaction', applied.reason as Error, this);
 				break;
 			}
 
-			reversedSteps.push(reversed);
+			reversedSteps.push(reversed.value);
 		}
 
 		// rollback on fail
@@ -47,8 +51,12 @@ export class Transaction implements TransactionInterface {
 		return success(new Transaction(reversedSteps.reverse()));
 	}
 
-	public reverse(state: State): TransactionInterface {
-		return new Transaction(this._steps.map(step => step.reverse(state)));
+	public reverse(state: State): Result<Transaction, TransactionError> {
+		const steps = fromCall(() => this._steps.map(step => step.reverse(state)));
+		if (!steps.ok) {
+			return failure(new TransactionError('Unable to invert transaction', steps.reason, this));
+		}
+		return success(new Transaction(steps.value));
 	}
 
 	public getMeta<meta extends keyof TransactionMeta>(name: meta): TransactionMeta[meta] | undefined {

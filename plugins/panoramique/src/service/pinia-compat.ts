@@ -1,5 +1,6 @@
-import type { Service } from '@xoram/core';
-import type { Store } from 'pinia';
+import type { Notifications, Service } from '@xoram/core';
+import type { Emitter } from 'mitt';
+import type { Store, StoreDefinition } from 'pinia';
 import type { ComputedRef } from 'vue';
 
 // we can't use `unknown` in the following types as nothing can be assigned to it, that would narrow down the filters
@@ -119,12 +120,14 @@ export type StoreAsService<
 > =
 	(store extends Store
 		? store
-		: Store<
-			storeId,
-			_ExtractStateFromSetupStore<store>,
-			_ExtractGettersFromSetupStore<store>,
-			_ExtractActionsFromSetupStore<store>
-		>)
+		: store extends StoreDefinition
+			? Omit<ReturnType<store>, '$id'>
+			: Store<
+				storeId,
+				_ExtractStateFromSetupStore<store>,
+				_ExtractGettersFromSetupStore<store>,
+				_ExtractActionsFromSetupStore<store>
+			>)
 	& Service<notifications>
 	;
 
@@ -148,3 +151,11 @@ export type StoreAsService<
  * @public
  */
 export type ServiceAsStore<service extends Service> = Omit<service, keyof Service>;
+
+let activeEmitter: Emitter<Notifications> | undefined;
+export const setActiveEmitter = (emitter: Emitter<Notifications>): () => void => {
+	const previous = activeEmitter;
+	activeEmitter = emitter;
+	return () => activeEmitter = previous;
+};
+export const useEmitter = <notifications extends Notifications>() => activeEmitter as Emitter<notifications> | undefined;

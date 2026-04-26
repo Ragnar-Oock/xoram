@@ -3449,7 +3449,7 @@ __metadata:
   dependencies:
     "@repo/config-api-extractor": "workspace:*"
     "@repo/config-typescript": "workspace:*"
-    "@xoram/utils": "workspace:^"
+    "@xoram/utils": "npm:^0.0.0"
     mitt: "npm:^3.0.1"
     oxlint: "npm:^1.11.1"
     typescript: "npm:^5.9.2"
@@ -3485,6 +3485,7 @@ __metadata:
     "@vitejs/plugin-vue": "npm:^6.0.1"
     "@vue/test-utils": "npm:^2.4.6"
     "@xoram/core": "workspace:^"
+    mitt: "npm:^3.0.1"
     pinia: "npm:^3.0.3"
     sass: "npm:^1.90.0"
     typescript: "npm:^5.9.2"
@@ -3496,7 +3497,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@xoram/utils@workspace:^, @xoram/utils@workspace:packages/utils":
+"@xoram/utils@npm:^0.0.0, @xoram/utils@workspace:^, @xoram/utils@workspace:packages/utils":
   version: 0.0.0-use.local
   resolution: "@xoram/utils@workspace:packages/utils"
   languageName: unknown
